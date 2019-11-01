@@ -19,7 +19,8 @@ defmodule RpiMusicMachineNerves.Application do
     main_viewport_config = Application.get_env(:rpi_music_machine_nerves, :viewport)
 
     [
-      {Scenic, viewports: [main_viewport_config]}
+      {Scenic, viewports: [main_viewport_config]},
+      {AudioPlayer, []}
     ]
   end
 
@@ -27,7 +28,8 @@ defmodule RpiMusicMachineNerves.Application do
     main_viewport_config = Application.get_env(:rpi_music_machine_nerves, :viewport)
 
     [
-      {Scenic, viewports: [main_viewport_config]}
+      {Scenic, viewports: [main_viewport_config]},
+      {AudioPlayer, []}
     ]
   end
 end
