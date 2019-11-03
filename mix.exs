@@ -56,14 +56,35 @@ defmodule RpiMusicMachineNerves.MixProject do
       {:scenic_driver_nerves_touch, "~> 0.10", targets: @all_targets},
 
       # Dependencies for specific targets
-      {:nerves_system_rpi, "~> 1.8", runtime: false, targets: :rpi},
-      {:nerves_system_rpi0, "~> 1.8", runtime: false, targets: :rpi0},
-      {:nerves_system_rpi2, "~> 1.8", runtime: false, targets: :rpi2},
-      {:nerves_system_rpi3, "~> 1.8", runtime: false, targets: :rpi3},
-      {:nerves_system_rpi3a, "~> 1.8", runtime: false, targets: :rpi3a},
-      {:nerves_system_rpi4, "~> 1.8", runtime: false, targets: :rpi4},
-      {:nerves_system_bbb, "~> 2.3", runtime: false, targets: :bbb},
-      {:nerves_system_x86_64, "~> 1.8", runtime: false, targets: :x86_64}
+      # {:nerves_system_rpi, "~> 1.8", runtime: false, targets: :rpi},
+      # {:nerves_system_rpi0, "~> 1.8", runtime: false, targets: :rpi0},
+      # {:nerves_system_rpi2, "~> 1.8", runtime: false, targets: :rpi2},
+      {:nerves_system_rpi2,
+       [
+         github: "nerves-project/nerves_system_rpi2",
+         branch: "enable-rpi-touchscreen",
+         runtime: true,
+         override: true,
+         targets: :rpi2,
+         compile: true,
+         nerves: [compile: true]
+       ]}
+
+      #  {
+      #   :plasma_contracts,
+      #   git: "git@github.com:pik694/plasma-contracts.git",
+      #   branch: "feature/fee-burner",
+      #   sparse: "contracts",
+      #   compile: compile_plasma_contracts(),
+      #   app: false,
+      #   override: true,
+      #   only: [:dev, :test]
+      # },
+      # {:nerves_system_rpi3, "~> 1.8", runtime: false, targets: :rpi3},
+      # {:nerves_system_rpi3a, "~> 1.8", runtime: false, targets: :rpi3a},
+      # {:nerves_system_rpi4, "~> 1.8", runtime: false, targets: :rpi4},
+      # {:nerves_system_bbb, "~> 2.3", runtime: false, targets: :bbb},
+      # {:nerves_system_x86_64, "~> 1.8", runtime: false, targets: :x86_64}
     ]
   end
 

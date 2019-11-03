@@ -22,4 +22,15 @@ defmodule AudioPlayer do
 
     {:ok, init_arg}
   end
+
+  def play_sound(pid) do
+    GenServer.call(__MODULE__, :play_sound)
+  end
+
+  def handle_cast(:play_sound, state) do
+    IO.puts("PLAYING SOUND")
+    :os.cmd('afplay -q cello.wav') |> IO.inspect()
+
+    {:noreply, state}
+  end
 end

@@ -5,6 +5,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   alias Scenic.Graph
   alias Scenic.Primitive
   import Scenic.Primitives
+  import Scenic.Components
 
   @width 10000
   @height 10000
@@ -14,6 +15,11 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
          |> text("Touch the screen to start", id: :pos, translate: {20, 80})
          |> line({{0, 100}, {@width, 100}}, stroke: {4, :white}, id: :cross_hair_h, hidden: true)
          |> line({{100, 0}, {100, @height}}, stroke: {4, :white}, id: :cross_hair_v, hidden: true)
+         |> button("Hi", id: :play_song, translate: {20, 180})
+
+  @song_playing_graph Graph.build(font: :roboto, font_size: 16)
+                      |> rect({@width, @height}, id: :background)
+                      |> text("Song Playing or something", id: :pos, translate: {20, 80})
 
   # ============================================================================
   # setup
@@ -25,6 +31,16 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
 
   # ============================================================================
   # event handlers
+
+  def filter_event({:click, :play_song}, context, state) do
+    IO.puts("Sample button was clicked!")
+    IO.inspect(context)
+    IO.inspect(state)
+    # ViewPort.set_root(context, {RpiMusicMachineNerves.Scene.SysInfo, state})
+
+    # {:cont, :ok, state}
+    {:noreply, @song_playing_graph, push: @song_playing_graph}
+  end
 
   # --------------------------------------------------------
   def handle_input({:cursor_button, {:left, :press, _, {x, y}}}, context, graph) do
