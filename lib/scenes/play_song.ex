@@ -10,26 +10,30 @@ defmodule RpiMusicMachineNerves.Scene.PlaySong do
 
   #   @in_the_aeroplane "What a beautiful face I have found in this place That is circling all round the sun What a beautiful dream That could flash on the screen In a blink of an eye and be gone from me  Soft and sweet Let me hold it close and keep it here with me  And one day we will die And our ashes will fly From the aeroplane over the sea But for now we are young Let us lay in the sun And count every beautiful thing we can see  Love to be In the arms of all I'm keeping here with me  What a curious life We have found here tonight There is music that sounds from the street There are lights in the clouds Anna's ghost all around Hear her voice as it's rolling and ringing through me  Soft and sweet How the notes all bend and reach above the trees  Now how I remember you How I would push my fingers through Your mouth to make those muscles move That made your voice so smooth and sweet But now we keep where we don't know All secrets sleep in winter clothes With the one you loved so long ago Now he don't even know his name  What a beautiful face I have found in this place That is circling all 'round the sun And when we meet on a cloud I'll be laughing out loud I'll be laughing with everyone I see  Can't believe How strange it is to be anything at all"
   @in_the_aeroplane [
-    [text: "what a beautiful face I have found in this place", start_time: 16 * 1000, note: :c],
+    [text: "what a beautiful face I have found in this place", start_time: 8 * 1000, note: :c],
     [
       text: "that is circling all round the sun",
-      start_time: 21 * 1000,
+      start_time: 13 * 1000,
+      time_end: ~T[01:00:07.001],
+      note: :c
+    ],
+    [
+      text: "what a beautiful dream that can flash on the screen",
+      start_time: 18 * 1000,
+      time_end: ~T[01:00:07.001],
+      note: :c
+    ],
+    [
+      text: "in a blink of an eye and be gone from me",
+      start_time: 22 * 1000,
       time_end: ~T[01:00:07.001],
       note: :c
     ]
   ]
   @graph Graph.build(font_size: 22, font: :roboto_mono)
-         #  |> group(
-         #    fn g ->
-         #      g
-         #      |> text("Hello friend Playing song", translate: {10, 20}, font_size: 18)
-         #    end,
-         #    t: {10, 30}
-         #  )
-         #  |> text("Hi", id: :hi, translate: {50, 80})
-         |> text("CURRENT LYRIC FIELD",
+         |> text("",
            id: :current_lyric,
-           translate: {400, 80},
+           translate: {400, 200},
            text_align: :center,
            font_size: 36
          )
@@ -81,12 +85,12 @@ defmodule RpiMusicMachineNerves.Scene.PlaySong do
     Process.send_after(self(), :work, Kernel.trunc(1000 / @fps))
   end
 
-  # works on MAC dev env
+  # works on the mac dev env
   defp stop_audio() do
     :os.cmd('killall afplay')
   end
 
-  defp text_speed_x() do
-    @screen_width / @fps
-  end
+  #   defp text_speed_x() do
+  #     @screen_width / @fps
+  #   end
 end
