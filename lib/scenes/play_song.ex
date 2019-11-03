@@ -4,6 +4,14 @@ defmodule RpiMusicMachineNerves.Scene.PlaySong do
 
   import Scenic.Primitives
 
+  @fps 10
+  @screen_width 800
+
+  #   @in_the_aeroplane "What a beautiful face I have found in this place That is circling all round the sun What a beautiful dream That could flash on the screen In a blink of an eye and be gone from me  Soft and sweet Let me hold it close and keep it here with me  And one day we will die And our ashes will fly From the aeroplane over the sea But for now we are young Let us lay in the sun And count every beautiful thing we can see  Love to be In the arms of all I'm keeping here with me  What a curious life We have found here tonight There is music that sounds from the street There are lights in the clouds Anna's ghost all around Hear her voice as it's rolling and ringing through me  Soft and sweet How the notes all bend and reach above the trees  Now how I remember you How I would push my fingers through Your mouth to make those muscles move That made your voice so smooth and sweet But now we keep where we don't know All secrets sleep in winter clothes With the one you loved so long ago Now he don't even know his name  What a beautiful face I have found in this place That is circling all 'round the sun And when we meet on a cloud I'll be laughing out loud I'll be laughing with everyone I see  Can't believe How strange it is to be anything at all"
+  @in_the_aeroplane [
+    [text: "what a beautiful face", start_time: 1000, note: :c],
+    [text: "I have found in this place", start_time: 4000, time_end: ~T[01:00:07.001], note: :c]
+  ]
   @graph Graph.build(font_size: 22, font: :roboto_mono)
          |> group(
            fn g ->
@@ -12,44 +20,63 @@ defmodule RpiMusicMachineNerves.Scene.PlaySong do
            end,
            t: {10, 30}
          )
-         |> group(
-           fn g ->
-             g
-             |> text("ViewPort")
-             |> text("", translate: {10, 20}, font_size: 18, id: :vp_info)
-           end,
-           t: {10, 110}
-         )
-         |> group(
-           fn g ->
-             g
-             |> text("Devices are being loaded...",
-               translate: {10, 20},
-               font_size: 18,
-               id: :devices
-             )
-           end,
-           t: {280, 30},
-           id: :device_list
-         )
+         |> text("CURRENT LYRIC FIELD", id: :current_lyric, translate: {150, 80})
+         |> Map.put(:current_lyric_index, 0)
 
   # --------------------------------------------------------
   def init(_, opts) do
     {:ok, info} = Scenic.ViewPort.info(opts[:viewport])
 
-    vp_info = """
-    size: #{inspect(Map.get(info, :size))}
-    """
+    IO.puts("Scheduling work!")
+    schedule_work()
 
-    # styles: #{stringify_map(Map.get(info, :styles, %{a: 1, b: 2}))}
-    # transforms: #{stringify_map(Map.get(info, :transforms, %{}))}
-    # drivers: #{stringify_map(Map.get(info, :drivers))}
+    Enum.each(@in_the_aeroplane, fn lyric ->
+      start_time = Keyword.get(lyric, :start_time)
+      IO.puts("Sending after")
+      IO.inspect(start_time)
+      Process.send_after(self(), :show_next_lyric, start_time)
+    end)
+
+    spawn(fn -> :os.cmd('afplay lib/in_the_airplane_over_the_sea_karaoke.mp3 ') end)
+
+    {:ok, @graph, push: @graph}
+  end
+
+  def handle_info(:show_next_lyric, graph) do
+    graph = Map.put(graph, :current_lyric_index, graph.current_lyric_index + 1)
+    IO.puts("Showing next lyric")
 
     graph =
-      @graph
-      |> Graph.modify(:vp_info, &text(&1, vp_info))
-      |> Graph.modify(:device_list, &update_opts(&1, hidden: @target == "host"))
+      Graph.modify(graph, :current_lyric, fn p ->
+        Primitive.put(
+          p,
+          "poop"
+        )
+      end)
 
-    {:ok, graph, push: graph}
+    IO.puts("Putting poop")
+
+    {:noreply, graph}
+  end
+
+  @impl true
+  def handle_info(:work, state) do
+    # Reschedule once more
+    schedule_work()
+
+    {:noreply, state}
+  end
+
+  defp schedule_work do
+    Process.send_after(self(), :work, Kernel.trunc(1000 / @fps))
+  end
+
+  # works on MAC dev env
+  defp stop_audio() do
+    :os.cmd('killall afplay')
+  end
+
+  defp text_speed_x() do
+    @screen_width / @fps
   end
 end
