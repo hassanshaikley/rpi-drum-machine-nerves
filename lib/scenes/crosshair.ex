@@ -15,7 +15,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
          |> text("Touch the screen to start", id: :pos, translate: {20, 80})
          |> line({{0, 100}, {@width, 100}}, stroke: {4, :white}, id: :cross_hair_h, hidden: true)
          |> line({{100, 0}, {100, @height}}, stroke: {4, :white}, id: :cross_hair_v, hidden: true)
-         |> button("Start Song", id: :play_song, translate: {20, 180})
+         |> button("Start", id: :play_song, translate: {20, 180})
 
   @song_playing_graph Graph.build(font: :roboto, font_size: 16)
                       |> rect({@width, @height}, id: :background)
@@ -36,6 +36,9 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
     IO.inspect(context, label: :context)
     IO.inspect(state)
     # ViewPort.set_root(context, {RpiMusicMachineNerves.Scene.PlaySong, state})
+
+    IO.puts("HITTING AUD PLAY")
+    AudioPlayer.play_sound()
 
     {:noreply, @song_playing_graph, push: @song_playing_graph}
   end
@@ -63,7 +66,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
         )
       end)
 
-    ViewPort.capture_input(context, [:cursor_button, :cursor_pos])
+    ViewPort.capture_input(context, [:cursor_button])
 
     {:noreply, graph, push: graph}
   end
@@ -88,34 +91,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
         )
       end)
 
-    ViewPort.release_input(context, [:cursor_button, :cursor_pos])
-
-    {:noreply, graph, push: graph}
-  end
-
-  # --------------------------------------------------------
-  def handle_input({:cursor_pos, {x, y}}, _context, graph) do
-    graph =
-      graph
-      |> Graph.modify(:cross_hair_h, fn p ->
-        p
-        |> Primitive.put({{0, y}, {@width, y}})
-      end)
-      |> Graph.modify(:cross_hair_v, fn p ->
-        p
-        |> Primitive.put({{x, 0}, {x, @height}})
-      end)
-      |> Graph.modify(:pos, fn p ->
-        Primitive.put(
-          p,
-          "x: #{:erlang.float_to_binary(x * 1.0, decimals: 1)}, y: #{
-            :erlang.float_to_binary(y * 1.0, decimals: 1)
-          }"
-        )
-      end)
-
-    IO.inspect(graph)
-    IO.inspect(_context, label: :context)
+    ViewPort.release_input(context, [:cursor_button])
 
     {:noreply, graph, push: graph}
   end
