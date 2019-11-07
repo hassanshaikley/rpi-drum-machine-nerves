@@ -19,7 +19,7 @@ defmodule RpiMusicMachineNerves.Scene.PlaySong do
     ],
     [
       text: "what a beautiful dream that can flash on the screen",
-      start_time: 18 * 1000,
+      start_time: 16 * 1000,
       time_end: ~T[01:00:07.001],
       note: :c
     ],
@@ -53,6 +53,7 @@ defmodule RpiMusicMachineNerves.Scene.PlaySong do
       Process.send_after(self(), :show_next_lyric, start_time)
     end)
 
+    IO.puts("STARTING SONG")
     spawn(fn -> :os.cmd('afplay lib/in_the_airplane_over_the_sea_karaoke.mp3 ') end)
 
     {:ok, @graph, push: @graph}

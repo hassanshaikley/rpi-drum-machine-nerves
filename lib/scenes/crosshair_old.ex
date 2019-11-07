@@ -1,4 +1,4 @@
-defmodule RpiMusicMachineNerves.Scene.Crosshair do
+defmodule RpiMusicMachineNerves.Scene.CrosshairOLD do
   use Scenic.Scene
 
   alias Scenic.ViewPort
