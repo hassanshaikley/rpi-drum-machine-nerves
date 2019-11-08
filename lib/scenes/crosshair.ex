@@ -20,6 +20,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   @song_playing_graph Graph.build(font: :roboto, font_size: 16)
                       |> rect({@width, @height}, id: :background)
                       |> text("Song Playing or something", id: :pos, translate: {20, 80})
+                      |> button("Stop", id: :stop_song, translate: {20, 180})
 
   # ============================================================================
   # setup
@@ -33,67 +34,17 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   # event handlers
 
   def filter_event({:click, :play_song}, context, state) do
-    IO.inspect(context, label: :context)
-    IO.inspect(state)
-    # ViewPort.set_root(context, {RpiMusicMachineNerves.Scene.PlaySong, state})
-
     IO.puts("HITTING AUD PLAY")
     AudioPlayer.play_sound()
 
     {:noreply, @song_playing_graph, push: @song_playing_graph}
   end
 
-  # --------------------------------------------------------
-  def handle_input({:cursor_button, {:left, :press, _, {x, y}}}, context, graph) do
-    graph =
-      graph
-      |> Graph.modify(:cross_hair_h, fn p ->
-        p
-        |> Primitive.put({{0, y}, {@width, y}})
-        |> Primitive.put_style(:hidden, false)
-      end)
-      |> Graph.modify(:cross_hair_v, fn p ->
-        p
-        |> Primitive.put({{x, 0}, {x, @height}})
-        |> Primitive.put_style(:hidden, false)
-      end)
-      |> Graph.modify(:pos, fn p ->
-        Primitive.put(
-          p,
-          "x: #{:erlang.float_to_binary(x * 1.0, decimals: 1)}, y: #{
-            :erlang.float_to_binary(y * 1.0, decimals: 1)
-          }"
-        )
-      end)
+  def filter_event({:click, :stop_song}, context, state) do
+    IO.puts("HITTING AUD stop")
+    AudioPlayer.stop_sound()
 
-    ViewPort.capture_input(context, [:cursor_button])
-
-    {:noreply, graph, push: graph}
-  end
-
-  # --------------------------------------------------------
-  def handle_input({:cursor_button, {:left, :release, _, {x, y}}}, context, graph) do
-    graph =
-      Graph.modify(graph, :cross_hair_h, fn p ->
-        Primitive.put_style(p, :hidden, true)
-      end)
-
-    graph =
-      Graph.modify(graph, :cross_hair_v, fn p ->
-        Primitive.put_style(p, :hidden, true)
-      end)
-      |> Graph.modify(:pos, fn p ->
-        Primitive.put(
-          p,
-          "x: #{:erlang.float_to_binary(x * 1.0, decimals: 1)}, y: #{
-            :erlang.float_to_binary(y * 1.0, decimals: 1)
-          }"
-        )
-      end)
-
-    ViewPort.release_input(context, [:cursor_button])
-
-    {:noreply, graph, push: graph}
+    {:noreply, @song_playing_graph, push: @song_playing_graph}
   end
 
   def handle_input(_msg, _, graph) do

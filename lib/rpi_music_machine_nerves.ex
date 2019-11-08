@@ -32,4 +32,10 @@ defmodule RpiMusicMachineNerves.Application do
       {AudioPlayer, []}
     ]
   end
+
+  def stop(state) do
+    IO.puts("Stop in Application")
+    AudioPlayer.stop_sound()
+    IO.puts("Done stopping in Application")
+  end
 end

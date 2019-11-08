@@ -27,23 +27,21 @@ defmodule AudioPlayer do
   end
 
   def play_sound() do
-    IO.puts("Hit play sound focusing genserver")
-    GenServer.cast(__MODULE__, :play_sound)
-    IO.puts("DONE DEAL")
+    GenServer.cast(__MODULE__, :start_audio)
   end
 
-  def handle_cast(:play_sound, state) do
-    :os.cmd('afplay lib/in_the_airplane_over_the_sea_karaoke.mp3')
-    {:noreply, state}
+  def stop_sound() do
+    GenServer.cast(__MODULE__, :stop_audio)
   end
 
-  def handle_cast(:stop_sound, state) do
+  def handle_cast(:stop_audio, state) do
     :os.cmd('killall afplay')
     {:noreply, state}
   end
 
-  def handle_cast(ok, state) do
-    IO.inspect(ok)
+  def handle_cast(:start_audio, state) do
+    spawn(fn -> :os.cmd('afplay lib/in_the_airplane_over_the_sea_karaoke.mp3 ') end)
+
     {:noreply, state}
   end
 end
