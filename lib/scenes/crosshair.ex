@@ -12,23 +12,17 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
                    |> rect({@width, @height}, id: :background)
-                   |> text("Touch the screen to start", id: :pos, translate: {20, 80})
-                   |> line({{0, 100}, {@width, 100}},
-                     stroke: {4, :white},
-                     id: :cross_hair_h,
-                     hidden: true
-                   )
-                   |> line({{100, 0}, {100, @height}},
-                     stroke: {4, :white},
-                     id: :cross_hair_v,
-                     hidden: true
-                   )
-                   |> button("Start", id: :play_song, translate: {20, 180})
+                   |> button("Start Song", id: :play_song, translate: {20, 180})
 
   @song_playing_graph Graph.build(font: :roboto, font_size: 16)
                       |> rect({@width, @height}, id: :background)
-                      |> text("Song Playing or something", id: :pos, translate: {20, 80})
-                      |> button("Stop", id: :stop_song, translate: {20, 180})
+                      |> text("~~ In The Aeroplane Over The Sea ~~",
+                        id: :title,
+                        translate: {400, 50},
+                        text_align: :center,
+                        font_size: 36
+                      )
+                      |> button("Stop Song", id: :stop_song, translate: {20, 180})
 
   # ============================================================================
   # setup
