@@ -10,12 +10,20 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   @width 10000
   @height 10000
 
-  @graph Graph.build(font: :roboto, font_size: 16)
-         |> rect({@width, @height}, id: :background)
-         |> text("Touch the screen to start", id: :pos, translate: {20, 80})
-         |> line({{0, 100}, {@width, 100}}, stroke: {4, :white}, id: :cross_hair_h, hidden: true)
-         |> line({{100, 0}, {100, @height}}, stroke: {4, :white}, id: :cross_hair_v, hidden: true)
-         |> button("Start", id: :play_song, translate: {20, 180})
+  @main_menu_graph Graph.build(font: :roboto, font_size: 16)
+                   |> rect({@width, @height}, id: :background)
+                   |> text("Touch the screen to start", id: :pos, translate: {20, 80})
+                   |> line({{0, 100}, {@width, 100}},
+                     stroke: {4, :white},
+                     id: :cross_hair_h,
+                     hidden: true
+                   )
+                   |> line({{100, 0}, {100, @height}},
+                     stroke: {4, :white},
+                     id: :cross_hair_v,
+                     hidden: true
+                   )
+                   |> button("Start", id: :play_song, translate: {20, 180})
 
   @song_playing_graph Graph.build(font: :roboto, font_size: 16)
                       |> rect({@width, @height}, id: :background)
@@ -27,7 +35,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
 
   # --------------------------------------------------------
   def init(_, _) do
-    {:ok, @graph, push: @graph}
+    {:ok, @main_menu_graph, push: @main_menu_graph}
   end
 
   # ============================================================================
@@ -44,7 +52,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
     IO.puts("HITTING AUD stop")
     AudioPlayer.stop_sound()
 
-    {:noreply, @song_playing_graph, push: @song_playing_graph}
+    {:noreply, @main_menu_graph, push: @main_menu_graph}
   end
 
   def handle_input(_msg, _, graph) do
