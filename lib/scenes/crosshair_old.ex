@@ -20,7 +20,12 @@ defmodule RpiMusicMachineNerves.Scene.CrosshairOLD do
   @song_playing_graph Graph.build(font: :roboto, font_size: 16)
                       |> rect({@width, @height}, id: :background)
                       |> text("Song Playing or something", id: :pos, translate: {20, 80})
-
+                      |> text("",
+                        id: :current_lyric,
+                        translate: {400, 200},
+                        text_align: :center,
+                        font_size: 36
+                      )
   # ============================================================================
   # setup
 
