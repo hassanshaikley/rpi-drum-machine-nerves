@@ -15,7 +15,10 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   @button_padding 5
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
-                   |> rect({@width, @height}, color: :blue, id: :background)
+                   |> rect({@width, @height},
+                     id: :background,
+                     fill: {50, 50, 50}
+                   )
                    |> group(
                      fn graph ->
                        graph
