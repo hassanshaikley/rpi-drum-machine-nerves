@@ -11,35 +11,58 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   @height 10000
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
-                   |> rect({@width, @height}, id: :background)
-                   #  |> button(" ", id: :xy, translate: {20, 20})
+                   |> rect({@width, @height}, color: :blue, id: :background)
                    |> group(
                      fn graph ->
-                       group = Primitive.Group.build()
+                       Enum.reduce(
+                         [
+                           {0, 0, "00"},
+                           {100, 0, "01"},
+                           {200, 0, "02"},
+                           {300, 0, "03"},
+                           {400, 0, "04"},
+                           {500, 0, "05"},
+                           {600, 0, "06"},
+                           {700, 0, "07"},
+                           {800, 0, "08"}
+                         ],
+                         graph,
+                         fn obj, graph ->
+                           x = elem(obj, 0)
+                           y = elem(obj, 1)
+                           label = elem(obj, 2)
 
-                       y = 0
-                       x = 1
-
-                       Enum.reduce([{50, 100, 00}, {100, 100, 01}, {150, 100, 02}], graph, fn obj,
-                                                                                              graph ->
-                         x = elem(obj, 0)
-                         y = elem(obj, 1)
-                         label = elem(obj, 2)
-
-                         text(graph, "#{label}", translate: {x, y})
-                       end)
-
-                       #  graph
-                       #  #  |> button("00", translate: {0, 20})
-                       #  #  |> button("01", translate: {50, 20})
-                       #  |> Graph.add(group)
+                           graph
+                           |> button("",
+                             theme: %{
+                               text: :white,
+                               background: {200, 200, 200},
+                               active: {200, 200, 200},
+                               border: :green
+                             },
+                             id: label <> "_up",
+                             translate: {x, y},
+                             height: 90,
+                             width: 90
+                           )
+                           |> button("",
+                             theme: %{
+                               text: :white,
+                               background: {120, 120, 120},
+                               active: {120, 120, 120},
+                               border: :green
+                             },
+                             hidden: true,
+                             id: label <> "_down",
+                             translate: {x, y},
+                             height: 90,
+                             width: 90
+                           )
+                         end
+                       )
                      end,
-                     t: {10, 110}
+                     t: {5, 5}
                    )
-
-  @song_playing_graph Graph.build(font: :roboto, font_size: 16)
-                      |> rect({@width, @height}, id: :background)
-  # |> button("Stop Song", id: :stop_song, translate: {20, 430})
 
   # ============================================================================
   # setup
@@ -54,37 +77,34 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   # event handlers
 
   # --------------------------------------------------------
-  def filter_event({:click, :play_song}, context, state) do
-    # AudioPlayer.play_sound()
-    {:noreply, @song_playing_graph, push: @song_playing_graph}
+  def filter_event({:click, "00_up"}, context, state) do
+    IO.puts("00")
+
+    updated_graph =
+      state
+      |> Graph.modify("00_up", fn p ->
+        Primitive.put_style(p, :hidden, true)
+      end)
+      |> Graph.modify("00_down", fn p ->
+        Primitive.put_style(p, :hidden, false)
+      end)
+
+    IO.inspect(updated_graph)
+
+    {:noreply, %{}, push: updated_graph}
   end
 
-  def filter_event({:click, :stop_song}, context, state) do
-    # AudioPlayer.stop_sound()
-    {:noreply, @main_menu_graph, push: @main_menu_graph}
+  def filter_event({:click, "01"}, context, graph) do
+    IO.puts("01")
+    {:noreply, graph}
+  end
+
+  def filter_event({:click, "02"}, context, graph) do
+    IO.puts("02")
+    {:noreply, graph}
   end
 
   def handle_input(_msg, _, graph) do
     {:noreply, graph}
   end
-
-  # ============================================================================
-  # rendering helpers
-
-  # --------------------------------------------------------
-  def show_next_text() do
-  end
-
-  # @impl true
-  # def handle_info(:loop, state) do
-  #   # Reschedule once more
-  #   loop()
-  #   IO.puts("LOOPING")
-
-  #   {:noreply, state}
-  # end
-
-  # defp loop do
-  #   Process.send_after(self(), :loop, Kernel.trunc(1000 / @fps))
-  # end
 end
