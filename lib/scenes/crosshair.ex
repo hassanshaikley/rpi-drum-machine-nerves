@@ -90,31 +90,38 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   # event handlers
 
   # --------------------------------------------------------
-  def filter_event({:click, "00_up"}, context, state) do
-    IO.puts("00")
+  def filter_event({:click, <<id::bytes-size(2)>> <> "_up"}, context, state) do
+    IO.inspect(id)
 
     updated_graph =
       state
-      |> Graph.modify("00_up", fn p ->
+      |> Graph.modify(id <> "_up", fn p ->
         Primitive.put_style(p, :hidden, true)
       end)
-      |> Graph.modify("00_down", fn p ->
+      |> Graph.modify(id <> "_down", fn p ->
         Primitive.put_style(p, :hidden, false)
       end)
 
-    IO.inspect(updated_graph)
+    ViewPort.release_input(context, [:cursor_button, :cursor_pos])
 
     {:noreply, %{}, push: updated_graph}
   end
 
-  def filter_event({:click, "01"}, context, graph) do
-    IO.puts("01")
-    {:noreply, graph}
-  end
+  def filter_event({:click, <<id::bytes-size(2)>> <> "_down"}, context, state) do
+    IO.inspect(id)
 
-  def filter_event({:click, "02"}, context, graph) do
-    IO.puts("02")
-    {:noreply, graph}
+    updated_graph =
+      state
+      |> Graph.modify(id <> "_up", fn p ->
+        Primitive.put_style(p, :hidden, false)
+      end)
+      |> Graph.modify(id <> "_down", fn p ->
+        Primitive.put_style(p, :hidden, true)
+      end)
+
+    ViewPort.release_input(context, [:cursor_button, :cursor_pos])
+
+    {:noreply, %{}, push: updated_graph}
   end
 
   def handle_input(_msg, _, graph) do
