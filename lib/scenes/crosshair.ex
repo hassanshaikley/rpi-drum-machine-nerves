@@ -39,7 +39,11 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                            y = elem(obj, 1)
 
                            graph
-                           |> rect({@button_width, 10}, fill: :red, translate: {x, y})
+                           |> rect({@button_width, 10},
+                             fill: :red,
+                             translate: {x, y},
+                             id: "h_#{Integer.to_string(x)}"
+                           )
                          end
                        )
                      end,
@@ -94,8 +98,24 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
 
   # --------------------------------------------------------
   def init(_, _) do
-    # loop()
-    {:ok, @main_menu_graph, push: @main_menu_graph}
+    loop()
+
+    graph = Map.put(@main_menu_graph, :iteration, 0)
+
+    {:ok, graph, push: graph}
+  end
+
+  def handle_info(:loop, state) do
+    iteration = Map.get(state, :iteration)
+    IO.inspect(iteration, label: :iteration)
+
+    loop()
+
+    {:noreply, Map.put(state, :iteration, iteration + 1)}
+  end
+
+  defp loop do
+    Process.send_after(self(), :loop, 200)
   end
 
   # ============================================================================
