@@ -13,6 +13,9 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   @button_width 50
   @button_height @button_width
   @button_padding 5
+  @buttons Enum.map(0..8, fn x ->
+             {(@button_width + @button_padding) * x, @button_padding, Integer.to_string(x) <> "0"}
+           end)
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
                    |> rect({@width, @height},
@@ -31,17 +34,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                    |> group(
                      fn graph ->
                        Enum.reduce(
-                         [
-                           {(@button_width + @button_padding) * 0, @button_padding, "00"},
-                           {(@button_width + @button_padding) * 1, @button_padding, "01"},
-                           {(@button_width + @button_padding) * 2, @button_padding, "02"},
-                           {(@button_width + @button_padding) * 3, @button_padding, "03"},
-                           {(@button_width + @button_padding) * 4, @button_padding, "04"},
-                           {(@button_width + @button_padding) * 5, @button_padding, "05"},
-                           {(@button_width + @button_padding) * 6, @button_padding, "06"},
-                           {(@button_width + @button_padding) * 7, @button_padding, "07"},
-                           {(@button_width + @button_padding) * 8, @button_padding, "08"}
-                         ],
+                         @buttons,
                          graph,
                          fn obj, graph ->
                            x = elem(obj, 0)
@@ -109,9 +102,6 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   end
 
   def filter_event({:click, <<id::bytes-size(2)>> <> "_down"}, context, state) do
-    IO.inspect(id)
-    IO.puts("HIT DOWN")
-
     updated_graph =
       state
       |> Graph.modify(id <> "_up", fn p ->
