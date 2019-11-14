@@ -28,10 +28,22 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                    )
                    |> group(
                      fn graph ->
-                       graph
-                       |> rect({100, 5}, color: :red, id: :header_thing, translate: {5, 2})
+                       Enum.map(0..8, fn x ->
+                         {(@button_width + @button_padding) * x, @button_padding,
+                          Integer.to_string(x)}
+                       end)
+                       |> Enum.reduce(
+                         graph,
+                         fn obj, graph ->
+                           x = elem(obj, 0)
+                           y = elem(obj, 1)
+
+                           graph
+                           |> rect({@button_width, 10}, fill: :red, translate: {x, y})
+                         end
+                       )
                      end,
-                     t: {0, 0}
+                     t: {200, 160}
                    )
                    # 640 x 300 (use 280 I guess, 10 for padding otp and bot)
                    # each button is 70 with 5 padding each way?
