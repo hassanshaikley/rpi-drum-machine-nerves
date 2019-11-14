@@ -91,8 +91,6 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
 
   # --------------------------------------------------------
   def filter_event({:click, <<id::bytes-size(2)>> <> "_up"}, context, state) do
-    IO.inspect(id)
-
     updated_graph =
       state
       |> Graph.modify(id <> "_up", fn p ->
@@ -104,11 +102,12 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
 
     ViewPort.release_input(context, [:cursor_button, :cursor_pos])
 
-    {:noreply, %{}, push: updated_graph}
+    {:noreply, updated_graph, push: updated_graph}
   end
 
   def filter_event({:click, <<id::bytes-size(2)>> <> "_down"}, context, state) do
     IO.inspect(id)
+    IO.puts("HIT DOWN")
 
     updated_graph =
       state
@@ -121,7 +120,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
 
     ViewPort.release_input(context, [:cursor_button, :cursor_pos])
 
-    {:noreply, %{}, push: updated_graph}
+    {:noreply, updated_graph, push: updated_graph}
   end
 
   def handle_input(_msg, _, graph) do
