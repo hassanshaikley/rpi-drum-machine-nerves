@@ -10,21 +10,34 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   @width 10000
   @height 10000
 
+  @button_width 50
+  @button_height @button_width
+  @button_padding 5
+
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
                    |> rect({@width, @height}, color: :blue, id: :background)
                    |> group(
                      fn graph ->
+                       graph
+                       |> rect({100, 5}, color: :red, id: :header_thing, translate: {5, 2})
+                     end,
+                     t: {0, 0}
+                   )
+                   # 640 x 300 (use 280 I guess, 10 for padding otp and bot)
+                   # each button is 70 with 5 padding each way?
+                   |> group(
+                     fn graph ->
                        Enum.reduce(
                          [
-                           {0, 0, "00"},
-                           {100, 0, "01"},
-                           {200, 0, "02"},
-                           {300, 0, "03"},
-                           {400, 0, "04"},
-                           {500, 0, "05"},
-                           {600, 0, "06"},
-                           {700, 0, "07"},
-                           {800, 0, "08"}
+                           {(@button_width + @button_padding) * 0, @button_padding, "00"},
+                           {(@button_width + @button_padding) * 1, @button_padding, "01"},
+                           {(@button_width + @button_padding) * 2, @button_padding, "02"},
+                           {(@button_width + @button_padding) * 3, @button_padding, "03"},
+                           {(@button_width + @button_padding) * 4, @button_padding, "04"},
+                           {(@button_width + @button_padding) * 5, @button_padding, "05"},
+                           {(@button_width + @button_padding) * 6, @button_padding, "06"},
+                           {(@button_width + @button_padding) * 7, @button_padding, "07"},
+                           {(@button_width + @button_padding) * 8, @button_padding, "08"}
                          ],
                          graph,
                          fn obj, graph ->
@@ -42,8 +55,8 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                              },
                              id: label <> "_up",
                              translate: {x, y},
-                             height: 90,
-                             width: 90
+                             height: @button_height,
+                             width: @button_width
                            )
                            |> button("",
                              theme: %{
@@ -55,13 +68,13 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                              hidden: true,
                              id: label <> "_down",
                              translate: {x, y},
-                             height: 90,
-                             width: 90
+                             height: @button_height,
+                             width: @button_width
                            )
                          end
                        )
                      end,
-                     t: {5, 5}
+                     t: {200, 180}
                    )
 
   # ============================================================================
