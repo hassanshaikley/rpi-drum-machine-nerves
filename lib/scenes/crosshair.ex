@@ -15,7 +15,11 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   @button_padding 5
   @buttons Enum.map(0..8, fn x ->
              {(@button_width + @button_padding) * x, @button_padding, Integer.to_string(x) <> "0"}
-           end)
+           end) ++
+             Enum.map(0..8, fn x ->
+               {(@button_width + @button_padding) * x,
+                @button_width + @button_padding + @button_padding, Integer.to_string(x) <> "1"}
+             end)
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
                    |> rect({@width, @height},
