@@ -14,18 +14,18 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   @button_height @button_width
 
   @button_padding 5
-  @buttons Enum.map(0..8, fn x ->
+  @buttons Enum.map(0..7, fn x ->
              {(@button_width + @button_padding) * x, @button_padding, Integer.to_string(x) <> "0"}
            end) ++
-             Enum.map(0..8, fn x ->
+             Enum.map(0..7, fn x ->
                {(@button_width + @button_padding) * x,
                 @button_height + @button_padding + @button_padding, Integer.to_string(x) <> "1"}
              end) ++
-             Enum.map(0..8, fn x ->
+             Enum.map(0..7, fn x ->
                {(@button_width + @button_padding) * x, @button_height * 2 + @button_padding * 3,
                 Integer.to_string(x) <> "2"}
              end) ++
-             Enum.map(0..8, fn x ->
+             Enum.map(0..7, fn x ->
                {(@button_width + @button_padding) * x, @button_height * 3 + @button_padding * 4,
                 Integer.to_string(x) <> "3"}
              end)
@@ -37,7 +37,24 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                    )
                    |> group(
                      fn graph ->
-                       Enum.map(0..8, fn x ->
+                       graph
+                       |> rect({780, 75},
+                         fill: :dark_gray,
+                         translate: {0, 0},
+                         id: "header_rect"
+                       )
+                       |> text("Nerves Drum Machine",
+                         id: :pos,
+                         translate: {630, 60},
+                         font_size: 16,
+                         fill: :black
+                       )
+                     end,
+                     t: {10, 10}
+                   )
+                   |> group(
+                     fn graph ->
+                       Enum.map(0..7, fn x ->
                          {(@button_width + @button_padding) * x, @button_padding,
                           Integer.to_string(x)}
                        end)
@@ -46,20 +63,19 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                          fn obj, graph ->
                            x = elem(obj, 0)
                            y = elem(obj, 1)
+                           index = elem(obj, 2)
 
                            graph
                            |> rect({@button_width, 10},
                              fill: :red,
                              translate: {x, y},
-                             id: "h_#{Integer.to_string(x)}"
+                             id: "h_#{index}"
                            )
                          end
                        )
                      end,
-                     t: {200, 160}
+                     t: {300, 160}
                    )
-                   # 640 x 300 (use 280 I guess, 10 for padding otp and bot)
-                   # each button is 70 with 5 padding each way?
                    |> group(
                      fn graph ->
                        Enum.reduce(
@@ -69,6 +85,8 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                            x = elem(obj, 0)
                            y = elem(obj, 1)
                            label = elem(obj, 2)
+
+                           IO.inspect(label)
 
                            graph
                            |> button("",
@@ -86,8 +104,8 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                            |> button("",
                              theme: %{
                                text: :white,
-                               background: {120, 120, 120},
-                               active: {120, 120, 120},
+                               background: {50, 240, 50},
+                               active: {50, 240, 50},
                                border: :green
                              },
                              hidden: true,
@@ -99,7 +117,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                          end
                        )
                      end,
-                     t: {200, 180}
+                     t: {300, 180}
                    )
 
   # ============================================================================
@@ -116,11 +134,27 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
 
   def handle_info(:loop, state) do
     iteration = Map.get(state, :iteration)
-    IO.inspect(iteration, label: :iteration)
+
+    previous_index = rem(iteration - 1, 8)
+
+    current_index = rem(iteration, 8)
+
+    current_header_id = "h_" <> Integer.to_string(current_index)
+    previous_header_id = "h_" <> Integer.to_string(previous_index)
+
+    updated_graph =
+      state
+      |> Graph.modify(current_header_id, fn p ->
+        Primitive.put_style(p, :fill, :blue)
+      end)
+      |> Graph.modify(previous_header_id, fn p ->
+        Primitive.put_style(p, :fill, :red)
+      end)
+      |> Map.put(:iteration, iteration + 1)
 
     loop()
 
-    {:noreply, Map.put(state, :iteration, iteration + 1)}
+    {:noreply, updated_graph, push: updated_graph}
   end
 
   defp loop do
