@@ -12,13 +12,22 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
 
   @button_width 50
   @button_height @button_width
+
   @button_padding 5
   @buttons Enum.map(0..8, fn x ->
              {(@button_width + @button_padding) * x, @button_padding, Integer.to_string(x) <> "0"}
            end) ++
              Enum.map(0..8, fn x ->
                {(@button_width + @button_padding) * x,
-                @button_width + @button_padding + @button_padding, Integer.to_string(x) <> "1"}
+                @button_height + @button_padding + @button_padding, Integer.to_string(x) <> "1"}
+             end) ++
+             Enum.map(0..8, fn x ->
+               {(@button_width + @button_padding) * x, @button_height * 2 + @button_padding * 3,
+                Integer.to_string(x) <> "2"}
+             end) ++
+             Enum.map(0..8, fn x ->
+               {(@button_width + @button_padding) * x, @button_height * 3 + @button_padding * 4,
+                Integer.to_string(x) <> "3"}
              end)
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
