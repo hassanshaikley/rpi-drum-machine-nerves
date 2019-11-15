@@ -33,6 +33,14 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
              Enum.map(0..@cols, fn x ->
                {(@button_width + @button_padding) * x, @button_height * 3 + @button_padding * 4,
                 Integer.to_string(x) <> "3"}
+             end) ++
+             Enum.map(0..@cols, fn x ->
+               {(@button_width + @button_padding) * x, @button_height * 4 + @button_padding * 5,
+                Integer.to_string(x) <> "4"}
+             end) ++
+             Enum.map(0..@cols, fn x ->
+               {(@button_width + @button_padding) * x, @button_height * 5 + @button_padding * 6,
+                Integer.to_string(x) <> "5"}
              end)
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
@@ -156,7 +164,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
       end)
       |> Map.put(:iteration, iteration + 1)
 
-    Enum.each(0..3, fn row ->
+    Enum.each(0..5, fn row ->
       row_hidden =
         Graph.get(updated_graph, "#{current_index}#{row}_down")
         |> Enum.at(0)
@@ -169,6 +177,8 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
           1 -> AudioPlayer.play_sound("22inchridecymbal.wav")
           2 -> AudioPlayer.play_sound("triangle.wav")
           3 -> AudioPlayer.play_sound("runnerskick.wav")
+          4 -> AudioPlayer.play_sound("tom.wav")
+          5 -> AudioPlayer.play_sound("snare.wav")
         end
       end
     end)
