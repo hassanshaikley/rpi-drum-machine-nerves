@@ -90,7 +90,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                      width: 50
                    )
                    |> text("volume", translate: {450, 112})
-                   |> slider({{0, 100}, 50},
+                   |> slider({{40, 100}, 50},
                      id: :volume_slider,
                      translate: {500, 100},
                      width: 100
