@@ -15,10 +15,10 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   @num_cols 16
   @cols @num_cols - 1
 
-  @button_width 30
+  @button_width 46
   @button_height @button_width
 
-  @button_padding 5
+  @button_padding 2
   @buttons Enum.map(0..@cols, fn x ->
              {(@button_width + @button_padding) * x, @button_padding, Integer.to_string(x) <> "0"}
            end) ++
@@ -80,7 +80,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                          end
                        )
                      end,
-                     t: {200, 160}
+                     t: {16, 160}
                    )
                    |> group(
                      fn graph ->
@@ -122,7 +122,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                          end
                        )
                      end,
-                     t: {200, 180}
+                     t: {16, 180}
                    )
 
   # ============================================================================
@@ -200,13 +200,13 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   end
 
   def filter_event({:click, <<id::bytes-size(3)>> <> "_down"}, context, state) do
-    updated_graph = toggle_button(id, :on, state)
+    updated_graph = toggle_button(id, :off, state)
     ViewPort.release_input(context, [:cursor_button, :cursor_pos])
     {:noreply, updated_graph, push: updated_graph}
   end
 
   def filter_event({:click, <<id::bytes-size(2)>> <> "_down"}, context, state) do
-    updated_graph = toggle_button(id, :on, state)
+    updated_graph = toggle_button(id, :off, state)
     ViewPort.release_input(context, [:cursor_button, :cursor_pos])
     {:noreply, updated_graph, push: updated_graph}
   end
