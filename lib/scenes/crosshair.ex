@@ -66,6 +66,18 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                      end,
                      t: {10, 10}
                    )
+                   |> button("OFF",
+                     theme: %{
+                       text: :white,
+                       background: :black,
+                       active: :black,
+                       border: :green
+                     },
+                     id: "shutdown",
+                     translate: {700, 100},
+                     height: 50,
+                     width: 50
+                   )
                    |> group(
                      fn graph ->
                        Enum.map(0..@cols, fn x ->
@@ -164,7 +176,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
       end)
       |> Map.put(:iteration, iteration + 1)
 
-    Enum.each(0..5, fn row ->
+    Enum.each(0..1, fn row ->
       row_hidden =
         Graph.get(updated_graph, "#{current_index}#{row}_down")
         |> Enum.at(0)
@@ -235,6 +247,14 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
     |> Graph.modify(id <> "_up", fn p ->
       Primitive.put_style(p, :hidden, true)
     end)
+  end
+
+  def filter_event({:click, "shutdown"}, context, state) do
+    IO.puts("Shutdown clicked")
+
+    ViewPort.release_input(context, [:cursor_button, :cursor_pos])
+    spawn(fn -> :os.cmd('shutdown now') end)
+    {:noreply, state}
   end
 
   def handle_input(_msg, _, graph) do

@@ -14,8 +14,8 @@ defmodule AudioPlayer do
     IO.puts("Setting audio to jack")
     :os.cmd('amixer cset numid=3 1')
 
-    IO.puts("Setting volume to 100%")
-    :os.cmd('amixer cset numid=1 100%')
+    IO.puts("Setting volume to 50%")
+    :os.cmd('amixer cset numid=1 50%')
 
     IO.puts("Generating audio")
     :os.cmd('espeak -ven+f5 -k5 -w /tmp/out.wav Hello')
