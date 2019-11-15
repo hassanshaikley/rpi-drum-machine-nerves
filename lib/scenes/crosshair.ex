@@ -12,7 +12,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   @width 10000
   @height 10000
 
-  @num_cols 8
+  @num_cols 16
   @cols @num_cols - 1
 
   @button_width 30
@@ -139,9 +139,9 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   def handle_info(:loop, state) do
     iteration = Map.get(state, :iteration)
 
-    previous_index = rem(iteration - 1, @cols)
+    previous_index = rem(iteration - 1, @num_cols)
 
-    current_index = rem(iteration, @cols)
+    current_index = rem(iteration, @num_cols)
 
     current_header_id = "h_" <> Integer.to_string(current_index)
     previous_header_id = "h_" <> Integer.to_string(previous_index)
