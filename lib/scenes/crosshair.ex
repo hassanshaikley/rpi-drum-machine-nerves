@@ -183,14 +183,10 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
       end
     end)
 
-    Process.send_after(self(), :loop, trunc(1000 / 8))
+    Process.send_after(self(), :loop, trunc(1000 / 1))
 
     {:noreply, updated_graph, push: updated_graph}
   end
-
-  # defp loop do
-
-  # end
 
   # ============================================================================
   # event handlers
@@ -240,21 +236,6 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
       Primitive.put_style(p, :hidden, true)
     end)
   end
-
-  # def filter_event({:click, <<id::bytes-size(2)>> <> "_down"}, context, state) do
-  #   updated_graph =
-  #     state
-  #     |> Graph.modify(id <> "_up", fn p ->
-  #       Primitive.put_style(p, :hidden, false)
-  #     end)
-  #     |> Graph.modify(id <> "_down", fn p ->
-  #       Primitive.put_style(p, :hidden, true)
-  #     end)
-
-  #   ViewPort.release_input(context, [:cursor_button, :cursor_pos])
-
-  #   {:noreply, updated_graph, push: updated_graph}
-  # end
 
   def handle_input(_msg, _, graph) do
     {:noreply, graph}

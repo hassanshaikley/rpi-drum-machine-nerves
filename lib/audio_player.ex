@@ -21,7 +21,7 @@ defmodule AudioPlayer do
     :os.cmd('espeak -ven+f5 -k5 -w /tmp/out.wav Hello')
 
     IO.puts("Playing audio")
-    :os.cmd('aplay -q /tmp/out.wav')
+    spawn(fn -> :os.cmd('aplay -q /tmp/out.wav') end)
 
     {:ok, init_arg}
   end
