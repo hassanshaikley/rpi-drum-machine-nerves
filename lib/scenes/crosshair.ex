@@ -7,25 +7,30 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   import Scenic.Primitives
   import Scenic.Components
 
+  @bpm 90
+
   @width 10000
   @height 10000
 
-  @button_width 50
+  @num_cols 8
+  @cols @num_cols - 1
+
+  @button_width 30
   @button_height @button_width
 
   @button_padding 5
-  @buttons Enum.map(0..7, fn x ->
+  @buttons Enum.map(0..@cols, fn x ->
              {(@button_width + @button_padding) * x, @button_padding, Integer.to_string(x) <> "0"}
            end) ++
-             Enum.map(0..7, fn x ->
+             Enum.map(0..@cols, fn x ->
                {(@button_width + @button_padding) * x,
                 @button_height + @button_padding + @button_padding, Integer.to_string(x) <> "1"}
              end) ++
-             Enum.map(0..7, fn x ->
+             Enum.map(0..@cols, fn x ->
                {(@button_width + @button_padding) * x, @button_height * 2 + @button_padding * 3,
                 Integer.to_string(x) <> "2"}
              end) ++
-             Enum.map(0..7, fn x ->
+             Enum.map(0..@cols, fn x ->
                {(@button_width + @button_padding) * x, @button_height * 3 + @button_padding * 4,
                 Integer.to_string(x) <> "3"}
              end)
@@ -35,6 +40,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                      id: :background,
                      fill: {50, 50, 50}
                    )
+                   # Header rectangle
                    |> group(
                      fn graph ->
                        graph
@@ -54,7 +60,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                    )
                    |> group(
                      fn graph ->
-                       Enum.map(0..7, fn x ->
+                       Enum.map(0..@cols, fn x ->
                          {(@button_width + @button_padding) * x, @button_padding,
                           Integer.to_string(x)}
                        end)
@@ -74,7 +80,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                          end
                        )
                      end,
-                     t: {300, 160}
+                     t: {200, 160}
                    )
                    |> group(
                      fn graph ->
@@ -116,7 +122,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                          end
                        )
                      end,
-                     t: {300, 180}
+                     t: {200, 180}
                    )
 
   # ============================================================================
@@ -124,8 +130,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
 
   # --------------------------------------------------------
   def init(_, _) do
-    loop()
-
+    Process.send(self(), :loop, [])
     graph = Map.put(@main_menu_graph, :iteration, 0)
 
     {:ok, graph, push: graph}
@@ -134,9 +139,9 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   def handle_info(:loop, state) do
     iteration = Map.get(state, :iteration)
 
-    previous_index = rem(iteration - 1, 8)
+    previous_index = rem(iteration - 1, @cols)
 
-    current_index = rem(iteration, 8)
+    current_index = rem(iteration, @cols)
 
     current_header_id = "h_" <> Integer.to_string(current_index)
     previous_header_id = "h_" <> Integer.to_string(previous_index)
@@ -168,14 +173,14 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
       end
     end)
 
-    loop()
+    Process.send_after(self(), :loop, trunc(1000 / 8))
 
     {:noreply, updated_graph, push: updated_graph}
   end
 
-  defp loop do
-    Process.send_after(self(), :loop, 1000)
-  end
+  # defp loop do
+
+  # end
 
   # ============================================================================
   # event handlers
