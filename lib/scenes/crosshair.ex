@@ -99,7 +99,8 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                              id: label <> "_up",
                              translate: {x, y},
                              height: @button_height,
-                             width: @button_width
+                             width: @button_width,
+                             hidden: false
                            )
                            |> button("",
                              theme: %{
@@ -152,13 +153,27 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
       end)
       |> Map.put(:iteration, iteration + 1)
 
+    # 
+
+    Enum.each(0..3, fn row ->
+      row_hidden =
+        Graph.get(updated_graph, "#{current_index}#{row}_down")
+        |> Enum.at(0)
+        |> Map.get(:styles)
+        |> Map.get(:hidden)
+
+      if !row_hidden do
+        # play sound associated with this row
+      end
+    end)
+
     loop()
 
     {:noreply, updated_graph, push: updated_graph}
   end
 
   defp loop do
-    Process.send_after(self(), :loop, 200)
+    Process.send_after(self(), :loop, 1000)
   end
 
   # ============================================================================
