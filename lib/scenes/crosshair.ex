@@ -12,7 +12,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   @width 10000
   @height 10000
 
-  @num_cols 16
+  @num_cols 8
   @cols @num_cols - 1
 
   @button_width 46
@@ -25,29 +25,35 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
              Enum.map(0..@cols, fn x ->
                {(@button_width + @button_padding) * x,
                 @button_height + @button_padding + @button_padding, Integer.to_string(x) <> "1"}
-             end) ++
-             Enum.map(0..@cols, fn x ->
-               {(@button_width + @button_padding) * x, @button_height * 2 + @button_padding * 3,
-                Integer.to_string(x) <> "2"}
-             end) ++
-             Enum.map(0..@cols, fn x ->
-               {(@button_width + @button_padding) * x, @button_height * 3 + @button_padding * 4,
-                Integer.to_string(x) <> "3"}
-             end) ++
-             Enum.map(0..@cols, fn x ->
-               {(@button_width + @button_padding) * x, @button_height * 4 + @button_padding * 5,
-                Integer.to_string(x) <> "4"}
-             end) ++
-             Enum.map(0..@cols, fn x ->
-               {(@button_width + @button_padding) * x, @button_height * 5 + @button_padding * 6,
-                Integer.to_string(x) <> "5"}
              end)
+  #  ++
+  #  Enum.map(0..@cols, fn x ->
+  #    {(@button_width + @button_padding) * x, @button_height * 2 + @button_padding * 3,
+  #     Integer.to_string(x) <> "2"}
+  #  end) ++
+  #  Enum.map(0..@cols, fn x ->
+  #    {(@button_width + @button_padding) * x, @button_height * 3 + @button_padding * 4,
+  #     Integer.to_string(x) <> "3"}
+  #  end) ++
+  #  Enum.map(0..@cols, fn x ->
+  #    {(@button_width + @button_padding) * x, @button_height * 4 + @button_padding * 5,
+  #     Integer.to_string(x) <> "4"}
+  #  end) ++
+  #  Enum.map(0..@cols, fn x ->
+  #    {(@button_width + @button_padding) * x, @button_height * 5 + @button_padding * 6,
+  #     Integer.to_string(x) <> "5"}
+  #  end)
+  @num_rows 2
+
+  @path :os.cmd('pwd') |> to_string
+  IO.inspect(@path)
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
                    |> rect({@width, @height},
                      id: :background,
                      fill: {50, 50, 50}
                    )
+
                    # Header rectangle
                    |> group(
                      fn graph ->
@@ -65,6 +71,11 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                        )
                      end,
                      t: {10, 10}
+                   )
+                   |> text(@path,
+                     translate: {30, 30},
+                     font_size: 16,
+                     fill: :black
                    )
                    |> button("OFF",
                      theme: %{
@@ -150,8 +161,8 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
 
   # --------------------------------------------------------
   def init(_, _) do
-    Process.send(self(), :loop, [])
     graph = Map.put(@main_menu_graph, :iteration, 0)
+    Process.send(self(), :loop, [])
 
     {:ok, graph, push: graph}
   end
@@ -176,26 +187,33 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
       end)
       |> Map.put(:iteration, iteration + 1)
 
-    Enum.each(0..1, fn row ->
+    Enum.each(0..@num_rows, fn row ->
       row_hidden =
         Graph.get(updated_graph, "#{current_index}#{row}_down")
         |> Enum.at(0)
-        |> Map.get(:styles)
-        |> Map.get(:hidden)
+        |> case do
+          nil ->
+            true
+
+          thing ->
+            thing
+            |> Map.get(:styles)
+            |> Map.get(:hidden)
+        end
 
       if !row_hidden do
         case row do
-          0 -> AudioPlayer.play_sound("hitoms.wav")
+          0 -> AudioPlayer.play_sound("tom.wav")
           1 -> AudioPlayer.play_sound("22inchridecymbal.wav")
           2 -> AudioPlayer.play_sound("triangle.wav")
           3 -> AudioPlayer.play_sound("runnerskick.wav")
-          4 -> AudioPlayer.play_sound("tom.wav")
           5 -> AudioPlayer.play_sound("snare.wav")
+          4 -> AudioPlayer.play_sound("hitoms.wav")
         end
       end
     end)
 
-    Process.send_after(self(), :loop, trunc(1000 / 1))
+    Process.send_after(self(), :loop, trunc(1000))
 
     {:noreply, updated_graph, push: updated_graph}
   end
@@ -250,10 +268,8 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   end
 
   def filter_event({:click, "shutdown"}, context, state) do
-    IO.puts("Shutdown clicked")
-
     ViewPort.release_input(context, [:cursor_button, :cursor_pos])
-    spawn(fn -> :os.cmd('shutdown now') end)
+    spawn(fn -> :os.cmd('sudo shutdown -h now') end)
     {:noreply, state}
   end
 
