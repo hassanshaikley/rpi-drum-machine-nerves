@@ -44,8 +44,11 @@ defmodule AudioPlayer do
   defp init_audio do
     # Sets audio output to jack
     :os.cmd('amixer cset numid=3 1')
-
-    # Sets volume to 60%
     :os.cmd('amixer cset numid=1 50%')
+  end
+
+  def set_volume(number) do
+    # Sets volume to 60%
+    :os.cmd('amixer cset numid=1 #{Integer.to_string(number)}%')
   end
 end

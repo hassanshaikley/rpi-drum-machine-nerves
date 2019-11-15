@@ -9,8 +9,8 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
 
   @bpm 90
 
-  @width 10000
-  @height 10000
+  @width 800
+  @height 480
 
   @num_cols 8
   @cols @num_cols - 1
@@ -88,6 +88,12 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                      translate: {700, 100},
                      height: 50,
                      width: 50
+                   )
+                   |> text("volume", translate: {450, 112})
+                   |> slider({{0, 100}, 50},
+                     id: :volume_slider,
+                     translate: {500, 100},
+                     width: 100
                    )
                    |> group(
                      fn graph ->
@@ -213,7 +219,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
       end
     end)
 
-    Process.send_after(self(), :loop, trunc(1000))
+    Process.send_after(self(), :loop, trunc(1000 / 2))
 
     {:noreply, updated_graph, push: updated_graph}
   end
@@ -275,5 +281,10 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
 
   def handle_input(_msg, _, graph) do
     {:noreply, graph}
+  end
+
+  def filter_event({:value_changed, id, value}, context, state) do
+    AudioPlayer.set_volume(value)
+    {:noreply, state}
   end
 end
