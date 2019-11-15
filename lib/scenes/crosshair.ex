@@ -25,25 +25,24 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
              Enum.map(0..@cols, fn x ->
                {(@button_width + @button_padding) * x,
                 @button_height + @button_padding + @button_padding, Integer.to_string(x) <> "1"}
+             end) ++
+             Enum.map(0..@cols, fn x ->
+               {(@button_width + @button_padding) * x, @button_height * 2 + @button_padding * 3,
+                Integer.to_string(x) <> "2"}
+             end) ++
+             Enum.map(0..@cols, fn x ->
+               {(@button_width + @button_padding) * x, @button_height * 3 + @button_padding * 4,
+                Integer.to_string(x) <> "3"}
+             end) ++
+             Enum.map(0..@cols, fn x ->
+               {(@button_width + @button_padding) * x, @button_height * 4 + @button_padding * 5,
+                Integer.to_string(x) <> "4"}
+             end) ++
+             Enum.map(0..@cols, fn x ->
+               {(@button_width + @button_padding) * x, @button_height * 5 + @button_padding * 6,
+                Integer.to_string(x) <> "5"}
              end)
-  #  ++
-  #  Enum.map(0..@cols, fn x ->
-  #    {(@button_width + @button_padding) * x, @button_height * 2 + @button_padding * 3,
-  #     Integer.to_string(x) <> "2"}
-  #  end) ++
-  #  Enum.map(0..@cols, fn x ->
-  #    {(@button_width + @button_padding) * x, @button_height * 3 + @button_padding * 4,
-  #     Integer.to_string(x) <> "3"}
-  #  end) ++
-  #  Enum.map(0..@cols, fn x ->
-  #    {(@button_width + @button_padding) * x, @button_height * 4 + @button_padding * 5,
-  #     Integer.to_string(x) <> "4"}
-  #  end) ++
-  #  Enum.map(0..@cols, fn x ->
-  #    {(@button_width + @button_padding) * x, @button_height * 5 + @button_padding * 6,
-  #     Integer.to_string(x) <> "5"}
-  #  end)
-  @num_rows 2
+  @num_rows 5
 
   @path :os.cmd('pwd') |> to_string
   IO.inspect(@path)
