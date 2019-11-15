@@ -26,8 +26,8 @@ defmodule AudioPlayer do
     {:ok, init_arg}
   end
 
-  def play_sound() do
-    GenServer.cast(__MODULE__, :start_audio)
+  def play_sound(file) do
+    GenServer.cast(__MODULE__, {:start_audio, file})
   end
 
   def stop_sound() do
@@ -39,8 +39,8 @@ defmodule AudioPlayer do
     {:noreply, state}
   end
 
-  def handle_cast(:start_audio, state) do
-    spawn(fn -> :os.cmd('afplay lib/in_the_airplane_over_the_sea_karaoke.mp3 ') end)
+  def handle_cast({:start_audio, file}, state) do
+    spawn(fn -> :os.cmd('afplay lib/#{file}') end)
 
     {:noreply, state}
   end

@@ -86,8 +86,6 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                            y = elem(obj, 1)
                            label = elem(obj, 2)
 
-                           IO.inspect(label)
-
                            graph
                            |> button("",
                              theme: %{
@@ -153,8 +151,6 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
       end)
       |> Map.put(:iteration, iteration + 1)
 
-    # 
-
     Enum.each(0..3, fn row ->
       row_hidden =
         Graph.get(updated_graph, "#{current_index}#{row}_down")
@@ -163,7 +159,12 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
         |> Map.get(:hidden)
 
       if !row_hidden do
-        # play sound associated with this row
+        case row do
+          0 -> AudioPlayer.play_sound("hitoms.wav")
+          1 -> AudioPlayer.play_sound("22inchridecymbal.wav")
+          2 -> AudioPlayer.play_sound("triangle.wav")
+          3 -> AudioPlayer.play_sound("runnerskick.wav")
+        end
       end
     end)
 
