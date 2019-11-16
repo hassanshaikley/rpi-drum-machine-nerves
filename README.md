@@ -6,6 +6,8 @@ From template
 # Dependencies
 
 - afplay
+- Optimziing : http://learningelixir.joekain.com/optimizing-elixir-posts/
+
 
 ## MIDI
 
