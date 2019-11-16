@@ -12,7 +12,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   @width 800
   @height 480
 
-  @num_cols 8
+  @num_cols 16
   @cols @num_cols - 1
 
   @button_width 46
@@ -201,9 +201,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
             true
 
           thing ->
-            thing
-            |> Map.get(:styles)
-            |> Map.get(:hidden)
+            thing.styles.hidden
         end
 
       if !row_hidden do
@@ -230,27 +228,46 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
 
   def filter_event({:click, <<id::bytes-size(3)>> <> "_up"}, context, state) do
     updated_graph = toggle_button(id, :on, state)
-    ViewPort.release_input(context, [:cursor_button, :cursor_pos])
+    # ViewPort.release_input(context, [:cursor_button, :cursor_pos])
     {:noreply, updated_graph, push: updated_graph}
   end
 
   def filter_event({:click, <<id::bytes-size(2)>> <> "_up"}, context, state) do
     updated_graph = toggle_button(id, :on, state)
-    ViewPort.release_input(context, [:cursor_button, :cursor_pos])
+    # ViewPort.release_input(context, [:cursor_button, :cursor_pos])
     {:noreply, updated_graph, push: updated_graph}
   end
 
   def filter_event({:click, <<id::bytes-size(3)>> <> "_down"}, context, state) do
     updated_graph = toggle_button(id, :off, state)
-    ViewPort.release_input(context, [:cursor_button, :cursor_pos])
+    # ViewPort.release_input(context, [:cursor_button, :cursor_pos])
     {:noreply, updated_graph, push: updated_graph}
   end
 
   def filter_event({:click, <<id::bytes-size(2)>> <> "_down"}, context, state) do
     updated_graph = toggle_button(id, :off, state)
-    ViewPort.release_input(context, [:cursor_button, :cursor_pos])
+    # ViewPort.release_input(context, [:cursor_button, :cursor_pos])
     {:noreply, updated_graph, push: updated_graph}
   end
+
+  def filter_event({:click, "shutdown"}, context, state) do
+    # ViewPort.release_input(context, [:cursor_button, :cursor_pos])
+    spawn(fn -> :os.cmd('sudo shutdown -h now') end)
+    {:noreply, state}
+  end
+
+  def handle_input(_msg, _, graph) do
+    {:noreply, graph}
+  end
+
+  def filter_event({:value_changed, id, value}, context, state) do
+    AudioPlayer.set_volume(value)
+    {:noreply, state}
+  end
+
+  ####### '.###
+  # Private.` #
+  ########### `
 
   defp toggle_button(id, :off, state) do
     state
@@ -270,20 +287,5 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
     |> Graph.modify(id <> "_up", fn p ->
       Primitive.put_style(p, :hidden, true)
     end)
-  end
-
-  def filter_event({:click, "shutdown"}, context, state) do
-    ViewPort.release_input(context, [:cursor_button, :cursor_pos])
-    spawn(fn -> :os.cmd('sudo shutdown -h now') end)
-    {:noreply, state}
-  end
-
-  def handle_input(_msg, _, graph) do
-    {:noreply, graph}
-  end
-
-  def filter_event({:value_changed, id, value}, context, state) do
-    AudioPlayer.set_volume(value)
-    {:noreply, state}
   end
 end
