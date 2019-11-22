@@ -42,10 +42,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                {(@button_width + @button_padding) * x, @button_height * 5 + @button_padding * 6,
                 Integer.to_string(x) <> "5"}
              end)
-  @num_rows 5
-
-  @path :os.cmd('pwd') |> to_string
-  IO.inspect(@path)
+  @num_rows 2
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
                    |> rect({@width, @height},
@@ -71,11 +68,11 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                      end,
                      t: {10, 10}
                    )
-                   |> text(@path,
-                     translate: {30, 30},
-                     font_size: 16,
-                     fill: :black
-                   )
+                   #  |> text(@path,
+                   #    translate: {30, 30},
+                   #    font_size: 16,
+                   #    fill: :black
+                   #  )
                    |> button("OFF",
                      theme: %{
                        text: :white,
@@ -173,7 +170,8 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   end
 
   def handle_info(:loop, state) do
-    iteration = Map.get(state, :iteration)
+    start_time = Time.utc_now()
+    iteration = state.iteration
 
     previous_index = rem(iteration - 1, @num_cols)
 
@@ -217,6 +215,10 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
     end)
 
     Process.send_after(self(), :loop, trunc(1000 / 2))
+
+    end_time = Time.utc_now()
+    IO.inspect(Time.diff(end_time, start_time, :microsecond))
+    # IO.inspect(end_time - start_time)
 
     {:noreply, updated_graph, push: updated_graph}
   end
