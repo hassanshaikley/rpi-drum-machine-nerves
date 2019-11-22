@@ -7,7 +7,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   import Scenic.Primitives
   import Scenic.Components
 
-  @bpm 90
+  @bpm 138
 
   @width 800
   @height 480
@@ -42,7 +42,7 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                {(@button_width + @button_padding) * x, @button_height * 5 + @button_padding * 6,
                 Integer.to_string(x) <> "5"}
              end)
-  @num_rows 2
+  @num_rows 6
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
                    |> rect({@width, @height},
@@ -170,6 +170,8 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   end
 
   def handle_info(:loop, state) do
+    Process.send_after(self(), :loop, trunc(60_000 / @bpm))
+
     start_time = Time.utc_now()
     iteration = state.iteration
 
@@ -204,7 +206,8 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
 
       if !row_hidden do
         case row do
-          0 -> AudioPlayer.play_sound("tom.wav")
+          # 0 -> AudioPlayer.play_sound("tom.wav")
+          0 -> AudioPlayer.play_sound("hihat_great.wav")
           1 -> AudioPlayer.play_sound("22inchridecymbal.wav")
           2 -> AudioPlayer.play_sound("triangle.wav")
           3 -> AudioPlayer.play_sound("runnerskick.wav")
@@ -214,11 +217,8 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
       end
     end)
 
-    Process.send_after(self(), :loop, trunc(1000 / 2))
-
     end_time = Time.utc_now()
     IO.inspect(Time.diff(end_time, start_time, :microsecond))
-    # IO.inspect(end_time - start_time)
 
     {:noreply, updated_graph, push: updated_graph}
   end
