@@ -7,7 +7,7 @@ defmodule RpiMusicMachineNerves.Scene.Main do
   import Scenic.Primitives
   import Scenic.Components
 
-  @bpm 60
+  @bpm 20
 
   @width 800
   @height 480
@@ -21,29 +21,46 @@ defmodule RpiMusicMachineNerves.Scene.Main do
   @button_height @button_width
 
   @button_padding 2
-  @buttons Enum.map(0..@cols, fn x ->
-             {(@button_width + @button_padding) * x, @button_padding, Integer.to_string(x) <> "0"}
-           end) ++
+  @buttons [
              Enum.map(0..@cols, fn x ->
-               {(@button_width + @button_padding) * x,
-                @button_height + @button_padding + @button_padding, Integer.to_string(x) <> "1"}
-             end) ++
-             Enum.map(0..@cols, fn x ->
-               {(@button_width + @button_padding) * x, @button_height * 2 + @button_padding * 3,
-                Integer.to_string(x) <> "2"}
-             end) ++
-             Enum.map(0..@cols, fn x ->
-               {(@button_width + @button_padding) * x, @button_height * 3 + @button_padding * 4,
-                Integer.to_string(x) <> "3"}
-             end) ++
-             Enum.map(0..@cols, fn x ->
-               {(@button_width + @button_padding) * x, @button_height * 4 + @button_padding * 5,
-                Integer.to_string(x) <> "4"}
-             end) ++
-             Enum.map(0..@cols, fn x ->
-               {(@button_width + @button_padding) * x, @button_height * 5 + @button_padding * 6,
-                Integer.to_string(x) <> "5"}
+               {(@button_width + @button_padding) * x, @button_padding,
+                Integer.to_string(x) <> "0"}
              end)
+             | [
+                 Enum.map(0..@cols, fn x ->
+                   {(@button_width + @button_padding) * x,
+                    @button_height + @button_padding + @button_padding,
+                    Integer.to_string(x) <> "1"}
+                 end)
+                 | [
+                     Enum.map(0..@cols, fn x ->
+                       {(@button_width + @button_padding) * x,
+                        @button_height * 2 + @button_padding * 3, Integer.to_string(x) <> "2"}
+                     end)
+                     | [
+                         Enum.map(0..@cols, fn x ->
+                           {(@button_width + @button_padding) * x,
+                            @button_height * 3 + @button_padding * 4, Integer.to_string(x) <> "3"}
+                         end)
+                         | [
+                             Enum.map(0..@cols, fn x ->
+                               {(@button_width + @button_padding) * x,
+                                @button_height * 4 + @button_padding * 5,
+                                Integer.to_string(x) <> "4"}
+                             end)
+                             | [
+                                 Enum.map(0..@cols, fn x ->
+                                   {(@button_width + @button_padding) * x,
+                                    @button_height * 5 + @button_padding * 6,
+                                    Integer.to_string(x) <> "5"}
+                                 end)
+                               ]
+                           ]
+                       ]
+                   ]
+               ]
+           ]
+           |> List.flatten()
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
                    |> rect({@width, @height},
@@ -159,12 +176,9 @@ defmodule RpiMusicMachineNerves.Scene.Main do
 
   # --------------------------------------------------------
   def init(_, _) do
-    IO.inspect(Mix.target())
-    IO.inspect(Mix.env())
-
     graph = Map.put(@main_menu_graph, :iteration, 0)
 
-    Process.send(self(), :loop, [])
+    Process.send_after(self(), :loop, 2000, [])
 
     {:ok, graph, push: graph}
   end

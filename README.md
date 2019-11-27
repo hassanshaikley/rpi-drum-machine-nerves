@@ -77,3 +77,8 @@ XLR is the name of the cable
 
 To get the frequency of audio may need https://en.wikipedia.org/wiki/Fourier_transform
 
+
+
+# Optimization
+
+https://github.com/devonestes/fast-elixir#map-lookup-vs-pattern-matching-lookup-code

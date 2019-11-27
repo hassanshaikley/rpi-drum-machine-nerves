@@ -30,7 +30,6 @@ defmodule AudioPlayer do
   end
 
   def handle_cast({:start_audio, file}, state) do
-    # Works
     static_path = Path.join(:code.priv_dir(:rpi_music_machine_nerves), "static")
     full_path = Path.join(static_path, file)
 
