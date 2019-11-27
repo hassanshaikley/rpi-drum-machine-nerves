@@ -58,7 +58,10 @@ defmodule RpiMusicMachineNerves.MixProject do
       # Dependencies for specific targets
       # {:nerves_system_rpi, "~> 1.8", runtime: false, targets: :rpi},
       # {:nerves_system_rpi0, "~> 1.8", runtime: false, targets: :rpi0},
-      {:nerves_system_rpi2, "~> 1.9.1", runtime: false, targets: :rpi2}
+      {:nerves_system_rpi2, "~> 1.9.1", runtime: false, targets: :rpi2},
+
+      # Dependencies for development
+      {:benchee, "~> 1.0", only: :dev}
 
       #  {
       #   :plasma_contracts,

@@ -9,9 +9,6 @@ defmodule AudioPlayer do
   def init(init_arg \\ []) do
     init_audio()
 
-    # Generates "Hello" audio
-    :os.cmd('espeak -ven+f5 -k5 -w /tmp/out.wav Hello')
-
     {:ok, init_arg}
   end
 
@@ -24,8 +21,11 @@ defmodule AudioPlayer do
   end
 
   def handle_cast(:stop_audio, state) do
-    :os.cmd('killall afplay')
-    :os.cmd('killall aplay')
+    case Mix.env() == :prod do
+      true -> :os.cmd('killall aplay')
+      false -> :os.cmd('killall afplay')
+    end
+
     {:noreply, state}
   end
 
@@ -34,9 +34,10 @@ defmodule AudioPlayer do
     static_path = Path.join(:code.priv_dir(:rpi_music_machine_nerves), "static")
     full_path = Path.join(static_path, file)
 
-    spawn(fn -> :os.cmd('aplay -q #{full_path}') end)
-
-    spawn(fn -> :os.cmd('afplay #{full_path}') end)
+    case Mix.env() == :prod do
+      true -> spawn(fn -> :os.cmd('aplay -q #{full_path}') end)
+      false -> spawn(fn -> :os.cmd('afplay #{full_path}') end)
+    end
 
     {:noreply, state}
   end

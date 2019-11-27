@@ -3,7 +3,7 @@ use Mix.Config
 config :rpi_music_machine_nerves, :viewport, %{
   name: :main_viewport,
   # default_scene: {RpiMusicMachineNerves.Scene.PlaySong, nil},
-  default_scene: {RpiMusicMachineNerves.Scene.Crosshair, nil},
+  default_scene: {RpiMusicMachineNerves.Scene.Main, nil},
   size: {800, 480},
   opts: [scale: 1.0],
   drivers: [

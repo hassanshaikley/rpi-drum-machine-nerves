@@ -1,4 +1,4 @@
-defmodule RpiMusicMachineNerves.Scene.Crosshair do
+defmodule RpiMusicMachineNerves.Scene.Main do
   use Scenic.Scene
 
   alias Scenic.ViewPort
@@ -7,10 +7,12 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   import Scenic.Primitives
   import Scenic.Components
 
-  @bpm 138
+  @bpm 60
 
   @width 800
   @height 480
+
+  @num_rows 6
 
   @num_cols 16
   @cols @num_cols - 1
@@ -42,7 +44,6 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                {(@button_width + @button_padding) * x, @button_height * 5 + @button_padding * 6,
                 Integer.to_string(x) <> "5"}
              end)
-  @num_rows 6
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
                    |> rect({@width, @height},
@@ -68,11 +69,6 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
                      end,
                      t: {10, 10}
                    )
-                   #  |> text(@path,
-                   #    translate: {30, 30},
-                   #    font_size: 16,
-                   #    fill: :black
-                   #  )
                    |> button("OFF",
                      theme: %{
                        text: :white,
@@ -163,7 +159,11 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
 
   # --------------------------------------------------------
   def init(_, _) do
+    IO.inspect(Mix.target())
+    IO.inspect(Mix.env())
+
     graph = Map.put(@main_menu_graph, :iteration, 0)
+
     Process.send(self(), :loop, [])
 
     {:ok, graph, push: graph}
@@ -172,25 +172,11 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
   def handle_info(:loop, state) do
     Process.send_after(self(), :loop, trunc(60_000 / @bpm))
 
-    start_time = Time.utc_now()
+    # start_time = Time.utc_now()
     iteration = state.iteration
-
-    previous_index = rem(iteration - 1, @num_cols)
-
     current_index = rem(iteration, @num_cols)
 
-    current_header_id = "h_" <> Integer.to_string(current_index)
-    previous_header_id = "h_" <> Integer.to_string(previous_index)
-
-    updated_graph =
-      state
-      |> Graph.modify(current_header_id, fn p ->
-        Primitive.put_style(p, :fill, :blue)
-      end)
-      |> Graph.modify(previous_header_id, fn p ->
-        Primitive.put_style(p, :fill, :red)
-      end)
-      |> Map.put(:iteration, iteration + 1)
+    updated_graph = update_header(state, iteration)
 
     Enum.each(0..@num_rows, fn row ->
       row_hidden =
@@ -206,19 +192,15 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
 
       if !row_hidden do
         case row do
-          # 0 -> AudioPlayer.play_sound("tom.wav")
           0 -> AudioPlayer.play_sound("hihat_great.wav")
           1 -> AudioPlayer.play_sound("22inchridecymbal.wav")
           2 -> AudioPlayer.play_sound("triangle.wav")
           3 -> AudioPlayer.play_sound("runnerskick.wav")
-          5 -> AudioPlayer.play_sound("snare.wav")
           4 -> AudioPlayer.play_sound("hitoms.wav")
+          5 -> AudioPlayer.play_sound("snare.wav")
         end
       end
     end)
-
-    end_time = Time.utc_now()
-    IO.inspect(Time.diff(end_time, start_time, :microsecond))
 
     {:noreply, updated_graph, push: updated_graph}
   end
@@ -289,5 +271,23 @@ defmodule RpiMusicMachineNerves.Scene.Crosshair do
     |> Graph.modify(id <> "_up", fn p ->
       Primitive.put_style(p, :hidden, true)
     end)
+  end
+
+  defp update_header(graph, iteration) do
+    previous_index = rem(iteration - 1, @num_cols)
+
+    current_index = rem(iteration, @num_cols)
+
+    current_header_id = "h_" <> Integer.to_string(current_index)
+    previous_header_id = "h_" <> Integer.to_string(previous_index)
+
+    graph
+    |> Graph.modify(current_header_id, fn p ->
+      Primitive.put_style(p, :fill, :blue)
+    end)
+    |> Graph.modify(previous_header_id, fn p ->
+      Primitive.put_style(p, :fill, :red)
+    end)
+    |> Map.put(:iteration, iteration + 1)
   end
 end
