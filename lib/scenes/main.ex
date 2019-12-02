@@ -7,7 +7,7 @@ defmodule RpiMusicMachineNerves.Scene.Main do
   import Scenic.Primitives
   import Scenic.Components
 
-  @bpm 20
+  @bpm 120
 
   @width 800
   @height 480
@@ -171,12 +171,35 @@ defmodule RpiMusicMachineNerves.Scene.Main do
                      t: {16, 180}
                    )
 
+  # @active_buttons Enum.map(1..@num_cols, fn col ->
+  #                   Enum.map(1..@num_rows, fn _ -> false end)
+  #                 end)
   # ============================================================================
   # setup
+
+  @active_buttons_initial %{
+    "0" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
+    "1" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
+    "2" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
+    "3" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
+    "4" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
+    "5" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
+    "6" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
+    "7" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
+    "8" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
+    "9" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
+    "10" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
+    "11" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
+    "12" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
+    "13" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
+    "14" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
+    "15" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false}
+  }
 
   # --------------------------------------------------------
   def init(_, _) do
     graph = Map.put(@main_menu_graph, :iteration, 0)
+    graph = Map.put(graph, :active_buttons_cache, @active_buttons_initial)
 
     Process.send_after(self(), :loop, 2000, [])
 
@@ -186,25 +209,22 @@ defmodule RpiMusicMachineNerves.Scene.Main do
   def handle_info(:loop, state) do
     Process.send_after(self(), :loop, trunc(60_000 / @bpm))
 
-    # start_time = Time.utc_now()
     iteration = state.iteration
+    active_buttons_cache = state.active_buttons_cache
+
     current_index = rem(iteration, @num_cols)
 
     updated_graph = update_header(state, iteration)
+    # [[[[[current_index | ''] | row ] | ''] | down] | '']
 
-    Enum.each(0..@num_rows, fn row ->
-      row_hidden =
-        Graph.get(updated_graph, "#{current_index}#{row}_down")
-        |> Enum.at(0)
-        |> case do
-          nil ->
-            true
+    start_time = Time.utc_now()
 
-          thing ->
-            thing.styles.hidden
-        end
+    Enum.each(1..@num_rows, fn row ->
+      row = row - 1
 
-      if !row_hidden do
+      row_visible = active_buttons_cache[Integer.to_string(current_index)][Integer.to_string(row)]
+
+      if row_visible do
         case row do
           0 -> AudioPlayer.play_sound("hihat_great.wav")
           1 -> AudioPlayer.play_sound("22inchridecymbal.wav")
@@ -216,6 +236,9 @@ defmodule RpiMusicMachineNerves.Scene.Main do
       end
     end)
 
+    end_time = Time.utc_now()
+
+    Time.diff(start_time, end_time, :microseconds) |> IO.inspect()
     {:noreply, updated_graph, push: updated_graph}
   end
 
@@ -226,24 +249,77 @@ defmodule RpiMusicMachineNerves.Scene.Main do
 
   def filter_event({:click, <<id::bytes-size(3)>> <> "_up"}, context, state) do
     updated_graph = toggle_button(id, :on, state)
+
+    active_buttons_cache = state.active_buttons_cache
+
+    <<col::binary-size(2), row::binary>> = id
+
+    active_buttons_cache =
+      Map.update!(active_buttons_cache, col, fn current_value ->
+        Map.update!(current_value, row, fn current_inner_value ->
+          true
+        end)
+      end)
+
+    updated_graph = Map.put(updated_graph, :active_buttons_cache, active_buttons_cache)
+
     # ViewPort.release_input(context, [:cursor_button, :cursor_pos])
     {:noreply, updated_graph, push: updated_graph}
   end
 
   def filter_event({:click, <<id::bytes-size(2)>> <> "_up"}, context, state) do
     updated_graph = toggle_button(id, :on, state)
+
+    <<col::binary-size(1), row::binary>> = id
+    active_buttons_cache = state.active_buttons_cache
+
+    active_buttons_cache =
+      Map.update!(active_buttons_cache, col, fn current_value ->
+        Map.update!(current_value, row, fn current_inner_value ->
+          true
+        end)
+      end)
+
+    updated_graph = Map.put(updated_graph, :active_buttons_cache, active_buttons_cache)
+
     # ViewPort.release_input(context, [:cursor_button, :cursor_pos])
     {:noreply, updated_graph, push: updated_graph}
   end
 
   def filter_event({:click, <<id::bytes-size(3)>> <> "_down"}, context, state) do
     updated_graph = toggle_button(id, :off, state)
+
+    active_buttons_cache = state.active_buttons_cache
+    <<col::binary-size(2), row::binary>> = id
+
+    active_buttons_cache =
+      Map.update!(active_buttons_cache, col, fn current_value ->
+        Map.update!(current_value, row, fn current_inner_value ->
+          false
+        end)
+      end)
+
+    updated_graph = Map.put(updated_graph, :active_buttons_cache, active_buttons_cache)
+
     # ViewPort.release_input(context, [:cursor_button, :cursor_pos])
     {:noreply, updated_graph, push: updated_graph}
   end
 
   def filter_event({:click, <<id::bytes-size(2)>> <> "_down"}, context, state) do
     updated_graph = toggle_button(id, :off, state)
+
+    <<col::binary-size(1), row::binary>> = id
+    active_buttons_cache = state.active_buttons_cache
+
+    active_buttons_cache =
+      Map.update!(active_buttons_cache, col, fn current_value ->
+        Map.update!(current_value, row, fn current_inner_value ->
+          false
+        end)
+      end)
+
+    updated_graph = Map.put(updated_graph, :active_buttons_cache, active_buttons_cache)
+
     # ViewPort.release_input(context, [:cursor_button, :cursor_pos])
     {:noreply, updated_graph, push: updated_graph}
   end
