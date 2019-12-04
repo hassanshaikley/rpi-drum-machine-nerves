@@ -1,4 +1,4 @@
-defmodule RpiMusicMachineNerves.Application do
+defmodule RpiDrumMachineNerves.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
@@ -16,7 +16,7 @@ defmodule RpiMusicMachineNerves.Application do
 
   # List all child processes to be supervised
   def children("host") do
-    main_viewport_config = Application.get_env(:rpi_music_machine_nerves, :viewport)
+    main_viewport_config = Application.get_env(:rpi_drum_machine_nerves, :viewport)
 
     [
       {Scenic, viewports: [main_viewport_config]},
@@ -25,7 +25,7 @@ defmodule RpiMusicMachineNerves.Application do
   end
 
   def children(_target) do
-    main_viewport_config = Application.get_env(:rpi_music_machine_nerves, :viewport)
+    main_viewport_config = Application.get_env(:rpi_drum_machine_nerves, :viewport)
 
     [
       {Scenic, viewports: [main_viewport_config]},

@@ -1,7 +1,7 @@
-defmodule RpiMusicMachineNerves.MixProject do
+defmodule RpiDrumMachineNerves.MixProject do
   use Mix.Project
 
-  @app :rpi_music_machine_nerves
+  @app :rpi_drum_machine_nerves
   @version "0.1.0"
   @all_targets [:rpi, :rpi0, :rpi2, :rpi3, :rpi3a, :rpi4, :bbb, :x86_64]
 
@@ -30,7 +30,7 @@ defmodule RpiMusicMachineNerves.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      mod: {RpiMusicMachineNerves.Application, []},
+      mod: {RpiDrumMachineNerves.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end

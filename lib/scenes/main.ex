@@ -1,4 +1,4 @@
-defmodule RpiMusicMachineNerves.Scene.Main do
+defmodule RpiDrumMachineNerves.Scene.Main do
   use Scenic.Scene
 
   alias Scenic.ViewPort
