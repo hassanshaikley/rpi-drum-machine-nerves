@@ -14,7 +14,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   @num_rows 6
 
-  @num_cols 16
+  @num_cols 4
   @cols @num_cols - 1
 
   @button_width 46
@@ -215,7 +215,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     current_index = rem(iteration, @num_cols)
 
     updated_graph = update_header(state, iteration)
-    # [[[[[current_index | ''] | row ] | ''] | down] | '']
 
     start_time = Time.utc_now()
 
@@ -382,5 +381,4 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   end
 
   defp bpm_in_ms, do: trunc(60_000 / @bpm)
-
 end
