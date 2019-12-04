@@ -207,7 +207,7 @@ defmodule RpiMusicMachineNerves.Scene.Main do
   end
 
   def handle_info(:loop, state) do
-    Process.send_after(self(), :loop, trunc(60_000 / @bpm))
+    Process.send_after(self(), :loop, bpm_in_ms)
 
     iteration = state.iteration
     active_buttons_cache = state.active_buttons_cache
@@ -380,4 +380,7 @@ defmodule RpiMusicMachineNerves.Scene.Main do
     end)
     |> Map.put(:iteration, iteration + 1)
   end
+
+  defp bpm_in_ms, do: trunc(60_000 / @bpm)
+
 end
