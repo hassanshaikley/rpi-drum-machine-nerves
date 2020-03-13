@@ -2,23 +2,23 @@ defmodule AudioPlayer do
   use GenServer
   alias __MODULE__
 
+  # GenServer initialization
+
   def start_link(default \\ []) do
     GenServer.start_link(__MODULE__, default, name: __MODULE__)
   end
 
   def init(init_arg \\ []) do
-    init_audio()
+    setup_rpi_audio()
 
     {:ok, init_arg}
   end
 
-  def play_sound(file) do
-    GenServer.cast(__MODULE__, {:start_audio, file})
-  end
+  # GenServer calls
 
-  def stop_sound() do
-    GenServer.cast(__MODULE__, :stop_audio)
-  end
+  def play_sound(file), do: GenServer.cast(__MODULE__, {:start_audio, file})
+
+  def stop_sound(), do: GenServer.cast(__MODULE__, :stop_audio)
 
   def handle_cast(:stop_audio, state) do
     case Mix.env() == :prod do
@@ -27,6 +27,10 @@ defmodule AudioPlayer do
     end
 
     {:noreply, state}
+  end
+
+  def set_volume(number) do
+    :os.cmd('amixer cset numid=1 #{Integer.to_string(number)}%')
   end
 
   def handle_cast({:start_audio, file}, state) do
@@ -41,14 +45,18 @@ defmodule AudioPlayer do
     {:noreply, state}
   end
 
-  defp init_audio do
-    # Sets audio output to jack
-    :os.cmd('amixer cset numid=3 1')
-    :os.cmd('amixer cset numid=1 50%')
+  # Private
+
+  defp setup_rpi_audio() do
+    set_audio_output_to_jack()
+    set_audio_to_50_percent()
   end
 
-  def set_volume(number) do
-    # Sets volume to 60%
-    :os.cmd('amixer cset numid=1 #{Integer.to_string(number)}%')
+  defp set_audio_output_to_jack() do
+    :os.cmd('amixer cset numid=3 1')
+  end
+
+  defp set_audio_to_50_percent() do
+    :os.cmd('amixer cset numid=1 50%')
   end
 end
