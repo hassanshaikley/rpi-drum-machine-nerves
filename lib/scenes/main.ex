@@ -171,26 +171,22 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                      t: {16, 180}
                    )
 
-  # setup
+  # Creates a map of 16 elements thats mapping to each step of music
+  # Each has a map of 5 children, which represent the sound being played
+  # @active_buttons_initial %{
+  #   "0" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
+  #   ...
+  # }
+  @active_buttons_initial Enum.reduce(0..15, %{}, fn x, acc ->
+                            key = to_string(x)
 
-  @active_buttons_initial %{
-    "0" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
-    "1" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
-    "2" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
-    "3" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
-    "4" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
-    "5" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
-    "6" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
-    "7" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
-    "8" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
-    "9" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
-    "10" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
-    "11" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
-    "12" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
-    "13" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
-    "14" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
-    "15" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false}
-  }
+                            inner_map =
+                              Enum.reduce(0..5, %{}, fn x, acc ->
+                                Map.put(acc, to_string(x), false)
+                              end)
+
+                            Map.put(acc, key, inner_map)
+                          end)
 
   # --------------------------------------------------------
   def init(_, _) do
@@ -332,6 +328,10 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   ####### '.###
   # Private.` #
   ########### `
+
+  # In scenic to show that a button is down you need two buttons
+  # One for how it looks when it is up and another for how it looks when it is down
+  # And then hide the inactive button
 
   defp toggle_button(id, :off, state) do
     state
