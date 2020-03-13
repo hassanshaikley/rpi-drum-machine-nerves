@@ -233,7 +233,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     end_time = Time.utc_now()
 
-    Time.diff(start_time, end_time, :microseconds) |> IO.inspect()
+    Time.diff(start_time, end_time, :microsecond) |> IO.inspect()
     {:noreply, updated_graph, push: updated_graph}
   end
 
