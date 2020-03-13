@@ -24,18 +24,34 @@ defmodule AudioPlayer do
 
   # Public API
 
-  def set_volume(percent) when is_integer(percent) do
+  @doc """
+  Sets volume to the given percent (integer between 0 and 100)
+
+  ## Examples
+
+      iex> AudioPlayer.set_volume("100")
+
+  """
+
+  def set_volume(percent) when is_integer(percent) and percent in 0..100 do
     percent
     |> Integer.to_string()
-    |> set_volume
+    |> set_volume_cmd
   end
 
-  def set_volume(percent) when is_binary(percent) do
-    :os.cmd('amixer cset numid=1 #{percent}%')
-  end
+  @doc """
+  Given a file name, looks for that file in that static folder and plays it
 
+  ## Examples
+
+      iex> AudioPlayer.play_sound("triangle.wav")
+
+  """
   def play_sound(file), do: GenServer.cast(__MODULE__, {:start_audio, file})
 
+  @doc """
+  Stops any sounds that are currently being played. Used for teardown purposes.
+  """
   def stop_sound(), do: GenServer.cast(__MODULE__, :stop_audio)
 
   def handle_cast(:stop_audio, state) do
@@ -58,10 +74,14 @@ defmodule AudioPlayer do
 
   defp setup_audio() do
     set_audio_output_to_jack()
-    set_volume("50")
+    set_volume(50)
   end
 
   defp set_audio_output_to_jack() do
     :os.cmd('amixer cset numid=3 1')
+  end
+
+  def set_volume_cmd(percent) when is_binary(percent) do
+    :os.cmd('amixer cset numid=1 #{percent}%')
   end
 end
