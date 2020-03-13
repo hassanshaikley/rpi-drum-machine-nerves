@@ -258,7 +258,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     updated_graph = Map.put(updated_graph, :active_buttons_cache, active_buttons_cache)
 
-    # ViewPort.release_input(context, [:cursor_button, :cursor_pos])
     {:noreply, updated_graph, push: updated_graph}
   end
 
@@ -277,7 +276,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     updated_graph = Map.put(updated_graph, :active_buttons_cache, active_buttons_cache)
 
-    # ViewPort.release_input(context, [:cursor_button, :cursor_pos])
     {:noreply, updated_graph, push: updated_graph}
   end
 
@@ -296,7 +294,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     updated_graph = Map.put(updated_graph, :active_buttons_cache, active_buttons_cache)
 
-    # ViewPort.release_input(context, [:cursor_button, :cursor_pos])
     {:noreply, updated_graph, push: updated_graph}
   end
 
@@ -315,12 +312,10 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     updated_graph = Map.put(updated_graph, :active_buttons_cache, active_buttons_cache)
 
-    # ViewPort.release_input(context, [:cursor_button, :cursor_pos])
     {:noreply, updated_graph, push: updated_graph}
   end
 
   def filter_event({:click, "shutdown"}, context, state) do
-    # ViewPort.release_input(context, [:cursor_button, :cursor_pos])
     spawn(fn -> :os.cmd('sudo shutdown -h now') end)
     {:noreply, state}
   end
