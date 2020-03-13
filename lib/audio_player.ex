@@ -2,6 +2,10 @@ defmodule AudioPlayer do
   use GenServer
   alias __MODULE__
 
+  @audio_player if Mix.env() == :prod, do: "aplay", else: "afplay"
+  @audio_player_cmd if Mix.env() == :prod, do: "#{@audio_player} -q", else: @audio_player
+  @static_directory_path Path.join(:code.priv_dir(:rpi_drum_machine_nerves), "static")
+
   # GenServer initialization
 
   def start_link(default \\ []) do
@@ -21,10 +25,7 @@ defmodule AudioPlayer do
   def stop_sound(), do: GenServer.cast(__MODULE__, :stop_audio)
 
   def handle_cast(:stop_audio, state) do
-    case Mix.env() == :prod do
-      true -> :os.cmd('killall aplay')
-      false -> :os.cmd('killall afplay')
-    end
+    :os.cmd('killall #{@audio_player}')
 
     {:noreply, state}
   end
@@ -34,13 +35,9 @@ defmodule AudioPlayer do
   end
 
   def handle_cast({:start_audio, file}, state) do
-    static_path = Path.join(:code.priv_dir(:rpi_drum_machine_nerves), "static")
-    full_path = Path.join(static_path, file)
+    full_path = Path.join(@static_directory_path, file)
 
-    case Mix.env() == :prod do
-      true -> spawn(fn -> :os.cmd('aplay -q #{full_path}') end)
-      false -> spawn(fn -> :os.cmd('afplay #{full_path}') end)
-    end
+    :os.cmd('#{@audio_player_cmd} #{full_path}')
 
     {:noreply, state}
   end
