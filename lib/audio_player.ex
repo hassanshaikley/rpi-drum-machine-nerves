@@ -54,13 +54,13 @@ defmodule AudioPlayer do
   """
   def stop_sound(), do: GenServer.cast(__MODULE__, :stop_audio)
 
+  # GenServer handlers
+
   def handle_cast(:stop_audio, state) do
     :os.cmd('killall #{@audio_player}')
 
     {:noreply, state}
   end
-
-  # GenServer handlers
 
   def handle_cast({:start_audio, file}, state) do
     full_path = Path.join(@static_directory_path, file)
@@ -77,6 +77,7 @@ defmodule AudioPlayer do
     set_volume(50)
   end
 
+  # This is expected to fail and do nothing on non rpi devices
   defp set_audio_output_to_jack() do
     :os.cmd('amixer cset numid=3 1')
   end
