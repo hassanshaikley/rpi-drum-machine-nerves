@@ -8,8 +8,6 @@ There are some known issues; it won't run with all 4 measures. It works with 1 m
 
 ## Dependencies
 
-- afplay
+- afplay for local testing
 
 Note: I have only tested this on MAC. If you wish you to use a different tool for playing sound look at `lib/audio_player.ex` and change the command in there.
-
-6

@@ -171,10 +171,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                      t: {16, 180}
                    )
 
-  # @active_buttons Enum.map(1..@num_cols, fn col ->
-  #                   Enum.map(1..@num_rows, fn _ -> false end)
-  #                 end)
-  # ============================================================================
   # setup
 
   @active_buttons_initial %{
