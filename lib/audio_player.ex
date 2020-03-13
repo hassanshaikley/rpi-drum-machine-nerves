@@ -30,8 +30,14 @@ defmodule AudioPlayer do
     {:noreply, state}
   end
 
-  def set_volume(number) do
-    :os.cmd('amixer cset numid=1 #{Integer.to_string(number)}%')
+  def set_volume(percent) when is_integer(percent) do
+    percent
+    |> Integer.to_string()
+    |> set_volume
+  end
+
+  def set_volume(percent) when is_binary(percent) do
+    :os.cmd('amixer cset numid=1 #{percent}%')
   end
 
   def handle_cast({:start_audio, file}, state) do
@@ -46,14 +52,10 @@ defmodule AudioPlayer do
 
   defp setup_rpi_audio() do
     set_audio_output_to_jack()
-    set_audio_to_50_percent()
+    set_volume("50")
   end
 
   defp set_audio_output_to_jack() do
     :os.cmd('amixer cset numid=3 1')
-  end
-
-  defp set_audio_to_50_percent() do
-    :os.cmd('amixer cset numid=1 50%')
   end
 end
