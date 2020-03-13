@@ -2,8 +2,12 @@ defmodule AudioPlayer do
   use GenServer
   alias __MODULE__
 
+  # The library that is going to be used to play audio (on mac afplay, on rpi aplay)
   @audio_player if Mix.env() == :prod, do: "aplay", else: "afplay"
+  # aplay requires the -q command
   @audio_player_cmd if Mix.env() == :prod, do: "#{@audio_player} -q", else: @audio_player
+
+  # The directory where the audio files are stored
   @static_directory_path Path.join(:code.priv_dir(:rpi_drum_machine_nerves), "static")
 
   # GenServer initialization
@@ -13,22 +17,12 @@ defmodule AudioPlayer do
   end
 
   def init(init_arg \\ []) do
-    setup_rpi_audio()
+    setup_audio()
 
     {:ok, init_arg}
   end
 
-  # GenServer calls
-
-  def play_sound(file), do: GenServer.cast(__MODULE__, {:start_audio, file})
-
-  def stop_sound(), do: GenServer.cast(__MODULE__, :stop_audio)
-
-  def handle_cast(:stop_audio, state) do
-    :os.cmd('killall #{@audio_player}')
-
-    {:noreply, state}
-  end
+  # Public API
 
   def set_volume(percent) when is_integer(percent) do
     percent
@@ -40,6 +34,18 @@ defmodule AudioPlayer do
     :os.cmd('amixer cset numid=1 #{percent}%')
   end
 
+  def play_sound(file), do: GenServer.cast(__MODULE__, {:start_audio, file})
+
+  def stop_sound(), do: GenServer.cast(__MODULE__, :stop_audio)
+
+  def handle_cast(:stop_audio, state) do
+    :os.cmd('killall #{@audio_player}')
+
+    {:noreply, state}
+  end
+
+  # GenServer handlers
+
   def handle_cast({:start_audio, file}, state) do
     full_path = Path.join(@static_directory_path, file)
 
@@ -50,7 +56,7 @@ defmodule AudioPlayer do
 
   # Private
 
-  defp setup_rpi_audio() do
+  defp setup_audio() do
     set_audio_output_to_jack()
     set_volume("50")
   end
