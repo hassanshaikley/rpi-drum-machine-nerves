@@ -5,7 +5,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   alias Scenic.Primitive
   import Scenic.Primitives
   import Scenic.Components
-  alias RpiDrumMachineNerves.Component.{Header, OffButton}
+  alias RpiDrumMachineNerves.Component.{Header, OffButton, VolumeSlider}
 
   @bpm 120
 
@@ -36,19 +36,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                    )
                    |> Header.add_to_graph()
                    |> OffButton.add_to_graph()
-                   # Volume slider
-                   |> group(
-                     fn graph ->
-                       graph
-                       |> text("volume", translate: {450, 112})
-                       |> slider({{40, 100}, 50},
-                         id: :volume_slider,
-                         translate: {500, 100},
-                         width: 100
-                       )
-                     end,
-                     t: {0, 0}
-                   )
+                   |> VolumeSlider.add_to_graph()
                    |> group(
                      fn graph ->
                        Enum.map(0..(@num_cols - 1), fn x ->
