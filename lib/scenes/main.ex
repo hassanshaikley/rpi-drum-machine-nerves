@@ -71,12 +71,11 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                             Map.put(acc, key, inner_map)
                           end)
 
-  # --------------------------------------------------------
   def init(_, _) do
     graph = Map.put(@main_menu_graph, :iteration, 0)
     graph = Map.put(graph, :active_buttons_cache, @active_buttons_initial)
 
-    Process.send_after(self(), :loop, 2000, [])
+    Process.send_after(self(), :loop, 100, [])
 
     {:ok, graph, push: graph}
   end
@@ -85,7 +84,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     Process.send_after(self(), :loop, bpm_in_ms())
 
     iteration = state.iteration
-    active_buttons_cache = state.active_buttons_cache
 
     current_index = rem(iteration, @num_cols)
 
@@ -118,22 +116,14 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   # ============================================================================
   # event handlers
-
   # --------------------------------------------------------
 
   def filter_event({:click, <<id::bytes-size(3)>> <> "_up"}, _context, state) do
-    updated_graph = toggle_button(id, :on, state)
-
-    active_buttons_cache = state.active_buttons_cache
+    updated_graph = toggle_button(id, true, state)
 
     <<col::binary-size(2), row::binary>> = id
 
-    active_buttons_cache =
-      Map.update!(active_buttons_cache, col, fn current_value ->
-        Map.update!(current_value, row, fn _current_inner_value ->
-          true
-        end)
-      end)
+    active_buttons_cache = update_button(state, col, row, true)
 
     updated_graph = Map.put(updated_graph, :active_buttons_cache, active_buttons_cache)
 
@@ -141,17 +131,11 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   end
 
   def filter_event({:click, <<id::bytes-size(2)>> <> "_up"}, _context, state) do
-    updated_graph = toggle_button(id, :on, state)
+    updated_graph = toggle_button(id, true, state)
 
     <<col::binary-size(1), row::binary>> = id
-    active_buttons_cache = state.active_buttons_cache
 
-    active_buttons_cache =
-      Map.update!(active_buttons_cache, col, fn current_value ->
-        Map.update!(current_value, row, fn _current_inner_value ->
-          true
-        end)
-      end)
+    active_buttons_cache = update_button(state, col, row, true)
 
     updated_graph = Map.put(updated_graph, :active_buttons_cache, active_buttons_cache)
 
@@ -159,17 +143,11 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   end
 
   def filter_event({:click, <<id::bytes-size(3)>> <> "_down"}, _context, state) do
-    updated_graph = toggle_button(id, :off, state)
+    updated_graph = toggle_button(id, false, state)
 
-    active_buttons_cache = state.active_buttons_cache
     <<col::binary-size(2), row::binary>> = id
 
-    active_buttons_cache =
-      Map.update!(active_buttons_cache, col, fn current_value ->
-        Map.update!(current_value, row, fn _current_inner_value ->
-          false
-        end)
-      end)
+    active_buttons_cache = update_button(state, col, row, false)
 
     updated_graph = Map.put(updated_graph, :active_buttons_cache, active_buttons_cache)
 
@@ -177,17 +155,11 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   end
 
   def filter_event({:click, <<id::bytes-size(2)>> <> "_down"}, _context, state) do
-    updated_graph = toggle_button(id, :off, state)
+    updated_graph = toggle_button(id, false, state)
 
     <<col::binary-size(1), row::binary>> = id
-    active_buttons_cache = state.active_buttons_cache
 
-    active_buttons_cache =
-      Map.update!(active_buttons_cache, col, fn current_value ->
-        Map.update!(current_value, row, fn _current_inner_value ->
-          false
-        end)
-      end)
+    active_buttons_cache = update_button(state, col, row, false)
 
     updated_graph = Map.put(updated_graph, :active_buttons_cache, active_buttons_cache)
 
@@ -216,23 +188,21 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   # One for how it looks when it is up and another for how it looks when it is down
   # And then hide the inactive button
 
-  defp toggle_button(id, :off, state) do
-    state
-    |> Graph.modify(id <> "_down", fn p ->
-      Primitive.put_style(p, :hidden, true)
-    end)
-    |> Graph.modify(id <> "_up", fn p ->
-      Primitive.put_style(p, :hidden, false)
+  defp update_button(%{active_buttons_cache: active_buttons_cache} = state, col, row, value) do
+    Map.update!(active_buttons_cache, col, fn current_value ->
+      Map.update!(current_value, row, fn _current_inner_value ->
+        value
+      end)
     end)
   end
 
-  defp toggle_button(id, :on, state) do
+  defp toggle_button(id, button_down, state) do
     state
     |> Graph.modify(id <> "_down", fn p ->
-      Primitive.put_style(p, :hidden, false)
+      Primitive.put_style(p, :hidden, !button_down)
     end)
     |> Graph.modify(id <> "_up", fn p ->
-      Primitive.put_style(p, :hidden, true)
+      Primitive.put_style(p, :hidden, button_down)
     end)
   end
 
