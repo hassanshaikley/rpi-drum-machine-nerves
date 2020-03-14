@@ -29,12 +29,12 @@ defmodule RpiDrumMachineNerves.Scene.Main do
            |> List.flatten()
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
+                   # Background
                    |> rect({@width, @height},
                      id: :background,
                      fill: {50, 50, 50}
                    )
-
-                   # Header rectangle
+                   # Header
                    |> group(
                      fn graph ->
                        graph
@@ -52,6 +52,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                      end,
                      t: {10, 10}
                    )
+                   # Off button
                    |> button("OFF",
                      theme: %{
                        text: :white,
@@ -64,11 +65,18 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                      height: 50,
                      width: 50
                    )
-                   |> text("volume", translate: {450, 112})
-                   |> slider({{40, 100}, 50},
-                     id: :volume_slider,
-                     translate: {500, 100},
-                     width: 100
+                   # Volume slider
+                   |> group(
+                     fn graph ->
+                       graph
+                       |> text("volume", translate: {450, 112})
+                       |> slider({{40, 100}, 50},
+                         id: :volume_slider,
+                         translate: {500, 100},
+                         width: 100
+                       )
+                     end,
+                     t: {0, 0}
                    )
                    |> group(
                      fn graph ->
