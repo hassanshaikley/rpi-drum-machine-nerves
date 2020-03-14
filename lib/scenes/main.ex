@@ -85,18 +85,17 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   def handle_info(:loop, state) do
     Process.send_after(self(), :loop, bpm_in_ms())
 
-    iteration = state.iteration
+    current_index = rem(state.iteration, @num_cols)
 
-    current_index = rem(iteration, @num_cols)
-
-    updated_graph = update_header(state, iteration)
+    updated_graph = update_header(state)
 
     start_time = Time.utc_now()
 
     Enum.each(1..@num_rows, fn row ->
       row = row - 1
 
-      row_visible = active_buttons_cache[Integer.to_string(current_index)][Integer.to_string(row)]
+      row_visible =
+        state.active_buttons_cache[Integer.to_string(current_index)][Integer.to_string(row)]
 
       if row_visible do
         case row do
@@ -121,11 +120,12 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   # --------------------------------------------------------
 
   def filter_event({:click, <<id::bytes-size(3)>> <> "_up"}, _context, state) do
-    updated_graph = toggle_button(id, true, state)
+    button_down = true
+    updated_graph = toggle_button(id, button_down, state)
 
     <<col::binary-size(2), row::binary>> = id
 
-    active_buttons_cache = update_button(state, col, row, true)
+    active_buttons_cache = update_button(state, col, row, button_down)
 
     updated_graph = Map.put(updated_graph, :active_buttons_cache, active_buttons_cache)
 
@@ -133,11 +133,13 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   end
 
   def filter_event({:click, <<id::bytes-size(2)>> <> "_up"}, _context, state) do
-    updated_graph = toggle_button(id, true, state)
+    button_down = true
+
+    updated_graph = toggle_button(id, button_down, state)
 
     <<col::binary-size(1), row::binary>> = id
 
-    active_buttons_cache = update_button(state, col, row, true)
+    active_buttons_cache = update_button(state, col, row, button_down)
 
     updated_graph = Map.put(updated_graph, :active_buttons_cache, active_buttons_cache)
 
@@ -145,11 +147,13 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   end
 
   def filter_event({:click, <<id::bytes-size(3)>> <> "_down"}, _context, state) do
-    updated_graph = toggle_button(id, false, state)
+    button_down = false
+
+    updated_graph = toggle_button(id, button_down, state)
 
     <<col::binary-size(2), row::binary>> = id
 
-    active_buttons_cache = update_button(state, col, row, false)
+    active_buttons_cache = update_button(state, col, row, button_down)
 
     updated_graph = Map.put(updated_graph, :active_buttons_cache, active_buttons_cache)
 
@@ -157,11 +161,12 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   end
 
   def filter_event({:click, <<id::bytes-size(2)>> <> "_down"}, _context, state) do
-    updated_graph = toggle_button(id, false, state)
+    button_down = false
+    updated_graph = toggle_button(id, button_down, state)
 
     <<col::binary-size(1), row::binary>> = id
 
-    active_buttons_cache = update_button(state, col, row, false)
+    active_buttons_cache = update_button(state, col, row, button_down)
 
     updated_graph = Map.put(updated_graph, :active_buttons_cache, active_buttons_cache)
 
@@ -190,7 +195,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   # One for how it looks when it is up and another for how it looks when it is down
   # And then hide the inactive button
 
-  defp update_button(%{active_buttons_cache: active_buttons_cache} = state, col, row, value) do
+  defp update_button(%{active_buttons_cache: active_buttons_cache} = _state, col, row, value) do
     Map.update!(active_buttons_cache, col, fn current_value ->
       Map.update!(current_value, row, fn _current_inner_value ->
         value
@@ -208,7 +213,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     end)
   end
 
-  defp update_header(graph, iteration) do
+  defp update_header(%{iteration: iteration} = graph) do
     previous_index = rem(iteration - 1, @num_cols)
     current_index = rem(iteration, @num_cols)
     current_header_id = "h_" <> Integer.to_string(current_index)
