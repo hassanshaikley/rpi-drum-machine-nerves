@@ -6,6 +6,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   alias Scenic.Primitive
   import Scenic.Primitives
   import Scenic.Components
+  alias RpiDrumMachineNerves.Component.Header
 
   @bpm 120
 
@@ -34,24 +35,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                      id: :background,
                      fill: {50, 50, 50}
                    )
-                   # Header
-                   |> group(
-                     fn graph ->
-                       graph
-                       |> rect({780, 75},
-                         fill: :dark_gray,
-                         translate: {0, 0},
-                         id: "header_rect"
-                       )
-                       |> text("Nerves Drum Machine",
-                         id: :pos,
-                         translate: {630, 60},
-                         font_size: 16,
-                         fill: :black
-                       )
-                     end,
-                     t: {10, 10}
-                   )
+                   |> Header.add_to_graph()
                    # Off button
                    |> button("OFF",
                      theme: %{
