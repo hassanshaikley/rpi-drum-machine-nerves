@@ -72,8 +72,10 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                           end)
 
   def init(_, _) do
-    graph = Map.put(@main_menu_graph, :iteration, 0)
-    graph = Map.put(graph, :active_buttons_cache, @active_buttons_initial)
+    graph =
+      @main_menu_graph
+      |> Map.put(:iteration, 0)
+      |> Map.put(:active_buttons_cache, @active_buttons_initial)
 
     Process.send_after(self(), :loop, 100, [])
 
@@ -208,9 +210,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   defp update_header(graph, iteration) do
     previous_index = rem(iteration - 1, @num_cols)
-
     current_index = rem(iteration, @num_cols)
-
     current_header_id = "h_" <> Integer.to_string(current_index)
     previous_header_id = "h_" <> Integer.to_string(previous_index)
 
