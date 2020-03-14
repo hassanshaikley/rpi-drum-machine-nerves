@@ -4,9 +4,9 @@ defmodule RpiDrumMachineNerves.Component.Superbutton do
   def add_to_graph(map, any, list) do
   end
 
-  def info(data) do
+  def info(_data) do
   end
 
-  def verify(any) do
+  def verify(_any) do
   end
 end

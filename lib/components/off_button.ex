@@ -1,7 +1,6 @@
 defmodule RpiDrumMachineNerves.Component.OffButton do
   use Scenic.Scene, has_children: false
   import Scenic.Components
-  alias Scenic.Graph
   import Scenic.Primitives
   import Scenic.Components
 
@@ -21,9 +20,9 @@ defmodule RpiDrumMachineNerves.Component.OffButton do
     )
   end
 
-  def info(data) do
+  def info(_data) do
   end
 
-  def verify(any) do
+  def verify(_any) do
   end
 end

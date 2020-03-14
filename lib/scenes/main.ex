@@ -5,7 +5,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   alias Scenic.Primitive
   import Scenic.Primitives
   import Scenic.Components
-  alias RpiDrumMachineNerves.Component.{Header, OffButton, VolumeSlider}
+  alias RpiDrumMachineNerves.Component.{Header, OffButton, StepIndicator, VolumeSlider}
 
   @bpm 120
 
@@ -37,29 +37,10 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                    |> Header.add_to_graph()
                    |> OffButton.add_to_graph()
                    |> VolumeSlider.add_to_graph()
-                   |> group(
-                     fn graph ->
-                       Enum.map(0..(@num_cols - 1), fn x ->
-                         {(@button_width + @button_padding) * x, @button_padding,
-                          Integer.to_string(x)}
-                       end)
-                       |> Enum.reduce(
-                         graph,
-                         fn obj, graph ->
-                           x = elem(obj, 0)
-                           y = elem(obj, 1)
-                           index = elem(obj, 2)
-
-                           graph
-                           |> rect({@button_width, 10},
-                             fill: :red,
-                             translate: {x, y},
-                             id: "h_#{index}"
-                           )
-                         end
-                       )
-                     end,
-                     t: {16, 160}
+                   |> StepIndicator.add_to_graph(nil,
+                     button_width: @button_width,
+                     button_padding: @button_padding,
+                     num_cols: @num_cols
                    )
                    |> group(
                      fn graph ->

@@ -3,7 +3,6 @@ defmodule RpiDrumMachineNerves.Component.Header do
   import Scenic.Components
   alias Scenic.Graph
   import Scenic.Primitives
-  import Scenic.Components
 
   def add_to_graph(graph, data \\ nil, opts \\ []) do
     graph
@@ -26,9 +25,9 @@ defmodule RpiDrumMachineNerves.Component.Header do
     )
   end
 
-  def info(data) do
+  def info(_data) do
   end
 
-  def verify(any) do
+  def verify(_any) do
   end
 end

@@ -1,11 +1,10 @@
 defmodule RpiDrumMachineNerves.Component.VolumeSlider do
   use Scenic.Scene, has_children: false
   import Scenic.Components
-  alias Scenic.Graph
   import Scenic.Primitives
   import Scenic.Components
 
-  def add_to_graph(graph, data \\ nil, opts \\ []) do
+  def add_to_graph(graph, _data \\ nil, _opts \\ []) do
     graph
     |> group(
       fn graph ->
@@ -21,9 +20,9 @@ defmodule RpiDrumMachineNerves.Component.VolumeSlider do
     )
   end
 
-  def info(data) do
+  def info(_data) do
   end
 
-  def verify(any) do
+  def verify(_any) do
   end
 end
