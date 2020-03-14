@@ -10,8 +10,8 @@ defmodule RpiDrumMachineNerves.Component.StepIndicator do
     graph
     |> group(
       fn graph ->
-        Enum.map(0..(num_cols - 1), fn x ->
-          {(button_width + button_padding) * x, button_padding, Integer.to_string(x)}
+        Enum.map(0..(num_cols - 1), fn col ->
+          {(button_width + button_padding) * col, button_padding, Integer.to_string(col)}
         end)
         |> Enum.reduce(
           graph,
