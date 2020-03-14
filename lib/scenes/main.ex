@@ -13,53 +13,19 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   @height 480
 
   @num_rows 6
-
-  @num_cols 4
-  @cols @num_cols - 1
+  @num_cols 16
 
   @button_width 46
   @button_height @button_width
-
   @button_padding 2
-  @buttons [
-             Enum.map(0..@cols, fn x ->
-               {(@button_width + @button_padding) * x, @button_padding,
-                Integer.to_string(x) <> "0"}
+
+  # Tuples for every button containing {the left most x value, the top most y value, and the unique button identifier}
+  @buttons Enum.map(0..(@num_cols - 1), fn x ->
+             Enum.map(0..(@num_rows - 1), fn y ->
+               {(@button_width + @button_padding) * x, (@button_height + @button_padding) * y,
+                Integer.to_string(x) <> to_string(y)}
              end)
-             | [
-                 Enum.map(0..@cols, fn x ->
-                   {(@button_width + @button_padding) * x,
-                    @button_height + @button_padding + @button_padding,
-                    Integer.to_string(x) <> "1"}
-                 end)
-                 | [
-                     Enum.map(0..@cols, fn x ->
-                       {(@button_width + @button_padding) * x,
-                        @button_height * 2 + @button_padding * 3, Integer.to_string(x) <> "2"}
-                     end)
-                     | [
-                         Enum.map(0..@cols, fn x ->
-                           {(@button_width + @button_padding) * x,
-                            @button_height * 3 + @button_padding * 4, Integer.to_string(x) <> "3"}
-                         end)
-                         | [
-                             Enum.map(0..@cols, fn x ->
-                               {(@button_width + @button_padding) * x,
-                                @button_height * 4 + @button_padding * 5,
-                                Integer.to_string(x) <> "4"}
-                             end)
-                             | [
-                                 Enum.map(0..@cols, fn x ->
-                                   {(@button_width + @button_padding) * x,
-                                    @button_height * 5 + @button_padding * 6,
-                                    Integer.to_string(x) <> "5"}
-                                 end)
-                               ]
-                           ]
-                       ]
-                   ]
-               ]
-           ]
+           end)
            |> List.flatten()
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
@@ -106,7 +72,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                    )
                    |> group(
                      fn graph ->
-                       Enum.map(0..@cols, fn x ->
+                       Enum.map(0..(@num_cols - 1), fn x ->
                          {(@button_width + @button_padding) * x, @button_padding,
                           Integer.to_string(x)}
                        end)
