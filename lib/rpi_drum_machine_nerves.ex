@@ -33,7 +33,7 @@ defmodule RpiDrumMachineNerves.Application do
     ]
   end
 
-  def stop(state) do
+  def stop(_state) do
     AudioPlayer.stop_sound()
   end
 end

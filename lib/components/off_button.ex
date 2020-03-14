@@ -1,10 +1,8 @@
 defmodule RpiDrumMachineNerves.Component.OffButton do
   use Scenic.Scene, has_children: false
   import Scenic.Components
-  import Scenic.Primitives
-  import Scenic.Components
 
-  def add_to_graph(graph, data \\ nil, opts \\ []) do
+  def add_to_graph(graph, _data \\ nil, _opts \\ []) do
     graph
     |> button("OFF",
       theme: %{

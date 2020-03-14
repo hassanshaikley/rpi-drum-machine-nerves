@@ -1,10 +1,8 @@
 defmodule RpiDrumMachineNerves.Component.Header do
   use Scenic.Scene, has_children: false
-  import Scenic.Components
-  alias Scenic.Graph
   import Scenic.Primitives
 
-  def add_to_graph(graph, data \\ nil, opts \\ []) do
+  def add_to_graph(graph, _data \\ nil, _opts \\ []) do
     graph
     |> group(
       fn graph ->

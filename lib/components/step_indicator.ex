@@ -1,17 +1,12 @@
 defmodule RpiDrumMachineNerves.Component.StepIndicator do
   use Scenic.Scene, has_children: false
   import Scenic.Primitives
-  import Scenic.Components
 
   def add_to_graph(
         graph,
-        data \\ nil,
+        _data \\ nil,
         [button_width: button_width, button_padding: button_padding, num_cols: num_cols] = _opts
       ) do
-    # button_width = Keyword.get(opts, :button_width)
-    # button_padding = Keyword.get(opts, :button_padding)
-    # num_cols = Keyword.get(opts, :num_cols)
-
     graph
     |> group(
       fn graph ->
