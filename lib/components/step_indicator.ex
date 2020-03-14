@@ -24,7 +24,7 @@ defmodule RpiDrumMachineNerves.Component.StepIndicator do
             |> rect({button_width, 10},
               fill: :red,
               translate: {x, y},
-              id: "h_#{index}"
+              id: "#{index}_h"
             )
           end
         )

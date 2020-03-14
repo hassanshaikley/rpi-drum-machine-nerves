@@ -214,13 +214,11 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   end
 
   defp update_header(%{iteration: iteration} = graph) do
-    {current_header_id, previous_header_id} = current_and_previous_header_id(iteration)
-
     graph
-    |> Graph.modify(current_header_id, fn p ->
+    |> Graph.modify(current_header_id(iteration), fn p ->
       Primitive.put_style(p, :fill, :blue)
     end)
-    |> Graph.modify(previous_header_id, fn p ->
+    |> Graph.modify(previous_header_id(iteration), fn p ->
       Primitive.put_style(p, :fill, :red)
     end)
     |> Map.put(:iteration, iteration + 1)
@@ -228,11 +226,17 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   defp bpm_in_ms, do: trunc(60_000 / @bpm)
 
-  defp current_and_previous_header_id(iteration) do
-    previous_index = rem(iteration - 1, @num_cols)
-    current_index = rem(iteration, @num_cols)
-    current_header_id = "h_" <> Integer.to_string(current_index)
-    previous_header_id = "h_" <> Integer.to_string(previous_index)
-    {current_header_id, previous_header_id}
+  defp current_header_id(iteration) do
+    iteration
+    |> Integer.to_string()
+    |> Kernel.<>("_h")
+  end
+
+  defp previous_header_id(iteration) do
+    iteration
+    |> Kernel.-(1)
+    |> rem(@num_cols)
+    |> Integer.to_string()
+    |> Kernel.<>("_h")
   end
 end
