@@ -4,8 +4,14 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   alias Scenic.Graph
   alias Scenic.Primitive
   import Scenic.Primitives
-  import Scenic.Components
-  alias RpiDrumMachineNerves.Component.{Header, OffButton, StepIndicator, VolumeSlider}
+
+  alias RpiDrumMachineNerves.Component.{
+    Header,
+    OffButton,
+    PushButtons,
+    StepIndicator,
+    VolumeSlider
+  }
 
   @bpm 120
 
@@ -42,47 +48,10 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                      button_padding: @button_padding,
                      num_cols: @num_cols
                    )
-                   |> group(
-                     fn graph ->
-                       Enum.reduce(
-                         @buttons,
-                         graph,
-                         fn obj, graph ->
-                           x = elem(obj, 0)
-                           y = elem(obj, 1)
-                           label = elem(obj, 2)
-
-                           graph
-                           |> button("",
-                             theme: %{
-                               text: :white,
-                               background: {200, 200, 200},
-                               active: {200, 200, 200},
-                               border: :green
-                             },
-                             id: label <> "_up",
-                             translate: {x, y},
-                             height: @button_height,
-                             width: @button_width,
-                             hidden: false
-                           )
-                           |> button("",
-                             theme: %{
-                               text: :white,
-                               background: {50, 240, 50},
-                               active: {50, 240, 50},
-                               border: :green
-                             },
-                             hidden: true,
-                             id: label <> "_down",
-                             translate: {x, y},
-                             height: @button_height,
-                             width: @button_width
-                           )
-                         end
-                       )
-                     end,
-                     t: {16, 180}
+                   |> PushButtons.add_to_graph(
+                     button_width: @button_width,
+                     button_height: @button_height,
+                     buttons: @buttons
                    )
 
   # Creates a map of 16 elements thats mapping to each step of music
