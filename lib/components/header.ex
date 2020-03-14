@@ -5,15 +5,14 @@ defmodule RpiDrumMachineNerves.Component.Header do
   import Scenic.Primitives
   import Scenic.Components
 
-  def add_to_graph(map, data \\ nil, opts \\ []) do
-    map
+  def add_to_graph(graph, data \\ nil, opts \\ []) do
+    graph
     |> group(
       fn graph ->
         graph
         |> rect({780, 75},
           fill: :dark_gray,
-          translate: {0, 0},
-          id: "header_rect"
+          translate: {0, 0}
         )
         |> text("Nerves Drum Machine",
           id: :pos,
@@ -22,6 +21,7 @@ defmodule RpiDrumMachineNerves.Component.Header do
           fill: :black
         )
       end,
+      id: :header,
       t: {10, 10}
     )
   end

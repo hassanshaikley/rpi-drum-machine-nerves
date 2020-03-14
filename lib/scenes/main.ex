@@ -1,12 +1,11 @@
 defmodule RpiDrumMachineNerves.Scene.Main do
   use Scenic.Scene
 
-  alias Scenic.ViewPort
   alias Scenic.Graph
   alias Scenic.Primitive
   import Scenic.Primitives
   import Scenic.Components
-  alias RpiDrumMachineNerves.Component.Header
+  alias RpiDrumMachineNerves.Component.{Header, OffButton}
 
   @bpm 120
 
@@ -36,19 +35,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                      fill: {50, 50, 50}
                    )
                    |> Header.add_to_graph()
-                   # Off button
-                   |> button("OFF",
-                     theme: %{
-                       text: :white,
-                       background: :black,
-                       active: :black,
-                       border: :green
-                     },
-                     id: "shutdown",
-                     translate: {700, 100},
-                     height: 50,
-                     width: 50
-                   )
+                   |> OffButton.add_to_graph()
                    # Volume slider
                    |> group(
                      fn graph ->
@@ -157,7 +144,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   end
 
   def handle_info(:loop, state) do
-    Process.send_after(self(), :loop, bpm_in_ms)
+    Process.send_after(self(), :loop, bpm_in_ms())
 
     iteration = state.iteration
     active_buttons_cache = state.active_buttons_cache
@@ -196,7 +183,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   # --------------------------------------------------------
 
-  def filter_event({:click, <<id::bytes-size(3)>> <> "_up"}, context, state) do
+  def filter_event({:click, <<id::bytes-size(3)>> <> "_up"}, _context, state) do
     updated_graph = toggle_button(id, :on, state)
 
     active_buttons_cache = state.active_buttons_cache
@@ -205,7 +192,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     active_buttons_cache =
       Map.update!(active_buttons_cache, col, fn current_value ->
-        Map.update!(current_value, row, fn current_inner_value ->
+        Map.update!(current_value, row, fn _current_inner_value ->
           true
         end)
       end)
@@ -215,7 +202,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     {:noreply, updated_graph, push: updated_graph}
   end
 
-  def filter_event({:click, <<id::bytes-size(2)>> <> "_up"}, context, state) do
+  def filter_event({:click, <<id::bytes-size(2)>> <> "_up"}, _context, state) do
     updated_graph = toggle_button(id, :on, state)
 
     <<col::binary-size(1), row::binary>> = id
@@ -223,7 +210,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     active_buttons_cache =
       Map.update!(active_buttons_cache, col, fn current_value ->
-        Map.update!(current_value, row, fn current_inner_value ->
+        Map.update!(current_value, row, fn _current_inner_value ->
           true
         end)
       end)
@@ -233,7 +220,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     {:noreply, updated_graph, push: updated_graph}
   end
 
-  def filter_event({:click, <<id::bytes-size(3)>> <> "_down"}, context, state) do
+  def filter_event({:click, <<id::bytes-size(3)>> <> "_down"}, _context, state) do
     updated_graph = toggle_button(id, :off, state)
 
     active_buttons_cache = state.active_buttons_cache
@@ -241,7 +228,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     active_buttons_cache =
       Map.update!(active_buttons_cache, col, fn current_value ->
-        Map.update!(current_value, row, fn current_inner_value ->
+        Map.update!(current_value, row, fn _current_inner_value ->
           false
         end)
       end)
@@ -251,7 +238,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     {:noreply, updated_graph, push: updated_graph}
   end
 
-  def filter_event({:click, <<id::bytes-size(2)>> <> "_down"}, context, state) do
+  def filter_event({:click, <<id::bytes-size(2)>> <> "_down"}, _context, state) do
     updated_graph = toggle_button(id, :off, state)
 
     <<col::binary-size(1), row::binary>> = id
@@ -259,7 +246,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     active_buttons_cache =
       Map.update!(active_buttons_cache, col, fn current_value ->
-        Map.update!(current_value, row, fn current_inner_value ->
+        Map.update!(current_value, row, fn _current_inner_value ->
           false
         end)
       end)
@@ -269,18 +256,18 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     {:noreply, updated_graph, push: updated_graph}
   end
 
-  def filter_event({:click, "shutdown"}, context, state) do
+  def filter_event({:click, "shutdown"}, _context, state) do
     spawn(fn -> :os.cmd('sudo shutdown -h now') end)
+    {:noreply, state}
+  end
+
+  def filter_event({:value_changed, _id, value}, _context, state) do
+    AudioPlayer.set_volume(value)
     {:noreply, state}
   end
 
   def handle_input(_msg, _, graph) do
     {:noreply, graph}
-  end
-
-  def filter_event({:value_changed, id, value}, context, state) do
-    AudioPlayer.set_volume(value)
-    {:noreply, state}
   end
 
   ####### '.###
