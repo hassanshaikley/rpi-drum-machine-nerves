@@ -4,10 +4,9 @@
 
 This is a drum machine intended to run on an RPI. I currently have tested this on a RPI 2 B+.
 
-There are some known issues; it won't run with all 4 measures. It works with 1 measure.
+There are some known issues; it won't run with all 4 measures. It works with 1 measure due to performance constraints on the RPI 2 B+.
 
 ## Dependencies
 
-- afplay for local testing
+- afplay for local testing on a mac. If you'd like to use another library modify `lib/audio_player.ex`.
 
-Note: I have only tested this on MAC. If you wish you to use a different tool for playing sound look at `lib/audio_player.ex` and change the command in there.

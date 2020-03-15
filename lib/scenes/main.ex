@@ -35,7 +35,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
            |> List.flatten()
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
-                   # Background
                    |> rect({@width, @height},
                      id: :background,
                      fill: {50, 50, 50}
@@ -91,6 +90,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     start_time = Time.utc_now()
 
+    # Iterate through each row in the currently played column and play the sounds that are true
     Enum.each(1..@num_rows, fn row ->
       row = row - 1
 
