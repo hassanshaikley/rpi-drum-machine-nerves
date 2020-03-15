@@ -25,6 +25,8 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   @button_height @button_width
   @button_padding 2
 
+  # Keys are x_y (ie 0_5) and values are true if the button is down, false if the button is up
+
   # Tuples for every button containing {the left most x value, the top most y value, and the unique button identifier}
   @buttons Enum.map(0..(@num_cols - 1), fn x ->
              Enum.map(0..(@num_rows - 1), fn y ->
@@ -53,28 +55,22 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                      buttons: @buttons
                    )
 
-  # Creates a map of 16 elements thats mapping to each step of music
-  # Each has a map of 5 children, which represent the sound being played
-  # @active_buttons_initial %{
-  #   "0" => %{"0" => false, "1" => false, "2" => false, "3" => false, "4" => false, "5" => false},
-  #   ...
-  # }
-  @active_buttons_initial Enum.reduce(0..15, %{}, fn x, acc ->
-                            key = to_string(x)
-
-                            inner_map =
-                              Enum.reduce(0..5, %{}, fn x, acc ->
-                                Map.put(acc, to_string(x), false)
-                              end)
-
-                            Map.put(acc, key, inner_map)
-                          end)
-
   def init(_, _) do
+    button_store = :ets.new(:button_store, [:set, :protected])
+
+    # Initialize the ets store
+    Enum.each(0..15, fn x ->
+      Enum.each(0..5, fn y ->
+        :ets.insert(button_store, {"#{x}_#{y}", false})
+      end)
+    end)
+
     graph =
       @main_menu_graph
       |> Map.put(:iteration, 0)
-      |> Map.put(:active_buttons_cache, @active_buttons_initial)
+      |> Map.put(:button_store, button_store)
+
+    # a protected process means only the process that created it can write to it
 
     Process.send_after(self(), :loop, 100, [])
 
@@ -94,8 +90,8 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     Enum.each(1..@num_rows, fn row ->
       row = row - 1
 
-      row_visible =
-        state.active_buttons_cache[Integer.to_string(current_index)][Integer.to_string(row)]
+      [{_key, row_visible}] =
+        :ets.lookup(state.button_store, "#{rem(current_index, @num_cols)}_#{row}")
 
       if row_visible do
         case row do
@@ -125,9 +121,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     <<col::binary-size(2), row::binary>> = id
 
-    active_buttons_cache = update_button(state, col, row, button_down)
-
-    updated_graph = Map.put(updated_graph, :active_buttons_cache, active_buttons_cache)
+    update_ets(state.button_store, rem(state.iteration, @num_cols), col, button_down)
 
     {:noreply, updated_graph, push: updated_graph}
   end
@@ -139,9 +133,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     <<col::binary-size(1), row::binary>> = id
 
-    active_buttons_cache = update_button(state, col, row, button_down)
-
-    updated_graph = Map.put(updated_graph, :active_buttons_cache, active_buttons_cache)
+    update_ets(state.button_store, rem(state.iteration, @num_cols), col, button_down)
 
     {:noreply, updated_graph, push: updated_graph}
   end
@@ -153,9 +145,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     <<col::binary-size(2), row::binary>> = id
 
-    active_buttons_cache = update_button(state, col, row, button_down)
-
-    updated_graph = Map.put(updated_graph, :active_buttons_cache, active_buttons_cache)
+    update_ets(state.button_store, rem(state.iteration, @num_cols), col, button_down)
 
     {:noreply, updated_graph, push: updated_graph}
   end
@@ -166,9 +156,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     <<col::binary-size(1), row::binary>> = id
 
-    active_buttons_cache = update_button(state, col, row, button_down)
-
-    updated_graph = Map.put(updated_graph, :active_buttons_cache, active_buttons_cache)
+    update_ets(state.button_store, rem(state.iteration, @num_cols), col, button_down)
 
     {:noreply, updated_graph, push: updated_graph}
   end
@@ -195,14 +183,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   # One for how it looks when it is up and another for how it looks when it is down
   # And then hide the inactive button
 
-  defp update_button(%{active_buttons_cache: active_buttons_cache} = _state, col, row, value) do
-    Map.update!(active_buttons_cache, col, fn current_value ->
-      Map.update!(current_value, row, fn _current_inner_value ->
-        value
-      end)
-    end)
-  end
-
   defp toggle_button(id, button_down, state) do
     state
     |> Graph.modify(id <> "_down", fn p ->
@@ -225,6 +205,10 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   end
 
   defp bpm_in_ms, do: trunc(60_000 / @bpm)
+
+  defp update_ets(button_store, row, col, button_down) do
+    :ets.insert(button_store, {"#{col}_#{row}", button_down})
+  end
 
   defp current_header_id(iteration) when iteration >= 16,
     do: iteration |> rem(@num_cols) |> current_header_id()
