@@ -112,23 +112,17 @@ defmodule RpiDrumMachineNerves.Scene.Main do
       |> update_header()
       |> Map.put(:iteration, next_iteration)
 
-    if sound_is_playing_for_row?(state, 0),
-      do: AudioPlayer.play_sound("hihat_great.wav")
+    if sound_playing?(state, 0), do: AudioPlayer.play_sound("hihat_great.wav")
 
-    if sound_is_playing_for_row?(state, 1),
-      do: AudioPlayer.play_sound("ride_cymbal.wav")
+    if sound_playing?(state, 1), do: AudioPlayer.play_sound("ride_cymbal.wav")
 
-    if sound_is_playing_for_row?(state, 2),
-      do: AudioPlayer.play_sound("triangle.wav")
+    if sound_playing?(state, 2), do: AudioPlayer.play_sound("triangle.wav")
 
-    if sound_is_playing_for_row?(state, 3),
-      do: AudioPlayer.play_sound("runnerskick.wav")
+    if sound_playing?(state, 3), do: AudioPlayer.play_sound("runnerskick.wav")
 
-    if sound_is_playing_for_row?(state, 4),
-      do: AudioPlayer.play_sound("hitoms.wav")
+    if sound_playing?(state, 4), do: AudioPlayer.play_sound("hitoms.wav")
 
-    if sound_is_playing_for_row?(state, 5),
-      do: AudioPlayer.play_sound("snare.wav")
+    if sound_playing?(state, 5), do: AudioPlayer.play_sound("snare.wav")
 
     end_time = Time.utc_now()
 
@@ -146,7 +140,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   defp bpm_in_ms, do: trunc(60_000 / @bpm)
 
-  defp sound_is_playing_for_row?(%{button_store: button_store, iteration: iteration}, row) do
+  defp sound_playing?(%{button_store: button_store, iteration: iteration}, row) do
     case :ets.lookup(button_store, {iteration, row}) do
       [{_, true}] -> true
       _ -> false
