@@ -59,13 +59,11 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                    )
 
   def init(_, _) do
-    initialize_button_store
+    initialize_button_store()
 
     state =
       @main_menu_graph
       |> Map.put(:iteration, 0)
-
-    # |> Map.put(:button_store, )
 
     Process.send_after(self(), :loop, 100, [])
 
@@ -190,7 +188,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   # In scenic to show that a button is down you need two buttons
   # One for how it looks when it is up and another for how it looks when it is down
   # And then hide the inactive button
-  defp toggle_button({col, row, _down} = id, button_down, state) do
+  defp toggle_button({col, row, _down}, button_down, state) do
     state
     |> Graph.modify({col, row, :down}, fn p ->
       Primitive.put_style(p, :hidden, !button_down)
@@ -214,6 +212,8 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     :ets.insert(:button_store, {{col, row}, button_down})
   end
 
+  # Using an ets counter may be faster or more efficient becuase the code
+  # will run in a separate process
   defp update_iteration(%{iteration: iteration} = state),
     do: Map.put(state, :iteration, get_next_iteration(iteration))
 end
