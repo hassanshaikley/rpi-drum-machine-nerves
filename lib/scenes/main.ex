@@ -101,18 +101,18 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   # This funtion iterates through all rows and plays the ones that are pressed down
   # It also increments the number of iterations by 1
   def handle_info(:loop, state) do
+    start_time = Time.utc_now()
+
     Process.send_after(self(), :loop, bpm_in_ms())
 
     current_index = state.iteration
 
-    iteration = get_next_iteration(state.iteration)
+    next_iteration = get_next_iteration(state.iteration)
 
     updated_graph =
       state
       |> update_header()
-      |> Map.put(:iteration, iteration)
-
-    start_time = Time.utc_now()
+      |> Map.put(:iteration, next_iteration)
 
     Enum.each(0..(@num_rows - 1), fn row ->
       [{_key, row_visible}] = :ets.lookup(state.button_store, {current_index, row})
