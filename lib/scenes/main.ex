@@ -71,32 +71,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     {:ok, graph, push: graph}
   end
 
-  def handle_info(:loop, state) do
-    Process.send_after(self(), :loop, bpm_in_ms())
-
-    current_index = rem(state.iteration, @num_cols)
-
-    updated_graph =
-      state
-      |> update_header()
-      |> Map.put(:iteration, state.iteration + 1)
-
-    start_time = Time.utc_now()
-
-    # Iterate through each row in the currently played column and play the sounds that are true
-    Enum.each(0..(@num_rows - 1), fn row ->
-      [{_key, row_visible}] =
-        :ets.lookup(state.button_store, :"#{rem(current_index, @num_cols)}_#{row}")
-
-      play_sound_for_row(row, row_visible)
-    end)
-
-    end_time = Time.utc_now()
-
-    Time.diff(start_time, end_time, :microsecond) |> IO.inspect()
-    {:noreply, updated_graph, push: updated_graph}
-  end
-
   # ============================================================================
   # event handlers
   # --------------------------------------------------------
@@ -157,6 +131,32 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     {:noreply, state}
   end
 
+  def handle_info(:loop, state) do
+    Process.send_after(self(), :loop, bpm_in_ms())
+
+    current_index = rem(state.iteration, @num_cols)
+
+    updated_graph =
+      state
+      |> update_header()
+      |> Map.put(:iteration, state.iteration + 1)
+
+    start_time = Time.utc_now()
+
+    # Iterate through each row in the currently played column and play the sounds that are true
+    Enum.each(0..(@num_rows - 1), fn row ->
+      [{_key, row_visible}] =
+        :ets.lookup(state.button_store, :"#{rem(current_index, @num_cols)}_#{row}")
+
+      play_sound_for_row(row, row_visible)
+    end)
+
+    end_time = Time.utc_now()
+
+    Time.diff(start_time, end_time, :microsecond) |> IO.inspect()
+    {:noreply, updated_graph, push: updated_graph}
+  end
+
   def handle_input(_msg, _, graph) do
     {:noreply, graph}
   end
@@ -164,6 +164,31 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   ####### '.###
   # Private.` #
   ########### `
+
+  defp bpm_in_ms, do: trunc(60_000 / @bpm)
+
+  defp header_id_current(iteration) when iteration >= 16,
+    do: iteration |> rem(@num_cols) |> header_id_current()
+
+  defp header_id_current(iteration) when iteration == -1, do: "15_h"
+  defp header_id_current(iteration) when iteration == 0, do: "0_h"
+  defp header_id_current(iteration) when iteration == 1, do: "1_h"
+  defp header_id_current(iteration) when iteration == 2, do: "2_h"
+  defp header_id_current(iteration) when iteration == 3, do: "3_h"
+  defp header_id_current(iteration) when iteration == 4, do: "4_h"
+  defp header_id_current(iteration) when iteration == 5, do: "5_h"
+  defp header_id_current(iteration) when iteration == 6, do: "6_h"
+  defp header_id_current(iteration) when iteration == 7, do: "7_h"
+  defp header_id_current(iteration) when iteration == 8, do: "8_h"
+  defp header_id_current(iteration) when iteration == 9, do: "9_h"
+  defp header_id_current(iteration) when iteration == 10, do: "10_h"
+  defp header_id_current(iteration) when iteration == 11, do: "11_h"
+  defp header_id_current(iteration) when iteration == 12, do: "12_h"
+  defp header_id_current(iteration) when iteration == 13, do: "13_h"
+  defp header_id_current(iteration) when iteration == 14, do: "14_h"
+  defp header_id_current(iteration) when iteration == 15, do: "15_h"
+
+  defp header_id_previous(iteration), do: header_id_current(iteration - 1)
 
   # Keys are :"x_y" (ie 0_5) and values are true if the button is down, false if the button is up
   # The reason they are atoms is because atom comparison is more performant. I did my own benchmarks
@@ -182,10 +207,17 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     button_store
   end
 
+  defp play_sound_for_row(row, false), do: :noop
+  defp play_sound_for_row(row, _) when row == 0, do: AudioPlayer.play_sound("hihat_great.wav")
+  defp play_sound_for_row(row, _) when row == 1, do: AudioPlayer.play_sound("ride_cymbal.wav")
+  defp play_sound_for_row(row, _) when row == 2, do: AudioPlayer.play_sound("triangle.wav")
+  defp play_sound_for_row(row, _) when row == 3, do: AudioPlayer.play_sound("runnerskick.wav")
+  defp play_sound_for_row(row, _) when row == 4, do: AudioPlayer.play_sound("hitoms.wav")
+  defp play_sound_for_row(row, _) when row == 5, do: AudioPlayer.play_sound("snare.wav")
+
   # In scenic to show that a button is down you need two buttons
   # One for how it looks when it is up and another for how it looks when it is down
   # And then hide the inactive button
-
   defp toggle_button(id, button_down, state) do
     state
     |> Graph.modify(id <> "_down", fn p ->
@@ -198,48 +230,15 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   defp update_header(%{iteration: iteration} = graph) do
     graph
-    |> Graph.modify(current_header_id(iteration), fn p ->
+    |> Graph.modify(header_id_current(iteration), fn p ->
       Primitive.put_style(p, :fill, :blue)
     end)
-    |> Graph.modify(previous_header_id(iteration), fn p ->
+    |> Graph.modify(header_id_previous(iteration), fn p ->
       Primitive.put_style(p, :fill, :red)
     end)
   end
 
-  defp bpm_in_ms, do: trunc(60_000 / @bpm)
-
   defp update_ets(button_store, row, col, button_down) do
     :ets.insert(button_store, {:"#{col}_#{row}", button_down})
   end
-
-  defp current_header_id(iteration) when iteration >= 16,
-    do: iteration |> rem(@num_cols) |> current_header_id()
-
-  defp current_header_id(iteration) when iteration == -1, do: "15_h"
-  defp current_header_id(iteration) when iteration == 0, do: "0_h"
-  defp current_header_id(iteration) when iteration == 1, do: "1_h"
-  defp current_header_id(iteration) when iteration == 2, do: "2_h"
-  defp current_header_id(iteration) when iteration == 3, do: "3_h"
-  defp current_header_id(iteration) when iteration == 4, do: "4_h"
-  defp current_header_id(iteration) when iteration == 5, do: "5_h"
-  defp current_header_id(iteration) when iteration == 6, do: "6_h"
-  defp current_header_id(iteration) when iteration == 7, do: "7_h"
-  defp current_header_id(iteration) when iteration == 8, do: "8_h"
-  defp current_header_id(iteration) when iteration == 9, do: "9_h"
-  defp current_header_id(iteration) when iteration == 10, do: "10_h"
-  defp current_header_id(iteration) when iteration == 11, do: "11_h"
-  defp current_header_id(iteration) when iteration == 12, do: "12_h"
-  defp current_header_id(iteration) when iteration == 13, do: "13_h"
-  defp current_header_id(iteration) when iteration == 14, do: "14_h"
-  defp current_header_id(iteration) when iteration == 15, do: "15_h"
-
-  defp previous_header_id(iteration), do: current_header_id(iteration - 1)
-
-  defp play_sound_for_row(row, false), do: :noop
-  defp play_sound_for_row(row, _) when row == 0, do: AudioPlayer.play_sound("hihat_great.wav")
-  defp play_sound_for_row(row, _) when row == 1, do: AudioPlayer.play_sound("ride_cymbal.wav")
-  defp play_sound_for_row(row, _) when row == 2, do: AudioPlayer.play_sound("triangle.wav")
-  defp play_sound_for_row(row, _) when row == 3, do: AudioPlayer.play_sound("runnerskick.wav")
-  defp play_sound_for_row(row, _) when row == 4, do: AudioPlayer.play_sound("hitoms.wav")
-  defp play_sound_for_row(row, _) when row == 5, do: AudioPlayer.play_sound("snare.wav")
 end

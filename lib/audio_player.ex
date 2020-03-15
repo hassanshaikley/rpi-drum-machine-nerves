@@ -31,6 +31,16 @@ defmodule AudioPlayer do
   # Public API
 
   @doc """
+  Given a file name, looks for that file in that static folder and plays it
+
+  ## Examples
+
+      iex> AudioPlayer.play_sound("triangle.wav")
+
+  """
+  def play_sound(file), do: GenServer.cast(__MODULE__, {:start_audio, file})
+
+  @doc """
   Sets volume to the given percent (integer between 0 and 100)
 
   ## Examples
@@ -44,16 +54,6 @@ defmodule AudioPlayer do
     |> Integer.to_string()
     |> set_volume_cmd
   end
-
-  @doc """
-  Given a file name, looks for that file in that static folder and plays it
-
-  ## Examples
-
-      iex> AudioPlayer.play_sound("triangle.wav")
-
-  """
-  def play_sound(file), do: GenServer.cast(__MODULE__, {:start_audio, file})
 
   @doc """
   Stops any sounds that are currently being played. Used for teardown purposes.
