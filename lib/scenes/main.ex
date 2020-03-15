@@ -228,6 +228,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   defp current_header_id(iteration) do
     iteration
+    |> rem(@num_cols)
     |> Integer.to_string()
     |> Kernel.<>("_h")
   end
