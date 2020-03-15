@@ -236,10 +236,10 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   defp previous_header_id(iteration), do: current_header_id(iteration - 1)
 
   defp play_sound_for_row(row, false), do: :noop
-  defp play_sound_for_row(row, true) when row == 0, do: AudioPlayer.play_sound("hihat_great.wav")
-  defp play_sound_for_row(row, true) when row == 1, do: AudioPlayer.play_sound("ride_cymbal.wav")
-  defp play_sound_for_row(row, true) when row == 2, do: AudioPlayer.play_sound("triangle.wav")
-  defp play_sound_for_row(row, true) when row == 3, do: AudioPlayer.play_sound("runnerskick.wav")
-  defp play_sound_for_row(row, true) when row == 4, do: AudioPlayer.play_sound("hitoms.wav")
-  defp play_sound_for_row(row, true) when row == 5, do: AudioPlayer.play_sound("snare.wav")
+  defp play_sound_for_row(row, _) when row == 0, do: AudioPlayer.play_sound("hihat_great.wav")
+  defp play_sound_for_row(row, _) when row == 1, do: AudioPlayer.play_sound("ride_cymbal.wav")
+  defp play_sound_for_row(row, _) when row == 2, do: AudioPlayer.play_sound("triangle.wav")
+  defp play_sound_for_row(row, _) when row == 3, do: AudioPlayer.play_sound("runnerskick.wav")
+  defp play_sound_for_row(row, _) when row == 4, do: AudioPlayer.play_sound("hitoms.wav")
+  defp play_sound_for_row(row, _) when row == 5, do: AudioPlayer.play_sound("snare.wav")
 end
