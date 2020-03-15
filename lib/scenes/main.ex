@@ -75,7 +75,10 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     current_index = rem(state.iteration, @num_cols)
 
-    updated_graph = update_header(state)
+    updated_graph =
+      state
+      |> update_header()
+      |> Map.put(:iteration, state.iteration + 1)
 
     start_time = Time.utc_now()
 
@@ -207,7 +210,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     |> Graph.modify(previous_header_id(iteration), fn p ->
       Primitive.put_style(p, :fill, :red)
     end)
-    |> Map.put(:iteration, iteration + 1)
   end
 
   defp bpm_in_ms, do: trunc(60_000 / @bpm)
