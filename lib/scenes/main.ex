@@ -161,9 +161,9 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   end
 
   defp header_id_current(),
-    do: {get_current_iteration, :h}
+    do: {get_current_iteration(), :h}
 
-  defp header_id_previous(), do: {get_previous_iteration, :h}
+  defp header_id_previous(), do: {get_previous_iteration(), :h}
 
   defp initialize_button_store do
     :ets.new(:button_store, [:set, :named_table, read_concurrency: true, write_concurrency: true])
@@ -188,7 +188,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     end)
   end
 
-  defp update_header(%{iteration: iteration} = state) do
+  defp update_header(state) do
     state
     |> Graph.modify(header_id_current(), fn p ->
       Primitive.put_style(p, :fill, :blue)
