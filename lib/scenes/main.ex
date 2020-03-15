@@ -59,14 +59,26 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                    )
 
   def init(_, _) do
-    graph =
+    initialize_button_store
+
+    state =
       @main_menu_graph
       |> Map.put(:iteration, 0)
-      |> Map.put(:button_store, initialize_button_store)
+
+    # |> Map.put(:button_store, )
 
     Process.send_after(self(), :loop, 100, [])
 
-    {:ok, graph, push: graph}
+    # Benchee.run(
+    #   %{
+    #     "rem" => fn -> rem(14, 15) end,
+    #     "matching" => fn -> get_next_iteration(5) end
+    #   },
+    #   time: 5,
+    #   print: [fast_warning: false]
+    # )
+
+    {:ok, state, push: state}
   end
 
   # ============================================================================
@@ -75,14 +87,14 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   def filter_event({:click, {col, row, :up} = id}, _context, state) do
     updated_state = toggle_button(id, true, state)
-    update_ets(state.button_store, row, col, true)
+    update_ets(row, col, true)
 
     {:noreply, updated_state, push: updated_state}
   end
 
   def filter_event({:click, {col, row, :down} = id}, _context, state) do
     updated_state = toggle_button(id, false, state)
-    update_ets(state.button_store, row, col, false)
+    update_ets(row, col, false)
 
     {:noreply, updated_state, push: updated_state}
   end
@@ -105,19 +117,17 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     Process.send_after(self(), :loop, bpm_in_ms())
 
-    next_iteration = get_next_iteration(state.iteration)
-
-    updated_state =
-      state
-      |> update_header()
-      |> Map.put(:iteration, next_iteration)
-
     if sound_playing?(state, 0), do: AudioPlayer.play_sound("hihat_great.wav")
     if sound_playing?(state, 1), do: AudioPlayer.play_sound("ride_cymbal.wav")
     if sound_playing?(state, 2), do: AudioPlayer.play_sound("triangle.wav")
     if sound_playing?(state, 3), do: AudioPlayer.play_sound("runnerskick.wav")
     if sound_playing?(state, 4), do: AudioPlayer.play_sound("hitoms.wav")
     if sound_playing?(state, 5), do: AudioPlayer.play_sound("snare.wav")
+
+    updated_state =
+      state
+      |> update_header()
+      |> update_iteration()
 
     end_time = Time.utc_now()
 
@@ -135,8 +145,8 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   defp bpm_in_ms, do: trunc(60_000 / @bpm)
 
-  defp sound_playing?(%{button_store: button_store, iteration: iteration}, row) do
-    case :ets.lookup(button_store, {iteration, row}) do
+  defp sound_playing?(%{iteration: iteration}, row) do
+    case :ets.lookup(:button_store, {iteration, row}) do
       [{_, true}] -> true
       _ -> false
     end
@@ -167,15 +177,14 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   defp header_id_previous(iteration), do: header_id_current(iteration - 1)
 
   defp initialize_button_store do
-    button_store = :ets.new(:button_store, [:set, :protected])
+    # button_store =
+    :ets.new(:button_store, [:set, :named_table, read_concurrency: true, write_concurrency: true])
 
     Enum.each(0..15, fn x ->
       Enum.each(0..5, fn y ->
-        :ets.insert(button_store, {{x, y}, false})
+        :ets.insert(:button_store, {{x, y}, false})
       end)
     end)
-
-    button_store
   end
 
   # In scenic to show that a button is down you need two buttons
@@ -201,7 +210,10 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     end)
   end
 
-  defp update_ets(button_store, row, col, button_down) do
-    :ets.insert(button_store, {{col, row}, button_down})
+  defp update_ets(row, col, button_down) do
+    :ets.insert(:button_store, {{col, row}, button_down})
   end
+
+  defp update_iteration(%{iteration: iteration} = state),
+    do: Map.put(state, :iteration, get_next_iteration(iteration))
 end
