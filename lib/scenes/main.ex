@@ -105,8 +105,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     Process.send_after(self(), :loop, bpm_in_ms())
 
-    current_index = state.iteration
-
     next_iteration = get_next_iteration(state.iteration)
 
     updated_graph =
@@ -114,11 +112,23 @@ defmodule RpiDrumMachineNerves.Scene.Main do
       |> update_header()
       |> Map.put(:iteration, next_iteration)
 
-    Enum.each(0..(@num_rows - 1), fn row ->
-      [{_key, row_visible}] = :ets.lookup(state.button_store, {current_index, row})
+    if sound_is_playing_for_row?(state, 0),
+      do: AudioPlayer.play_sound("hihat_great.wav")
 
-      play_sound_for_row(row, row_visible)
-    end)
+    if sound_is_playing_for_row?(state, 1),
+      do: AudioPlayer.play_sound("ride_cymbal.wav")
+
+    if sound_is_playing_for_row?(state, 2),
+      do: AudioPlayer.play_sound("triangle.wav")
+
+    if sound_is_playing_for_row?(state, 3),
+      do: AudioPlayer.play_sound("runnerskick.wav")
+
+    if sound_is_playing_for_row?(state, 4),
+      do: AudioPlayer.play_sound("hitoms.wav")
+
+    if sound_is_playing_for_row?(state, 5),
+      do: AudioPlayer.play_sound("snare.wav")
 
     end_time = Time.utc_now()
 
@@ -135,6 +145,13 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   ########### `
 
   defp bpm_in_ms, do: trunc(60_000 / @bpm)
+
+  defp sound_is_playing_for_row?(%{button_store: button_store, iteration: iteration}, row) do
+    case :ets.lookup(button_store, {iteration, row}) do
+      [{_, true}] -> true
+      _ -> false
+    end
+  end
 
   # This is 7x more performant than doing a rem/2
   defp get_next_iteration(iteration) when iteration == -1, do: 15
@@ -171,14 +188,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     button_store
   end
-
-  defp play_sound_for_row(_, false), do: :noop
-  defp play_sound_for_row(row, _) when row == 0, do: AudioPlayer.play_sound("hihat_great.wav")
-  defp play_sound_for_row(row, _) when row == 1, do: AudioPlayer.play_sound("ride_cymbal.wav")
-  defp play_sound_for_row(row, _) when row == 2, do: AudioPlayer.play_sound("triangle.wav")
-  defp play_sound_for_row(row, _) when row == 3, do: AudioPlayer.play_sound("runnerskick.wav")
-  defp play_sound_for_row(row, _) when row == 4, do: AudioPlayer.play_sound("hitoms.wav")
-  defp play_sound_for_row(row, _) when row == 5, do: AudioPlayer.play_sound("snare.wav")
 
   # In scenic to show that a button is down you need two buttons
   # One for how it looks when it is up and another for how it looks when it is down
