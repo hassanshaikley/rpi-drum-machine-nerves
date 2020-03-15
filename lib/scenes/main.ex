@@ -59,12 +59,10 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                    )
 
   def init(_, _) do
-    button_store = initialize_button_store
-
     graph =
       @main_menu_graph
       |> Map.put(:iteration, 0)
-      |> Map.put(:button_store, button_store)
+      |> Map.put(:button_store, initialize_button_store)
 
     Process.send_after(self(), :loop, 100, [])
 
@@ -76,20 +74,15 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   # --------------------------------------------------------
 
   def filter_event({:click, {col, row, :up} = id}, _context, state) do
-    button_down = true
-    updated_graph = toggle_button(id, button_down, state)
-
-    update_ets(state.button_store, row, col, button_down)
+    updated_graph = toggle_button(id, true, state)
+    update_ets(state.button_store, row, col, true)
 
     {:noreply, updated_graph, push: updated_graph}
   end
 
   def filter_event({:click, {col, row, :down} = id}, _context, state) do
-    button_down = false
-
-    updated_graph = toggle_button(id, button_down, state)
-
-    update_ets(state.button_store, row, col, button_down)
+    updated_graph = toggle_button(id, false, state)
+    update_ets(state.button_store, row, col, false)
 
     {:noreply, updated_graph, push: updated_graph}
   end
@@ -104,22 +97,25 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     {:noreply, state}
   end
 
+  # Processing that happens each iteration
+  # This funtion iterates through all rows and plays the ones that are pressed down
+  # It also increments the number of iterations by 1
   def handle_info(:loop, state) do
     Process.send_after(self(), :loop, bpm_in_ms())
 
-    current_index = rem(state.iteration, @num_cols)
+    current_index = state.iteration
+
+    iteration = get_next_iteration(state.iteration)
 
     updated_graph =
       state
       |> update_header()
-      |> Map.put(:iteration, state.iteration + 1)
+      |> Map.put(:iteration, iteration)
 
     start_time = Time.utc_now()
 
-    # Iterate through each row in the currently played column and play the sounds that are true
     Enum.each(0..(@num_rows - 1), fn row ->
-      [{_key, row_visible}] =
-        :ets.lookup(state.button_store, {rem(current_index, @num_cols), row})
+      [{_key, row_visible}] = :ets.lookup(state.button_store, {current_index, row})
 
       play_sound_for_row(row, row_visible)
     end)
@@ -140,8 +136,27 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   defp bpm_in_ms, do: trunc(60_000 / @bpm)
 
+  # This is 7x more performant than doing a rem/2
+  defp get_next_iteration(iteration) when iteration == -1, do: 15
+  defp get_next_iteration(iteration) when iteration == 0, do: 1
+  defp get_next_iteration(iteration) when iteration == 1, do: 2
+  defp get_next_iteration(iteration) when iteration == 2, do: 3
+  defp get_next_iteration(iteration) when iteration == 3, do: 4
+  defp get_next_iteration(iteration) when iteration == 4, do: 5
+  defp get_next_iteration(iteration) when iteration == 5, do: 6
+  defp get_next_iteration(iteration) when iteration == 6, do: 7
+  defp get_next_iteration(iteration) when iteration == 7, do: 8
+  defp get_next_iteration(iteration) when iteration == 8, do: 9
+  defp get_next_iteration(iteration) when iteration == 9, do: 10
+  defp get_next_iteration(iteration) when iteration == 10, do: 11
+  defp get_next_iteration(iteration) when iteration == 11, do: 12
+  defp get_next_iteration(iteration) when iteration == 12, do: 13
+  defp get_next_iteration(iteration) when iteration == 13, do: 14
+  defp get_next_iteration(iteration) when iteration == 14, do: 15
+  defp get_next_iteration(iteration) when iteration == 15, do: 0
+
   defp header_id_current(iteration),
-    do: {rem(iteration, @num_cols), :h}
+    do: {iteration, :h}
 
   defp header_id_previous(iteration), do: header_id_current(iteration - 1)
 
@@ -157,7 +172,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     button_store
   end
 
-  defp play_sound_for_row(row, false), do: :noop
+  defp play_sound_for_row(_, false), do: :noop
   defp play_sound_for_row(row, _) when row == 0, do: AudioPlayer.play_sound("hihat_great.wav")
   defp play_sound_for_row(row, _) when row == 1, do: AudioPlayer.play_sound("ride_cymbal.wav")
   defp play_sound_for_row(row, _) when row == 2, do: AudioPlayer.play_sound("triangle.wav")
@@ -168,7 +183,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   # In scenic to show that a button is down you need two buttons
   # One for how it looks when it is up and another for how it looks when it is down
   # And then hide the inactive button
-  defp toggle_button({col, row, down} = id, button_down, state) do
+  defp toggle_button({col, row, _down} = id, button_down, state) do
     state
     |> Graph.modify({col, row, :down}, fn p ->
       Primitive.put_style(p, :hidden, !button_down)
