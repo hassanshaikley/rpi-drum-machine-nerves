@@ -18,6 +18,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   }
 
   @bpm 120
+  @bpm_in_ms trunc(60_000 / @bpm)
 
   @width 800
   @height 480
@@ -113,7 +114,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   def handle_info(:loop, state) do
     start_time = Time.utc_now()
 
-    Process.send_after(self(), :loop, bpm_in_ms())
+    Process.send_after(self(), :loop, @bpm_in_ms)
 
     if sound_playing?(state, 0), do: AudioPlayer.play_sound("hihat_great.wav")
     if sound_playing?(state, 1), do: AudioPlayer.play_sound("ride_cymbal.wav")
@@ -140,8 +141,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   ####### '.###
   # Private.` #
   ########### `
-
-  defp bpm_in_ms, do: trunc(60_000 / @bpm)
 
   defp sound_playing?(%{iteration: iteration}, row) do
     case :ets.lookup(:button_store, {iteration, row}) do
