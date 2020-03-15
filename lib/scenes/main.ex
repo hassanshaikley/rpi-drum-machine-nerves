@@ -234,10 +234,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   defp play_sound_for_row(row, play) when play == false, do: :noop
   defp play_sound_for_row(row, play) when row == 0, do: AudioPlayer.play_sound("hihat_great.wav")
-
-  defp play_sound_for_row(row, play) when row == 1,
-    do: AudioPlayer.play_sound("22inchridecymbal.wav")
-
+  defp play_sound_for_row(row, play) when row == 1, do: AudioPlayer.play_sound("ride_cymbal.wav")
   defp play_sound_for_row(row, play) when row == 2, do: AudioPlayer.play_sound("triangle.wav")
   defp play_sound_for_row(row, play) when row == 3, do: AudioPlayer.play_sound("runnerskick.wav")
   defp play_sound_for_row(row, play) when row == 4, do: AudioPlayer.play_sound("hitoms.wav")
