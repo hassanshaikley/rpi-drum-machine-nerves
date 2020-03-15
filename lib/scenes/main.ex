@@ -74,17 +74,17 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   # --------------------------------------------------------
 
   def filter_event({:click, {col, row, :up} = id}, _context, state) do
-    updated_graph = toggle_button(id, true, state)
+    updated_state = toggle_button(id, true, state)
     update_ets(state.button_store, row, col, true)
 
-    {:noreply, updated_graph, push: updated_graph}
+    {:noreply, updated_state, push: updated_state}
   end
 
   def filter_event({:click, {col, row, :down} = id}, _context, state) do
-    updated_graph = toggle_button(id, false, state)
+    updated_state = toggle_button(id, false, state)
     update_ets(state.button_store, row, col, false)
 
-    {:noreply, updated_graph, push: updated_graph}
+    {:noreply, updated_state, push: updated_state}
   end
 
   def filter_event({:click, "shutdown"}, _context, state) do
@@ -107,31 +107,26 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     next_iteration = get_next_iteration(state.iteration)
 
-    updated_graph =
+    updated_state =
       state
       |> update_header()
       |> Map.put(:iteration, next_iteration)
 
     if sound_playing?(state, 0), do: AudioPlayer.play_sound("hihat_great.wav")
-
     if sound_playing?(state, 1), do: AudioPlayer.play_sound("ride_cymbal.wav")
-
     if sound_playing?(state, 2), do: AudioPlayer.play_sound("triangle.wav")
-
     if sound_playing?(state, 3), do: AudioPlayer.play_sound("runnerskick.wav")
-
     if sound_playing?(state, 4), do: AudioPlayer.play_sound("hitoms.wav")
-
     if sound_playing?(state, 5), do: AudioPlayer.play_sound("snare.wav")
 
     end_time = Time.utc_now()
 
     Time.diff(start_time, end_time, :microsecond) |> IO.inspect()
-    {:noreply, updated_graph, push: updated_graph}
+    {:noreply, updated_state, push: updated_state}
   end
 
-  def handle_input(_msg, _, graph) do
-    {:noreply, graph}
+  def handle_input(_msg, _, state) do
+    {:noreply, state}
   end
 
   ####### '.###
@@ -196,8 +191,8 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     end)
   end
 
-  defp update_header(%{iteration: iteration} = graph) do
-    graph
+  defp update_header(%{iteration: iteration} = state) do
+    state
     |> Graph.modify(header_id_current(iteration), fn p ->
       Primitive.put_style(p, :fill, :blue)
     end)
