@@ -86,6 +86,7 @@ defmodule AudioPlayer do
     set_volume(50)
   end
 
+  # Sets RPI audio output to the microphone jack
   # This is expected to fail and do nothing on non rpi devices
   defp set_audio_output_to_jack do
     :os.cmd('amixer cset numid=3 1')

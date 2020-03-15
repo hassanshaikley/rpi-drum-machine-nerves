@@ -29,7 +29,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   @button_height @button_width
   @button_padding 2
 
-  # Tuples for every button containing {the left most x value, the top most y value, and the unique button identifier}
+  # Tuples for every button containing {the left most x value, the top most y value, and the unique button id}
   # This is only used to build the UI
   @buttons Enum.map(0..(@num_cols - 1), fn x ->
              Enum.map(0..(@num_rows - 1), fn y ->
