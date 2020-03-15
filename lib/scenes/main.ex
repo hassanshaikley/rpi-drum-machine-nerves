@@ -59,10 +59,12 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                    )
 
   def init(_, _) do
+    button_store = initialize_button_store
+
     graph =
       @main_menu_graph
       |> Map.put(:iteration, 0)
-      |> Map.put(:button_store, initialize_button_store())
+      |> Map.put(:button_store, button_store)
 
     # a protected process means only the process that created it can write to it
 
@@ -88,7 +90,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
       row = row - 1
 
       [{_key, row_visible}] =
-        :ets.lookup(state.button_store, "#{rem(current_index, @num_cols)}_#{row}")
+        :ets.lookup(state.button_store, :"#{rem(current_index, @num_cols)}_#{row}")
 
       play_sound_for_row(row, row_visible)
     end)
@@ -167,13 +169,17 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   # Private.` #
   ########### `
 
-  # Keys are x_y (ie 0_5) and values are true if the button is down, false if the button is up
+  # Keys are :"x_y" (ie 0_5) and values are true if the button is down, false if the button is up
+  # The reason they are atoms is because atom comparison is more performant. I did my own benchmarks
+  # But here's another (source: https://github.com/devonestes/fast-elixir#comparing-strings-vs-atoms-code)
   defp initialize_button_store do
     button_store = :ets.new(:button_store, [:set, :protected])
 
+    :ets.insert(button_store, {"#{0}_#{0}", false})
+
     Enum.each(0..15, fn x ->
       Enum.each(0..5, fn y ->
-        :ets.insert(button_store, {"#{x}_#{y}", false})
+        :ets.insert(button_store, {:"#{x}_#{y}", false})
       end)
     end)
 
@@ -207,7 +213,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   defp bpm_in_ms, do: trunc(60_000 / @bpm)
 
   defp update_ets(button_store, row, col, button_down) do
-    :ets.insert(button_store, {"#{col}_#{row}", button_down})
+    :ets.insert(button_store, {:"#{col}_#{row}", button_down})
   end
 
   defp current_header_id(iteration) when iteration >= 16,
