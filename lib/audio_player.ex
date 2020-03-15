@@ -39,7 +39,7 @@ defmodule AudioPlayer do
       iex> AudioPlayer.play_sound("triangle.wav")
 
   """
-  def play_sound(file), do: GenServer.cast(__MODULE__, {:start_audio, file})
+  def play_sound(file), do: GenServer.cast(__MODULE__, {:play_sound, file})
 
   @doc """
   Sets volume to the given percent (integer between 0 and 100)
@@ -69,7 +69,7 @@ defmodule AudioPlayer do
     {:noreply, state}
   end
 
-  def handle_cast({:start_audio, file}, state) do
+  def handle_cast({:play_sound, file}, state) do
     spawn(fn ->
       full_path = Path.join(@static_directory_path, file)
 

@@ -76,7 +76,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   # --------------------------------------------------------
 
   def filter_event({:click, {col, row, :up} = id}, _context, state) do
-    IO.puts("UP")
     button_down = true
     updated_graph = toggle_button(id, button_down, state)
 
@@ -86,7 +85,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   end
 
   def filter_event({:click, {col, row, :down} = id}, _context, state) do
-    IO.puts("DOWN")
     button_down = false
 
     updated_graph = toggle_button(id, button_down, state)
@@ -147,13 +145,8 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   defp header_id_previous(iteration), do: header_id_current(iteration - 1)
 
-  # Keys are :"x_y" (ie 0_5) and values are true if the button is down, false if the button is up
-  # The reason they are atoms is because atom comparison is more performant. I did my own benchmarks
-  # But here's another (source: https://github.com/devonestes/fast-elixir#comparing-strings-vs-atoms-code)
   defp initialize_button_store do
     button_store = :ets.new(:button_store, [:set, :protected])
-
-    # :ets.insert(button_store, {"#{0}_#{0}", false})
 
     Enum.each(0..15, fn x ->
       Enum.each(0..5, fn y ->
@@ -176,8 +169,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   # One for how it looks when it is up and another for how it looks when it is down
   # And then hide the inactive button
   defp toggle_button({col, row, down} = id, button_down, state) do
-    IO.puts("TOGGLING")
-
     state
     |> Graph.modify({col, row, :down}, fn p ->
       Primitive.put_style(p, :hidden, !button_down)
