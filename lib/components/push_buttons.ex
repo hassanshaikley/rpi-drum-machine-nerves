@@ -30,7 +30,7 @@ defmodule RpiDrumMachineNerves.Components.PushButtons do
                 active: {200, 200, 200},
                 border: :green
               },
-              id: label <> "_up",
+              id: Tuple.append(label, :up),
               translate: {x, y},
               height: button_height,
               width: button_width,
@@ -44,7 +44,7 @@ defmodule RpiDrumMachineNerves.Components.PushButtons do
                 border: :green
               },
               hidden: true,
-              id: label <> "_down",
+              id: Tuple.append(label, :down),
               translate: {x, y},
               height: button_height,
               width: button_width

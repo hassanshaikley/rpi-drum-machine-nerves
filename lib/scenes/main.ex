@@ -34,7 +34,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   @buttons Enum.map(0..(@num_cols - 1), fn x ->
              Enum.map(0..(@num_rows - 1), fn y ->
                {(@button_width + @button_padding) * x, (@button_height + @button_padding) * y,
-                Integer.to_string(x) <> to_string(y)}
+                {x, y}}
              end)
            end)
            |> List.flatten()
@@ -75,46 +75,21 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   # event handlers
   # --------------------------------------------------------
 
-  def filter_event({:click, <<id::bytes-size(3)>> <> "_up"}, _context, state) do
+  def filter_event({:click, {col, row, :up} = id}, _context, state) do
+    IO.puts("UP")
     button_down = true
     updated_graph = toggle_button(id, button_down, state)
 
-    <<col::binary-size(2), row::binary>> = id
-
     update_ets(state.button_store, row, col, button_down)
 
     {:noreply, updated_graph, push: updated_graph}
   end
 
-  def filter_event({:click, <<id::bytes-size(2)>> <> "_up"}, _context, state) do
-    button_down = true
-
-    updated_graph = toggle_button(id, button_down, state)
-
-    <<col::binary-size(1), row::binary>> = id
-
-    update_ets(state.button_store, row, col, button_down)
-
-    {:noreply, updated_graph, push: updated_graph}
-  end
-
-  def filter_event({:click, <<id::bytes-size(3)>> <> "_down"}, _context, state) do
+  def filter_event({:click, {col, row, :down} = id}, _context, state) do
+    IO.puts("DOWN")
     button_down = false
 
     updated_graph = toggle_button(id, button_down, state)
-
-    <<col::binary-size(2), row::binary>> = id
-
-    update_ets(state.button_store, row, col, button_down)
-
-    {:noreply, updated_graph, push: updated_graph}
-  end
-
-  def filter_event({:click, <<id::bytes-size(2)>> <> "_down"}, _context, state) do
-    button_down = false
-    updated_graph = toggle_button(id, button_down, state)
-
-    <<col::binary-size(1), row::binary>> = id
 
     update_ets(state.button_store, row, col, button_down)
 
@@ -146,7 +121,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     # Iterate through each row in the currently played column and play the sounds that are true
     Enum.each(0..(@num_rows - 1), fn row ->
       [{_key, row_visible}] =
-        :ets.lookup(state.button_store, :"#{rem(current_index, @num_cols)}_#{row}")
+        :ets.lookup(state.button_store, {rem(current_index, @num_cols), row})
 
       play_sound_for_row(row, row_visible)
     end)
@@ -196,11 +171,11 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   defp initialize_button_store do
     button_store = :ets.new(:button_store, [:set, :protected])
 
-    :ets.insert(button_store, {"#{0}_#{0}", false})
+    # :ets.insert(button_store, {"#{0}_#{0}", false})
 
     Enum.each(0..15, fn x ->
       Enum.each(0..5, fn y ->
-        :ets.insert(button_store, {:"#{x}_#{y}", false})
+        :ets.insert(button_store, {{x, y}, false})
       end)
     end)
 
@@ -218,12 +193,14 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   # In scenic to show that a button is down you need two buttons
   # One for how it looks when it is up and another for how it looks when it is down
   # And then hide the inactive button
-  defp toggle_button(id, button_down, state) do
+  defp toggle_button({col, row, down} = id, button_down, state) do
+    IO.puts("TOGGLING")
+
     state
-    |> Graph.modify(id <> "_down", fn p ->
+    |> Graph.modify({col, row, :down}, fn p ->
       Primitive.put_style(p, :hidden, !button_down)
     end)
-    |> Graph.modify(id <> "_up", fn p ->
+    |> Graph.modify({col, row, :up}, fn p ->
       Primitive.put_style(p, :hidden, button_down)
     end)
   end
@@ -239,6 +216,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   end
 
   defp update_ets(button_store, row, col, button_down) do
-    :ets.insert(button_store, {:"#{col}_#{row}", button_down})
+    :ets.insert(button_store, {{col, row}, button_down})
   end
 end
