@@ -25,9 +25,8 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   @button_height @button_width
   @button_padding 2
 
-  # Keys are x_y (ie 0_5) and values are true if the button is down, false if the button is up
-
   # Tuples for every button containing {the left most x value, the top most y value, and the unique button identifier}
+  # This is only used to build the UI
   @buttons Enum.map(0..(@num_cols - 1), fn x ->
              Enum.map(0..(@num_rows - 1), fn y ->
                {(@button_width + @button_padding) * x, (@button_height + @button_padding) * y,
@@ -56,14 +55,8 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                    )
 
   def init(_, _) do
-    button_store = :ets.new(:button_store, [:set, :protected])
-
     # Initialize the ets store
-    Enum.each(0..15, fn x ->
-      Enum.each(0..5, fn y ->
-        :ets.insert(button_store, {"#{x}_#{y}", false})
-      end)
-    end)
+    button_store = initialize_button_store()
 
     graph =
       @main_menu_graph
@@ -178,6 +171,19 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   ####### '.###
   # Private.` #
   ########### `
+
+  # Keys are x_y (ie 0_5) and values are true if the button is down, false if the button is up
+  defp initialize_button_store() do
+    button_store = :ets.new(:button_store, [:set, :protected])
+
+    Enum.each(0..15, fn x ->
+      Enum.each(0..5, fn y ->
+        :ets.insert(button_store, {"#{x}_#{y}", false})
+      end)
+    end)
+
+    button_store
+  end
 
   # In scenic to show that a button is down you need two buttons
   # One for how it looks when it is up and another for how it looks when it is down
