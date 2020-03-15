@@ -108,25 +108,24 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     {:noreply, state}
   end
 
-  # Processing that happens each iteration
-  # This funtion iterates through all rows and plays the ones that are pressed down
-  # It also increments the number of iterations by 1
+  # Code that is run each beat
   def handle_info(:loop, state) do
     start_time = Time.utc_now()
 
     Process.send_after(self(), :loop, @bpm_in_ms)
 
-    if sound_playing?(state, 0), do: AudioPlayer.play_sound("hihat_great.wav")
-    if sound_playing?(state, 1), do: AudioPlayer.play_sound("ride_cymbal.wav")
-    if sound_playing?(state, 2), do: AudioPlayer.play_sound("triangle.wav")
-    if sound_playing?(state, 3), do: AudioPlayer.play_sound("runnerskick.wav")
-    if sound_playing?(state, 4), do: AudioPlayer.play_sound("hitoms.wav")
-    if sound_playing?(state, 5), do: AudioPlayer.play_sound("snare.wav")
+    current_iteration = update_iteration()
+
+    if sound_playing?(current_iteration, 0), do: AudioPlayer.play_sound("hihat_great.wav")
+    if sound_playing?(current_iteration, 1), do: AudioPlayer.play_sound("ride_cymbal.wav")
+    if sound_playing?(current_iteration, 2), do: AudioPlayer.play_sound("triangle.wav")
+    if sound_playing?(current_iteration, 3), do: AudioPlayer.play_sound("runnerskick.wav")
+    if sound_playing?(current_iteration, 4), do: AudioPlayer.play_sound("hitoms.wav")
+    if sound_playing?(current_iteration, 5), do: AudioPlayer.play_sound("snare.wav")
 
     updated_state =
       state
       |> update_header()
-      |> update_iteration()
 
     end_time = Time.utc_now()
 
@@ -142,38 +141,29 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   # Private.` #
   ########### `
 
-  defp sound_playing?(%{iteration: iteration}, row) do
+  defp sound_playing?(iteration, row) do
     case :ets.lookup(:button_store, {iteration, row}) do
       [{_, true}] -> true
       _ -> false
     end
   end
 
-  # This is 7x more performant than doing a rem/2. It may be more
-  # performant due to multithreading to move this to ets
-  # https://erlang.org/doc/man/ets.html#update_counter-3
-  defp get_next_iteration(iteration) when iteration == -1, do: 15
-  defp get_next_iteration(iteration) when iteration == 0, do: 1
-  defp get_next_iteration(iteration) when iteration == 1, do: 2
-  defp get_next_iteration(iteration) when iteration == 2, do: 3
-  defp get_next_iteration(iteration) when iteration == 3, do: 4
-  defp get_next_iteration(iteration) when iteration == 4, do: 5
-  defp get_next_iteration(iteration) when iteration == 5, do: 6
-  defp get_next_iteration(iteration) when iteration == 6, do: 7
-  defp get_next_iteration(iteration) when iteration == 7, do: 8
-  defp get_next_iteration(iteration) when iteration == 8, do: 9
-  defp get_next_iteration(iteration) when iteration == 9, do: 10
-  defp get_next_iteration(iteration) when iteration == 10, do: 11
-  defp get_next_iteration(iteration) when iteration == 11, do: 12
-  defp get_next_iteration(iteration) when iteration == 12, do: 13
-  defp get_next_iteration(iteration) when iteration == 13, do: 14
-  defp get_next_iteration(iteration) when iteration == 14, do: 15
-  defp get_next_iteration(iteration) when iteration == 15, do: 0
+  defp get_current_iteration() do
+    [counter_current: iteration] = :ets.lookup(:button_store, :counter_current)
 
-  defp header_id_current(iteration),
-    do: {iteration, :h}
+    iteration
+  end
 
-  defp header_id_previous(iteration), do: header_id_current(iteration - 1)
+  defp get_previous_iteration() do
+    [counter_previous: iteration] = :ets.lookup(:button_store, :counter_previous)
+
+    iteration
+  end
+
+  defp header_id_current(),
+    do: {get_current_iteration, :h}
+
+  defp header_id_previous(), do: {get_previous_iteration, :h}
 
   defp initialize_button_store do
     :ets.new(:button_store, [:set, :named_table, read_concurrency: true, write_concurrency: true])
@@ -200,10 +190,10 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   defp update_header(%{iteration: iteration} = state) do
     state
-    |> Graph.modify(header_id_current(iteration), fn p ->
+    |> Graph.modify(header_id_current(), fn p ->
       Primitive.put_style(p, :fill, :blue)
     end)
-    |> Graph.modify(header_id_previous(iteration), fn p ->
+    |> Graph.modify(header_id_previous(), fn p ->
       Primitive.put_style(p, :fill, :red)
     end)
   end
@@ -212,8 +202,8 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     :ets.insert(:button_store, {{col, row}, button_down})
   end
 
-  # Using an ets counter may be faster or more efficient becuase the code
-  # will run in a separate process
-  defp update_iteration(%{iteration: iteration} = state),
-    do: Map.put(state, :iteration, get_next_iteration(iteration))
+  defp update_iteration() do
+    :ets.update_counter(:button_store, :counter_previous, {2, 1, 15, 0}, {:counter_previous, 15})
+    :ets.update_counter(:button_store, :counter_current, {2, 1, 15, 0}, {:counter_current, 0})
+  end
 end
