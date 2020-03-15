@@ -142,26 +142,8 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   defp bpm_in_ms, do: trunc(60_000 / @bpm)
 
-  defp header_id_current(iteration) when iteration >= 16,
-    do: iteration |> rem(@num_cols) |> header_id_current()
-
-  defp header_id_current(iteration) when iteration == -1, do: "15_h"
-  defp header_id_current(iteration) when iteration == 0, do: "0_h"
-  defp header_id_current(iteration) when iteration == 1, do: "1_h"
-  defp header_id_current(iteration) when iteration == 2, do: "2_h"
-  defp header_id_current(iteration) when iteration == 3, do: "3_h"
-  defp header_id_current(iteration) when iteration == 4, do: "4_h"
-  defp header_id_current(iteration) when iteration == 5, do: "5_h"
-  defp header_id_current(iteration) when iteration == 6, do: "6_h"
-  defp header_id_current(iteration) when iteration == 7, do: "7_h"
-  defp header_id_current(iteration) when iteration == 8, do: "8_h"
-  defp header_id_current(iteration) when iteration == 9, do: "9_h"
-  defp header_id_current(iteration) when iteration == 10, do: "10_h"
-  defp header_id_current(iteration) when iteration == 11, do: "11_h"
-  defp header_id_current(iteration) when iteration == 12, do: "12_h"
-  defp header_id_current(iteration) when iteration == 13, do: "13_h"
-  defp header_id_current(iteration) when iteration == 14, do: "14_h"
-  defp header_id_current(iteration) when iteration == 15, do: "15_h"
+  defp header_id_current(iteration),
+    do: {rem(iteration, @num_cols), :h}
 
   defp header_id_previous(iteration), do: header_id_current(iteration - 1)
 
