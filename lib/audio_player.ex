@@ -69,9 +69,11 @@ defmodule AudioPlayer do
   end
 
   def handle_cast({:start_audio, file}, state) do
-    full_path = Path.join(@static_directory_path, file)
+    spawn(fn ->
+      full_path = Path.join(@static_directory_path, file)
 
-    :os.cmd('#{@audio_player_cmd} #{full_path}')
+      :os.cmd('#{@audio_player_cmd} #{full_path}')
+    end)
 
     {:noreply, state}
   end
