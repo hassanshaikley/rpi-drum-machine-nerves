@@ -116,7 +116,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     current_iteration = update_iteration()
 
-    if sound_playing?(current_iteration, 0), do: AudioPlayer.play_sound("hihat_great.wav")
+    if sound_playing?(current_iteration, 0), do: AudioPlayer.play_sound("hihat.wav")
     if sound_playing?(current_iteration, 1), do: AudioPlayer.play_sound("ride_cymbal.wav")
     if sound_playing?(current_iteration, 2), do: AudioPlayer.play_sound("triangle.wav")
     if sound_playing?(current_iteration, 3), do: AudioPlayer.play_sound("runnerskick.wav")
