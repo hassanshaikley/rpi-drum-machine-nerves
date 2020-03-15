@@ -59,13 +59,10 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                    )
 
   def init(_, _) do
-    # Initialize the ets store
-    button_store = initialize_button_store()
-
     graph =
       @main_menu_graph
       |> Map.put(:iteration, 0)
-      |> Map.put(:button_store, button_store)
+      |> Map.put(:button_store, initialize_button_store())
 
     # a protected process means only the process that created it can write to it
 
