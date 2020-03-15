@@ -89,16 +89,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
       [{_key, row_visible}] =
         :ets.lookup(state.button_store, "#{rem(current_index, @num_cols)}_#{row}")
 
-      if row_visible do
-        case row do
-          0 -> AudioPlayer.play_sound("hihat_great.wav")
-          1 -> AudioPlayer.play_sound("22inchridecymbal.wav")
-          2 -> AudioPlayer.play_sound("triangle.wav")
-          3 -> AudioPlayer.play_sound("runnerskick.wav")
-          4 -> AudioPlayer.play_sound("hitoms.wav")
-          5 -> AudioPlayer.play_sound("snare.wav")
-        end
-      end
+      play_sound_for_row(row, row_visible)
     end)
 
     end_time = Time.utc_now()
@@ -240,4 +231,15 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   defp current_header_id(iteration) when iteration == 15, do: "15_h"
 
   defp previous_header_id(iteration), do: current_header_id(iteration - 1)
+
+  defp play_sound_for_row(row, play) when play == false, do: :noop
+  defp play_sound_for_row(row, play) when row == 0, do: AudioPlayer.play_sound("hihat_great.wav")
+
+  defp play_sound_for_row(row, play) when row == 1,
+    do: AudioPlayer.play_sound("22inchridecymbal.wav")
+
+  defp play_sound_for_row(row, play) when row == 2, do: AudioPlayer.play_sound("triangle.wav")
+  defp play_sound_for_row(row, play) when row == 3, do: AudioPlayer.play_sound("runnerskick.wav")
+  defp play_sound_for_row(row, play) when row == 4, do: AudioPlayer.play_sound("hitoms.wav")
+  defp play_sound_for_row(row, play) when row == 5, do: AudioPlayer.play_sound("snare.wav")
 end
