@@ -1,4 +1,4 @@
-defmodule RpiDrumMachineNerves.Component.StepIndicator do
+defmodule RpiDrumMachineNerves.Components.StepIndicator do
   @moduledoc """
   Step indicator component that displays which steps are active
   """

@@ -1,4 +1,4 @@
-defmodule RpiDrumMachineNerves.Component.PushButtons do
+defmodule RpiDrumMachineNerves.Components.PushButtons do
   @moduledoc """
   Push Buttons component
   """

@@ -9,7 +9,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   alias Scenic.Primitive
   import Scenic.Primitives
 
-  alias RpiDrumMachineNerves.Component.{
+  alias RpiDrumMachineNerves.Components.{
     Header,
     OffButton,
     PushButtons,

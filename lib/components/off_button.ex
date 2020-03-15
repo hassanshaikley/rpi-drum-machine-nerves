@@ -1,4 +1,4 @@
-defmodule RpiDrumMachineNerves.Component.OffButton do
+defmodule RpiDrumMachineNerves.Components.OffButton do
   @moduledoc """
   Shutdown button component
   """
