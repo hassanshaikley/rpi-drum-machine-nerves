@@ -64,16 +64,6 @@ defmodule RpiDrumMachineNerves.MixProject do
       {:benchee, "~> 1.0", only: :dev},
       {:credo, "~> 1.2", only: [:dev, :test], runtime: false}
 
-      #  {
-      #   :plasma_contracts,
-      #   git: "git@github.com:pik694/plasma-contracts.git",
-      #   branch: "feature/fee-burner",
-      #   sparse: "contracts",
-      #   compile: compile_plasma_contracts(),
-      #   app: false,
-      #   override: true,
-      #   only: [:dev, :test]
-      # },
       # {:nerves_system_rpi3, "~> 1.8", runtime: false, targets: :rpi3},
       # {:nerves_system_rpi3a, "~> 1.8", runtime: false, targets: :rpi3a},
       # {:nerves_system_rpi4, "~> 1.8", runtime: false, targets: :rpi4},
