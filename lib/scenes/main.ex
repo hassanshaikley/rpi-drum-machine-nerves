@@ -30,6 +30,10 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   @button_height @button_width
   @button_padding 2
 
+  @static_directory_path Path.join(:code.priv_dir(:rpi_drum_machine_nerves), "static")
+  @background_image_path Path.join(@static_directory_path, "art_1.png")
+  @background_image_hash Scenic.Cache.Hash.file!(@background_image_path, :sha)
+
   # Tuples for every button containing {the left most x value, the top most y value, and the unique button id}
   # This is only used to build the UI
   @buttons Enum.map(0..(@num_cols - 1), fn x ->
@@ -41,12 +45,13 @@ defmodule RpiDrumMachineNerves.Scene.Main do
            |> List.flatten()
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
-                   |> rect({@width, @height},
-                     id: :background,
-                     fill: {50, 50, 50}
-                   )
-                   |> Header.add_to_graph()
-                   |> OffButton.add_to_graph()
+                   #  |> rect({@width, @height},
+                   #    id: :background,
+                   #    fill: {50, 50, 50}
+                   #  )
+                   |> rect({@width, @height}, fill: {:image, @background_image_hash})
+                   #  |> Header.add_to_graph()
+                   #  |> OffButton.add_to_graph()
                    |> VolumeSlider.add_to_graph()
                    |> StepIndicator.add_to_graph(nil,
                      button_width: @button_width,
@@ -61,6 +66,8 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   def init(_, _) do
     initialize_button_store()
+
+    Scenic.Cache.Static.Texture.load(@background_image_path, @background_image_hash)
 
     state =
       @main_menu_graph
