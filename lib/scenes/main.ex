@@ -66,8 +66,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
       |> Map.put(:iteration, 0)
       |> Map.put(:button_store, button_store)
 
-    # a protected process means only the process that created it can write to it
-
     Process.send_after(self(), :loop, 100, [])
 
     {:ok, graph, push: graph}
@@ -86,9 +84,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     start_time = Time.utc_now()
 
     # Iterate through each row in the currently played column and play the sounds that are true
-    Enum.each(1..@num_rows, fn row ->
-      row = row - 1
-
+    Enum.each(0..(@num_rows - 1), fn row ->
       [{_key, row_visible}] =
         :ets.lookup(state.button_store, :"#{rem(current_index, @num_cols)}_#{row}")
 
@@ -239,11 +235,11 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   defp previous_header_id(iteration), do: current_header_id(iteration - 1)
 
-  defp play_sound_for_row(row, play) when play == false, do: :noop
-  defp play_sound_for_row(row, play) when row == 0, do: AudioPlayer.play_sound("hihat_great.wav")
-  defp play_sound_for_row(row, play) when row == 1, do: AudioPlayer.play_sound("ride_cymbal.wav")
-  defp play_sound_for_row(row, play) when row == 2, do: AudioPlayer.play_sound("triangle.wav")
-  defp play_sound_for_row(row, play) when row == 3, do: AudioPlayer.play_sound("runnerskick.wav")
-  defp play_sound_for_row(row, play) when row == 4, do: AudioPlayer.play_sound("hitoms.wav")
-  defp play_sound_for_row(row, play) when row == 5, do: AudioPlayer.play_sound("snare.wav")
+  defp play_sound_for_row(row, false), do: :noop
+  defp play_sound_for_row(row, true) when row == 0, do: AudioPlayer.play_sound("hihat_great.wav")
+  defp play_sound_for_row(row, true) when row == 1, do: AudioPlayer.play_sound("ride_cymbal.wav")
+  defp play_sound_for_row(row, true) when row == 2, do: AudioPlayer.play_sound("triangle.wav")
+  defp play_sound_for_row(row, true) when row == 3, do: AudioPlayer.play_sound("runnerskick.wav")
+  defp play_sound_for_row(row, true) when row == 4, do: AudioPlayer.play_sound("hitoms.wav")
+  defp play_sound_for_row(row, true) when row == 5, do: AudioPlayer.play_sound("snare.wav")
 end
