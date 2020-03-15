@@ -168,7 +168,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   ########### `
 
   # Keys are x_y (ie 0_5) and values are true if the button is down, false if the button is up
-  defp initialize_button_store() do
+  defp initialize_button_store do
     button_store = :ets.new(:button_store, [:set, :protected])
 
     Enum.each(0..15, fn x ->

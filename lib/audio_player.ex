@@ -58,7 +58,7 @@ defmodule AudioPlayer do
   @doc """
   Stops any sounds that are currently being played. Used for teardown purposes.
   """
-  def stop_sound(), do: GenServer.cast(__MODULE__, :stop_audio)
+  def stop_sound, do: GenServer.cast(__MODULE__, :stop_audio)
 
   # GenServer handlers
 
@@ -78,13 +78,13 @@ defmodule AudioPlayer do
 
   # Private
 
-  defp setup_audio() do
+  defp setup_audio do
     set_audio_output_to_jack()
     set_volume(50)
   end
 
   # This is expected to fail and do nothing on non rpi devices
-  defp set_audio_output_to_jack() do
+  defp set_audio_output_to_jack do
     :os.cmd('amixer cset numid=3 1')
   end
 
