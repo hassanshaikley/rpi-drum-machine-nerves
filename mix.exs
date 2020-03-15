@@ -61,7 +61,8 @@ defmodule RpiDrumMachineNerves.MixProject do
       {:nerves_system_rpi2, "~> 1.9.1", runtime: false, targets: :rpi2},
 
       # Dependencies for development
-      {:benchee, "~> 1.0", only: :dev}
+      {:benchee, "~> 1.0", only: :dev},
+      {:credo, "~> 1.2", only: [:dev, :test], runtime: false}
 
       #  {
       #   :plasma_contracts,
