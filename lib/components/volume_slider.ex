@@ -1,4 +1,8 @@
 defmodule RpiDrumMachineNerves.Component.VolumeSlider do
+  @moduledoc """
+  Volume Slider component
+  """
+
   use Scenic.Scene, has_children: false
   import Scenic.Components
   import Scenic.Primitives

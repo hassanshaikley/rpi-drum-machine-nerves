@@ -1,4 +1,8 @@
 defmodule RpiDrumMachineNerves.Component.StepIndicator do
+  @moduledoc """
+  Step indicator component that displays which steps are active
+  """
+
   use Scenic.Scene, has_children: false
   import Scenic.Primitives
 

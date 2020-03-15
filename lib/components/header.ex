@@ -1,4 +1,7 @@
 defmodule RpiDrumMachineNerves.Component.Header do
+  @moduledoc """
+  Header component
+  """
   use Scenic.Scene, has_children: false
   import Scenic.Primitives
 

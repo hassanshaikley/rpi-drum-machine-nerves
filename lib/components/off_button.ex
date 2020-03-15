@@ -1,4 +1,8 @@
 defmodule RpiDrumMachineNerves.Component.OffButton do
+  @moduledoc """
+  Shutdown button component
+  """
+
   use Scenic.Scene, has_children: false
   import Scenic.Components
 

@@ -1,4 +1,8 @@
 defmodule RpiDrumMachineNerves.Scene.Main do
+  @moduledoc """
+  Main scene
+  """
+
   use Scenic.Scene
 
   alias Scenic.Graph

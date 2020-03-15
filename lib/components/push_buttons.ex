@@ -1,4 +1,8 @@
 defmodule RpiDrumMachineNerves.Component.PushButtons do
+  @moduledoc """
+  Push Buttons component
+  """
+
   use Scenic.Scene, has_children: false
   import Scenic.{Components, Primitives}
 

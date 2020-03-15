@@ -1,4 +1,10 @@
 defmodule AudioPlayer do
+  @moduledoc """
+  Audio player that uses a GenServer to manage the audio
+
+  Currently unsophisticated; ideally it would schedule things so that the timing is on the dot
+  """
+
   use GenServer
   alias __MODULE__
 
