@@ -229,7 +229,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   defp current_header_id(iteration) when iteration >= 16,
     do: iteration |> rem(@num_cols) |> current_header_id()
 
-  defp current_header_id(iteration) when iteration == -1, do: "15_hc"
+  defp current_header_id(iteration) when iteration == -1, do: "15_h"
   defp current_header_id(iteration) when iteration == 0, do: "0_h"
   defp current_header_id(iteration) when iteration == 1, do: "1_h"
   defp current_header_id(iteration) when iteration == 2, do: "2_h"
