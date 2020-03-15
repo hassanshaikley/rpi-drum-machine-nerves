@@ -150,7 +150,9 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     end
   end
 
-  # This is 7x more performant than doing a rem/2
+  # This is 7x more performant than doing a rem/2. It may be more
+  # performant due to multithreading to move this to ets
+  # https://erlang.org/doc/man/ets.html#update_counter-3
   defp get_next_iteration(iteration) when iteration == -1, do: 15
   defp get_next_iteration(iteration) when iteration == 0, do: 1
   defp get_next_iteration(iteration) when iteration == 1, do: 2
@@ -175,7 +177,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   defp header_id_previous(iteration), do: header_id_current(iteration - 1)
 
   defp initialize_button_store do
-    # button_store =
     :ets.new(:button_store, [:set, :named_table, read_concurrency: true, write_concurrency: true])
 
     Enum.each(0..15, fn x ->
