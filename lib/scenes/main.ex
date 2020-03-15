@@ -121,7 +121,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     <<col::binary-size(2), row::binary>> = id
 
-    update_ets(state.button_store, rem(state.iteration, @num_cols), col, button_down)
+    update_ets(state.button_store, row, col, button_down)
 
     {:noreply, updated_graph, push: updated_graph}
   end
@@ -133,7 +133,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     <<col::binary-size(1), row::binary>> = id
 
-    update_ets(state.button_store, rem(state.iteration, @num_cols), col, button_down)
+    update_ets(state.button_store, row, col, button_down)
 
     {:noreply, updated_graph, push: updated_graph}
   end
@@ -145,7 +145,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     <<col::binary-size(2), row::binary>> = id
 
-    update_ets(state.button_store, rem(state.iteration, @num_cols), col, button_down)
+    update_ets(state.button_store, row, col, button_down)
 
     {:noreply, updated_graph, push: updated_graph}
   end
@@ -156,7 +156,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     <<col::binary-size(1), row::binary>> = id
 
-    update_ets(state.button_store, rem(state.iteration, @num_cols), col, button_down)
+    update_ets(state.button_store, row, col, button_down)
 
     {:noreply, updated_graph, push: updated_graph}
   end
