@@ -24,7 +24,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   @height 480
 
   @num_rows 6
-  @num_cols 16
+  @num_cols 8
 
   @button_width 46
   @button_height @button_width
@@ -66,11 +66,11 @@ defmodule RpiDrumMachineNerves.Scene.Main do
       @main_menu_graph
       |> Map.put(:iteration, 0)
 
-    Process.send_after(self(), :loop, 100, [])
+    Process.send_after(self(), :loop, 1000, [])
 
     # Benchee.run(
     #   %{
-    #     "rem" => fn -> rem(14, 15) end,
+    #     "rem" => fn -> rem(14, 7) end,
     #     "matching" => fn -> get_next_iteration(5) end
     #   },
     #   time: 5,
@@ -168,7 +168,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   defp initialize_button_store do
     :ets.new(:button_store, [:set, :named_table, read_concurrency: true, write_concurrency: true])
 
-    Enum.each(0..15, fn x ->
+    Enum.each(0..7, fn x ->
       Enum.each(0..5, fn y ->
         :ets.insert(:button_store, {{x, y}, false})
       end)
@@ -203,7 +203,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   end
 
   defp update_iteration() do
-    :ets.update_counter(:button_store, :counter_previous, {2, 1, 15, 0}, {:counter_previous, 15})
-    :ets.update_counter(:button_store, :counter_current, {2, 1, 15, 0}, {:counter_current, 0})
+    :ets.update_counter(:button_store, :counter_previous, {2, 1, 7, 0}, {:counter_previous, 7})
+    :ets.update_counter(:button_store, :counter_current, {2, 1, 7, 0}, {:counter_current, 0})
   end
 end
