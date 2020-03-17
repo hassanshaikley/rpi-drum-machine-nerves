@@ -33,7 +33,7 @@ defmodule RpiDrumMachineNerves.Components.StepIndicator do
           end
         )
       end,
-      t: {16, 160}
+      t: {16, 120}
     )
   end
 

@@ -23,12 +23,16 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   @width 800
   @height 480
 
-  @num_rows 6
+  @num_rows 5
   @num_cols 8
 
-  @button_width 46
+  # @button_width 46 * 1.5
+  # @button_height @button_width
+  # @button_padding 2 * 1.5
+
+  @button_width 60
   @button_height @button_width
-  @button_padding 2
+  @button_padding 4
 
   # Tuples for every button containing {the left most x value, the top most y value, and the unique button id}
   # This is only used to build the UI
@@ -117,11 +121,11 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     current_iteration = update_iteration()
 
     if sound_playing?(current_iteration, 0), do: AudioPlayer.play_sound("hihat.wav")
-    if sound_playing?(current_iteration, 1), do: AudioPlayer.play_sound("ride_cymbal.wav")
+    if sound_playing?(current_iteration, 1), do: AudioPlayer.play_sound("snare.wav")
     if sound_playing?(current_iteration, 2), do: AudioPlayer.play_sound("triangle.wav")
     if sound_playing?(current_iteration, 3), do: AudioPlayer.play_sound("runnerskick.wav")
     if sound_playing?(current_iteration, 4), do: AudioPlayer.play_sound("hitoms.wav")
-    if sound_playing?(current_iteration, 5), do: AudioPlayer.play_sound("snare.wav")
+    # if sound_playing?(current_iteration, 5), do: AudioPlayer.play_sound("ride_cymbal.wav")
 
     updated_state =
       state
@@ -168,8 +172,8 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   defp initialize_button_store do
     :ets.new(:button_store, [:set, :named_table, read_concurrency: true, write_concurrency: true])
 
-    Enum.each(0..7, fn x ->
-      Enum.each(0..5, fn y ->
+    Enum.each(0..(@num_cols - 1), fn x ->
+      Enum.each(0..(@num_rows - 1), fn y ->
         :ets.insert(:button_store, {{x, y}, false})
       end)
     end)
@@ -203,7 +207,18 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   end
 
   defp update_iteration() do
-    :ets.update_counter(:button_store, :counter_previous, {2, 1, 7, 0}, {:counter_previous, 7})
-    :ets.update_counter(:button_store, :counter_current, {2, 1, 7, 0}, {:counter_current, 0})
+    :ets.update_counter(
+      :button_store,
+      :counter_previous,
+      {2, 1, @num_cols - 1, 0},
+      {:counter_previous, @num_cols - 1}
+    )
+
+    :ets.update_counter(
+      :button_store,
+      :counter_current,
+      {2, 1, @num_cols - 1, 0},
+      {:counter_current, 0}
+    )
   end
 end

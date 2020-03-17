@@ -16,7 +16,7 @@ defmodule RpiDrumMachineNerves.Components.OffButton do
         border: :green
       },
       id: "shutdown",
-      translate: {700, 100},
+      translate: {400, 50},
       height: 50,
       width: 50
     )

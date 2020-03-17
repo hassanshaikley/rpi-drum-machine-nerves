@@ -13,10 +13,10 @@ defmodule RpiDrumMachineNerves.Components.VolumeSlider do
     |> group(
       fn graph ->
         graph
-        |> text("volume", translate: {450, 112})
+        |> text("volume", translate: {450, 62})
         |> slider({{40, 100}, 50},
           id: :volume_slider,
-          translate: {500, 100},
+          translate: {500, 50},
           width: 100
         )
       end,

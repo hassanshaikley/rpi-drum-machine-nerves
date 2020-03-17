@@ -52,7 +52,7 @@ defmodule RpiDrumMachineNerves.Components.PushButtons do
           end
         )
       end,
-      t: {16, 180}
+      t: {16, 140}
     )
   end
 
