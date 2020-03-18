@@ -68,16 +68,8 @@ defmodule RpiDrumMachineNerves.Scene.Main do
       @main_menu_graph
       |> Map.put(:iteration, 0)
 
+    # Start the loop
     Process.send_after(self(), :loop, 1000, [])
-
-    # Benchee.run(
-    #   %{
-    #     "rem" => fn -> rem(14, 7) end,
-    #     "matching" => fn -> get_next_iteration(5) end
-    #   },
-    #   time: 5,
-    #   print: [fast_warning: false]
-    # )
 
     {:ok, state, push: state}
   end
@@ -112,16 +104,12 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   # Code that is run each beat
   def handle_info(:loop, state) do
-    start_time = Time.utc_now()
-    Process.send_after(self(), :loop, @bpm_in_ms)
     Process.send(Loop, :loop, [])
+    Process.send_after(self(), :loop, @bpm_in_ms)
 
     updated_state =
       state
       |> update_header()
-
-    Time.diff(start_time, Time.utc_now(), :microsecond)
-    |> IO.inspect()
 
     {:noreply, updated_state, push: updated_state}
   end
@@ -130,28 +118,21 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     {:noreply, state}
   end
 
-  ####### '.###
-  # Private.` #
-  ########### `
-
-  # defp sound_playing?(iteration, row) do
-  #   case :ets.lookup(:button_store, {iteration, row}) do
-  #     [{_, true}] -> true
-  #     _ -> false
-  #   end
-  # end
-
-  defp get_current_iteration() do
+  def get_current_iteration() do
     [counter_current: iteration] = :ets.lookup(:button_store, :counter_current)
 
     iteration
   end
 
-  defp get_previous_iteration() do
+  def get_previous_iteration() do
     [counter_previous: iteration] = :ets.lookup(:button_store, :counter_previous)
 
     iteration
   end
+
+  ####### '.###
+  # Private.` #
+  ########### `
 
   defp header_id_current(),
     do: {get_current_iteration(), :h}
@@ -184,20 +165,4 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   defp update_ets(row, col, button_down) do
     :ets.insert(:button_store, {{col, row}, button_down})
   end
-
-  # defp update_iteration() do
-  #   :ets.update_counter(
-  #     :button_store,
-  #     :counter_previous,
-  #     {2, 1, @num_cols - 1, 0},
-  #     {:counter_previous, @num_cols - 1}
-  #   )
-
-  #   :ets.update_counter(
-  #     :button_store,
-  #     :counter_current,
-  #     {2, 1, @num_cols - 1, 0},
-  #     {:counter_current, 0}
-  #   )
-  # end
 end

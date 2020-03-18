@@ -20,37 +20,45 @@ defmodule RpiDrumMachineNerves.Loop do
 
   @impl true
   def init(state) do
-    send(self(), :loop)
-
     {:ok, state}
   end
 
   def handle_info(:loop, state) do
-    # Process.send_after(self(), :loop, @bpm_in_ms, [])
-
-    current_iteration = update_iteration() |> IO.inspect()
-    # current_iteration = 0
-
-    # Code that is run each beat
-    # start_time = Time.utc_now()
+    IO.puts("L1")
+    current_iteration = get_current_iteration
+    IO.puts("L2")
 
     if sound_playing?(current_iteration, 0), do: AudioPlayer.play_sound("hihat.wav")
     if sound_playing?(current_iteration, 1), do: AudioPlayer.play_sound("snare.wav")
     if sound_playing?(current_iteration, 2), do: AudioPlayer.play_sound("triangle.wav")
     if sound_playing?(current_iteration, 3), do: AudioPlayer.play_sound("runnerskick.wav")
     if sound_playing?(current_iteration, 4), do: AudioPlayer.play_sound("hitoms.wav")
-    # if sound_playing?(current_iteration, 5), do: AudioPlayer.play_sound("ride_cymbal.wav")
+    IO.puts("L3")
 
-    # updated_state =
-    #   state
-    #   |> update_header()
-
-    # end_time = Time.utc_now()
-
-    # Time.diff(start_time, end_time, :microsecond) |> IO.inspect()
-    # {:noreply, updated_state, push: updated_state}
+    Process.send_after(self(), :update_iteration, 20, [])
+    IO.puts("L4")
 
     {:noreply, state}
+  end
+
+  def handle_info(:update_iteration, state) do
+    IO.puts("Updating iteration")
+    update_iteration()
+    IO.puts("Done Updating iteration")
+
+    {:noreply, state}
+  end
+
+  def get_current_iteration() do
+    [counter_current: iteration] = :ets.lookup(:button_store, :counter_current)
+
+    iteration
+  end
+
+  def get_previous_iteration() do
+    [counter_previous: iteration] = :ets.lookup(:button_store, :counter_previous)
+
+    iteration
   end
 
   defp sound_playing?(iteration, row) do
@@ -61,8 +69,6 @@ defmodule RpiDrumMachineNerves.Loop do
   end
 
   defp initialize_button_store do
-    IO.puts("Initializing button store")
-
     :ets.new(:button_store, [
       :named_table,
       :public,
@@ -70,6 +76,8 @@ defmodule RpiDrumMachineNerves.Loop do
       read_concurrency: true,
       write_concurrency: true
     ])
+
+    update_iteration()
 
     Enum.each(0..(@num_cols - 1), fn x ->
       Enum.each(0..(@num_rows - 1), fn y ->
@@ -83,15 +91,14 @@ defmodule RpiDrumMachineNerves.Loop do
       :button_store,
       :counter_previous,
       {2, 1, @num_cols - 1, 0},
-      {:counter_previous, @num_cols - 1}
+      {:counter_previous, @num_cols - 2}
     )
-    |> IO.inspect()
 
     :ets.update_counter(
       :button_store,
       :counter_current,
       {2, 1, @num_cols - 1, 0},
-      {:counter_current, 0}
+      {:counter_current, -1}
     )
   end
 end
