@@ -64,8 +64,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                    )
 
   def init(_, _) do
-    initialize_button_store()
-
     state =
       @main_menu_graph
       |> Map.put(:iteration, 0)
@@ -115,25 +113,16 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   # Code that is run each beat
   def handle_info(:loop, state) do
     start_time = Time.utc_now()
-
     Process.send_after(self(), :loop, @bpm_in_ms)
-
-    current_iteration = update_iteration()
-
-    if sound_playing?(current_iteration, 0), do: AudioPlayer.play_sound("hihat.wav")
-    if sound_playing?(current_iteration, 1), do: AudioPlayer.play_sound("snare.wav")
-    if sound_playing?(current_iteration, 2), do: AudioPlayer.play_sound("triangle.wav")
-    if sound_playing?(current_iteration, 3), do: AudioPlayer.play_sound("runnerskick.wav")
-    if sound_playing?(current_iteration, 4), do: AudioPlayer.play_sound("hitoms.wav")
-    # if sound_playing?(current_iteration, 5), do: AudioPlayer.play_sound("ride_cymbal.wav")
+    Process.send(Loop, :loop, [])
 
     updated_state =
       state
       |> update_header()
 
-    end_time = Time.utc_now()
+    Time.diff(start_time, Time.utc_now(), :microsecond)
+    |> IO.inspect()
 
-    Time.diff(start_time, end_time, :microsecond) |> IO.inspect()
     {:noreply, updated_state, push: updated_state}
   end
 
@@ -145,12 +134,12 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   # Private.` #
   ########### `
 
-  defp sound_playing?(iteration, row) do
-    case :ets.lookup(:button_store, {iteration, row}) do
-      [{_, true}] -> true
-      _ -> false
-    end
-  end
+  # defp sound_playing?(iteration, row) do
+  #   case :ets.lookup(:button_store, {iteration, row}) do
+  #     [{_, true}] -> true
+  #     _ -> false
+  #   end
+  # end
 
   defp get_current_iteration() do
     [counter_current: iteration] = :ets.lookup(:button_store, :counter_current)
@@ -168,16 +157,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     do: {get_current_iteration(), :h}
 
   defp header_id_previous(), do: {get_previous_iteration(), :h}
-
-  defp initialize_button_store do
-    :ets.new(:button_store, [:set, :named_table, read_concurrency: true, write_concurrency: true])
-
-    Enum.each(0..(@num_cols - 1), fn x ->
-      Enum.each(0..(@num_rows - 1), fn y ->
-        :ets.insert(:button_store, {{x, y}, false})
-      end)
-    end)
-  end
 
   # In scenic to show that a button is down you need two buttons
   # One for how it looks when it is up and another for how it looks when it is down
@@ -206,19 +185,19 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     :ets.insert(:button_store, {{col, row}, button_down})
   end
 
-  defp update_iteration() do
-    :ets.update_counter(
-      :button_store,
-      :counter_previous,
-      {2, 1, @num_cols - 1, 0},
-      {:counter_previous, @num_cols - 1}
-    )
+  # defp update_iteration() do
+  #   :ets.update_counter(
+  #     :button_store,
+  #     :counter_previous,
+  #     {2, 1, @num_cols - 1, 0},
+  #     {:counter_previous, @num_cols - 1}
+  #   )
 
-    :ets.update_counter(
-      :button_store,
-      :counter_current,
-      {2, 1, @num_cols - 1, 0},
-      {:counter_current, 0}
-    )
-  end
+  #   :ets.update_counter(
+  #     :button_store,
+  #     :counter_current,
+  #     {2, 1, @num_cols - 1, 0},
+  #     {:counter_current, 0}
+  #   )
+  # end
 end
