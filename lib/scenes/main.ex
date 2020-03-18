@@ -102,22 +102,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     {:noreply, state}
   end
 
-  # Code that is run each beat
-  def handle_info(:loop, state) do
-    Process.send(Loop, :loop, [])
-    Process.send_after(self(), :loop, @bpm_in_ms)
-
-    updated_state =
-      state
-      |> update_header()
-
-    {:noreply, updated_state, push: updated_state}
-  end
-
-  def handle_input(_msg, _, state) do
-    {:noreply, state}
-  end
-
   def get_current_iteration() do
     [counter_current: iteration] = :ets.lookup(:button_store, :counter_current)
 
@@ -130,12 +114,23 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     iteration
   end
 
+  # Code that is run each beat
+  def handle_info(:loop, state) do
+    Process.send(Loop, :loop, [])
+    Process.send_after(self(), :loop, @bpm_in_ms)
+
+    updated_state =
+      state
+      |> update_header()
+
+    {:noreply, updated_state, push: updated_state}
+  end
+
   ####### '.###
   # Private.` #
   ########### `
 
-  defp header_id_current(),
-    do: {get_current_iteration(), :h}
+  defp header_id_current(), do: {get_current_iteration(), :h}
 
   defp header_id_previous(), do: {get_previous_iteration(), :h}
 

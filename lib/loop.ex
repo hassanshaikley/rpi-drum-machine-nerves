@@ -24,19 +24,15 @@ defmodule RpiDrumMachineNerves.Loop do
   end
 
   def handle_info(:loop, state) do
-    IO.puts("L1")
     current_iteration = get_current_iteration
-    IO.puts("L2")
 
     if sound_playing?(current_iteration, 0), do: AudioPlayer.play_sound("hihat.wav")
     if sound_playing?(current_iteration, 1), do: AudioPlayer.play_sound("snare.wav")
     if sound_playing?(current_iteration, 2), do: AudioPlayer.play_sound("triangle.wav")
     if sound_playing?(current_iteration, 3), do: AudioPlayer.play_sound("runnerskick.wav")
     if sound_playing?(current_iteration, 4), do: AudioPlayer.play_sound("hitoms.wav")
-    IO.puts("L3")
 
     Process.send_after(self(), :update_iteration, 20, [])
-    IO.puts("L4")
 
     {:noreply, state}
   end
@@ -51,12 +47,6 @@ defmodule RpiDrumMachineNerves.Loop do
 
   def get_current_iteration() do
     [counter_current: iteration] = :ets.lookup(:button_store, :counter_current)
-
-    iteration
-  end
-
-  def get_previous_iteration() do
-    [counter_previous: iteration] = :ets.lookup(:button_store, :counter_previous)
 
     iteration
   end
