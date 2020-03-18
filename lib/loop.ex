@@ -30,6 +30,9 @@ defmodule RpiDrumMachineNerves.Loop do
     if sound_playing?(current_iteration, 3), do: AudioPlayer.play_sound("runnerskick.wav")
     if sound_playing?(current_iteration, 4), do: AudioPlayer.play_sound("hitoms.wav")
 
+    # Increment the iteration once all the processing is done. Give it 20 ms to
+    # make sure the main loop has a chance to update the header with the correct
+    # values.
     Process.send_after(self(), :update_iteration, 20, [])
 
     {:noreply, state}
