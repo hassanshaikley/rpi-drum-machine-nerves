@@ -23,7 +23,6 @@ defmodule AudioPlayer do
   end
 
   def init(init_arg \\ []) do
-    IO.puts("Setting up audio")
     setup_audio()
 
     {:ok, init_arg}

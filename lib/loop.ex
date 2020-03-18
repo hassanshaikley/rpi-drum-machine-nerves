@@ -11,8 +11,6 @@ defmodule RpiDrumMachineNerves.Loop do
   @num_rows 5
 
   def start_link(opts) do
-    IO.puts("Loop.start_link")
-
     initialize_button_store()
 
     GenServer.start_link(__MODULE__, :ok, name: Loop)
@@ -38,9 +36,7 @@ defmodule RpiDrumMachineNerves.Loop do
   end
 
   def handle_info(:update_iteration, state) do
-    IO.puts("Updating iteration")
     update_iteration()
-    IO.puts("Done Updating iteration")
 
     {:noreply, state}
   end
