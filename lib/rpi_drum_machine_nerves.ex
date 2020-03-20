@@ -20,7 +20,6 @@ defmodule RpiDrumMachineNerves.Application do
 
     [
       {Scenic, viewports: [main_viewport_config]},
-      {RpiDrumMachineNerves.Loop, []},
       {AudioPlayer, []}
     ]
   end
@@ -30,7 +29,6 @@ defmodule RpiDrumMachineNerves.Application do
 
     [
       {Scenic, viewports: [main_viewport_config]},
-      {RpiDrumMachineNerves.Loop, []},
       {AudioPlayer, []}
     ]
   end

@@ -82,7 +82,7 @@ defmodule AudioPlayer do
 
   defp setup_audio do
     set_audio_output_to_jack()
-    set_volume(50)
+    set_volume(100)
   end
 
   # Sets RPI audio output to the microphone jack

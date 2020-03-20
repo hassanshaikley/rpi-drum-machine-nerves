@@ -24,7 +24,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   @height 480
 
   @num_rows 5
-  @num_cols 8
+  @num_cols 4
 
   # @button_width 46 * 1.5
   # @button_height @button_width
@@ -49,14 +49,14 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                      id: :background,
                      fill: {50, 50, 50}
                    )
-                   |> Header.add_to_graph()
-                   |> OffButton.add_to_graph()
-                   |> VolumeSlider.add_to_graph()
-                   |> StepIndicator.add_to_graph(nil,
-                     button_width: @button_width,
-                     button_padding: @button_padding,
-                     num_cols: @num_cols
-                   )
+                   #  |> Header.add_to_graph()
+                   #  |> OffButton.add_to_graph()
+                   #  |> VolumeSlider.add_to_graph()
+                   #  |> StepIndicator.add_to_graph(nil,
+                   #    button_width: @button_width,
+                   #    button_padding: @button_padding,
+                   #    num_cols: @num_cols
+                   #  )
                    |> PushButtons.add_to_graph(
                      button_width: @button_width,
                      button_height: @button_height,
@@ -64,12 +64,10 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                    )
 
   def init(_, _) do
-    state =
-      @main_menu_graph
-      |> Map.put(:iteration, 0)
+    state = @main_menu_graph
 
     # Start the loop
-    Process.send_after(self(), :loop, 1000, [])
+    # Process.send_after(self(), :loop, 1000, [])
 
     {:ok, state, push: state}
   end
@@ -115,20 +113,66 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   end
 
   # Code that is run each beat
-  def handle_info(:loop, state) do
-    Process.send(Loop, :loop, [])
-    Process.send_after(self(), :loop, @bpm_in_ms)
+  # def handle_info(:loop, state) do
+  #   Process.send(Loop, :loop, [])
+  #   Process.send_after(self(), :loop, @bpm_in_ms)
 
-    updated_state =
-      state
-      |> update_header()
+  #   updated_state = state
+  #   # |> update_header()
 
-    {:noreply, updated_state, push: updated_state}
-  end
+  #   {:noreply, updated_state, push: updated_state}
+  # end
 
   ####### '.###
   # Private.` #
   ########### `
+
+  def get_current_iteration() do
+    [counter_current: iteration] = :ets.lookup(:button_store, :counter_current)
+
+    iteration
+  end
+
+  defp sound_playing?(iteration, row) do
+    case :ets.lookup(:button_store, {iteration, row}) do
+      [{_, true}] -> true
+      _ -> false
+    end
+  end
+
+  defp initialize_button_store do
+    :ets.new(:button_store, [
+      :named_table,
+      :public,
+      :set,
+      read_concurrency: true,
+      write_concurrency: true
+    ])
+
+    update_iteration()
+
+    Enum.each(0..(@num_cols - 1), fn x ->
+      Enum.each(0..(@num_rows - 1), fn y ->
+        :ets.insert(:button_store, {{x, y}, false})
+      end)
+    end)
+  end
+
+  defp update_iteration() do
+    :ets.update_counter(
+      :button_store,
+      :counter_previous,
+      {2, 1, @num_cols - 1, 0},
+      {:counter_previous, @num_cols - 2}
+    )
+
+    :ets.update_counter(
+      :button_store,
+      :counter_current,
+      {2, 1, @num_cols - 1, 0},
+      {:counter_current, -1}
+    )
+  end
 
   defp header_id_current(), do: {get_current_iteration(), :h}
 

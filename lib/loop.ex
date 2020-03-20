@@ -7,7 +7,7 @@ defmodule RpiDrumMachineNerves.Loop do
   @bpm 120
   @bpm_in_ms trunc(60_000 / @bpm)
 
-  @num_cols 8
+  @num_cols 4
   @num_rows 5
 
   def start_link(opts) do
@@ -18,10 +18,14 @@ defmodule RpiDrumMachineNerves.Loop do
 
   @impl true
   def init(state) do
+    Process.send_after(self(), :loop, 1000, [])
+
     {:ok, state}
   end
 
   def handle_info(:loop, state) do
+    Process.send_after(self(), :loop, @bpm_in_ms)
+
     current_iteration = get_current_iteration
 
     if sound_playing?(current_iteration, 0), do: AudioPlayer.play_sound("hihat.wav")
