@@ -83,8 +83,8 @@ defmodule DrumMachineNerves.Scene.SysInfo do
     {:ok, graph, push: graph}
   end
 
-  def handle_info(:update_devices, graph) do
-    Process.send_after(self(), :update_devices, 1000)
+  def handle_info(:loop, graph) do
+    Process.send_after(self(), :loop, 1000)
 
 
       # devices =
