@@ -84,8 +84,16 @@ defmodule DrumMachineNerves.Scene.SysInfo do
   end
 
   def handle_info(:loop, graph) do
-    Process.send_after(self(), :loop, 1000)
+    Process.send_after(self(), :loop, 500)
+    x = :rand.uniform(10)
+    IO.inspect(x)
+    if x == 5 do
+      IO.puts "Playing audio"
+        # AudioPlayer.play_sound("triangle.wav")
 
+        :os.cmd('espeak -ven+f5 -k5 -w /tmp/out.wav Hello')
+        :os.cmd('aplay -q /tmp/out.wav')
+    end
 
       # devices =
       #   InputEvent.enumerate()

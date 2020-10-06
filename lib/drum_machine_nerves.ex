@@ -19,7 +19,8 @@ defmodule DrumMachineNerves.Application do
     main_viewport_config = Application.get_env(:drum_machine_nerves, :viewport)
 
     [
-      {Scenic, viewports: [main_viewport_config]}
+      {Scenic, viewports: [main_viewport_config]},
+      {AudioPlayer, []}
     ]
   end
 
@@ -27,7 +28,8 @@ defmodule DrumMachineNerves.Application do
     main_viewport_config = Application.get_env(:drum_machine_nerves, :viewport)
 
     [
-      {Scenic, viewports: [main_viewport_config]}
+      {Scenic, viewports: [main_viewport_config]},
+      {AudioPlayer, []}
     ]
   end
 end
