@@ -77,29 +77,25 @@ defmodule DrumMachineNerves.Scene.SysInfo do
 
     unless @target == "host" do
       # subscribe to the simulated temperature sensor
-      Process.send_after(self(), :update_devices, 100)
+      Process.send_after(self(), :loop, 100)
     end
 
     {:ok, graph, push: graph}
   end
 
-  unless @target == "host" do
-    # --------------------------------------------------------
-    # Not a fan of this being polling. Would rather have InputEvent send me
-    # an occasional event when something changes.
-    def handle_info(:update_devices, graph) do
-      Process.send_after(self(), :update_devices, 1000)
+  def handle_info(:update_devices, graph) do
+    Process.send_after(self(), :update_devices, 1000)
 
-      devices =
-        InputEvent.enumerate()
-        |> Enum.reduce("", fn {_, device}, acc ->
-          Enum.join([acc, inspect(device), "\r\n"])
-        end)
+
+      # devices =
+      #   InputEvent.enumerate()
+      #   |> Enum.reduce("", fn {_, device}, acc ->
+      #     Enum.join([acc, inspect(device), "\r\n"])
+      #   end)
 
       # update the graph
-      graph = Graph.modify(graph, :devices, &text(&1, devices))
+      # graph = Graph.modify(graph, :devices, &text(&1, devices))
 
       {:noreply, graph, push: graph}
-    end
   end
 end
