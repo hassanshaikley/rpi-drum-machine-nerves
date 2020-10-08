@@ -17,7 +17,7 @@ defmodule DrumMachineNerves.Scene.Main do
     VolumeSlider
   }
 
-  @bpm 40
+  @bpm 80
   @bpm_in_ms trunc(60_000 / @bpm)
 
   @width 800

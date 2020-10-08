@@ -71,7 +71,7 @@ defmodule DrumMachineNerves.Scene.SysInfo do
 
     # unless @target == "host" do
     # subscribe to the simulated temperature sensor
-    Process.send_after(self(), :loop, 100)
+    # Process.send_after(self(), :loop, 100)
     # end
 
     {:ok, graph, push: graph}

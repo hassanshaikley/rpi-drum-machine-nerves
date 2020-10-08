@@ -23,7 +23,6 @@ defmodule AudioPlayer do
 
   def init(init_arg \\ []) do
     setup_audio()
-    play_sound("hihat.wav")
 
     {:ok, init_arg}
   end
@@ -69,11 +68,7 @@ defmodule AudioPlayer do
   end
 
   def handle_cast({:play_sound, file}, state) do
-    IO.puts("In Play Sound")
-
     spawn(fn ->
-      IO.puts("In Play Sound 2")
-
       static_directory_path = Path.join(:code.priv_dir(:drum_machine_nerves), "static")
       full_path = Path.join(static_directory_path, file)
 
