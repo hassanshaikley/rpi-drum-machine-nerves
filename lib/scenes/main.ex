@@ -82,13 +82,6 @@ defmodule DrumMachineNerves.Scene.Main do
     :os.cmd('espeak -ven+f5 -k5 -w /tmp/out.wav Hello')
     :os.cmd('aplay -q /tmp/out.wav')
 
-    output = ">> #{AudioPlayer.test("hihat.wav")} <<"
-    # output = Application.get_env(:drum_machine_nerves, :target) |> to_string()
-
-    state =
-      state
-      |> Graph.modify(:debug, &text(&1, output))
-
     # Start after a second to give the app a chance to initialize
     Process.send_after(self(), :loop, 1000, [])
 
@@ -209,4 +202,7 @@ defmodule DrumMachineNerves.Scene.Main do
   # defp get_previous_iteration(iteration) when iteration == 6, do: 5
   # defp get_previous_iteration(iteration) when iteration == 7, do: 6
   # defp get_previous_iteration(iteration) when iteration == 8, do: 7
+
+  defp debug(g), do: Graph.modify(g, :debug, &text(&1, output))
+
 end

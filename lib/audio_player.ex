@@ -62,28 +62,21 @@ defmodule AudioPlayer do
   end
 
   def handle_cast({:play_sound, file}, state) do
-    # spawn(fn ->
-    static_directory_path = Path.join(:code.priv_dir(:drum_machine_nerves), "static")
-    full_path = Path.join(static_directory_path, file)
+    spawn(fn ->
+      static_directory_path = Path.join(:code.priv_dir(:drum_machine_nerves), "static")
+      full_path = Path.join(static_directory_path, file)
 
-    :os.cmd('#{audio_player_cmd} #{full_path}')
-    # end)
+      :os.cmd('#{audio_player_cmd} #{full_path}')
+    end)
 
     {:noreply, state}
-  end
-
-  def test(file) do
-    static_directory_path = Path.join(:code.priv_dir(:drum_machine_nerves), "static")
-    full_path = Path.join(static_directory_path, file)
-
-    :os.cmd('#{audio_player_cmd} #{full_path}') |> to_string()
   end
 
   # Private
 
   defp setup_audio do
-    # set_audio_output_to_jack()
-    # set_volume(90)
+    set_audio_output_to_jack()
+    set_volume(90)
   end
 
   # This is expected to fail and do nothing on non rpi devices
