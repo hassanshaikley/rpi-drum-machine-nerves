@@ -15,9 +15,6 @@ defmodule AudioPlayer do
   # aplay requires the -q command
   @audio_player_cmd if @prod, do: "#{@audio_player} -q", else: @audio_player
 
-  # The directory where the audio files are stored
-  @static_directory_path Path.join(:code.priv_dir(:drum_machine_nerves), "static")
-
   # GenServer initialization
 
   def start_link(default \\ []) do
@@ -26,6 +23,7 @@ defmodule AudioPlayer do
 
   def init(init_arg \\ []) do
     setup_audio()
+    play_sound("hihat.wav")
 
     {:ok, init_arg}
   end
@@ -71,13 +69,14 @@ defmodule AudioPlayer do
   end
 
   def handle_cast({:play_sound, file}, state) do
-    IO.puts "In Play Sound"
-    spawn(fn ->
-      full_path = Path.join(@static_directory_path, file)
+    IO.puts("In Play Sound")
 
-      IO.inspect(full_path)
-      IO.inspect('#{@audio_player_cmd} #{full_path}')
-      # IO.inspect('#{@audio_player_cmd} #{full_path}')
+    spawn(fn ->
+      IO.puts("In Play Sound 2")
+
+      static_directory_path = Path.join(:code.priv_dir(:drum_machine_nerves), "static")
+      full_path = Path.join(static_directory_path, file)
+
       :os.cmd('#{@audio_player_cmd} #{full_path}')
     end)
 

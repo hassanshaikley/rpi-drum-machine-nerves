@@ -31,23 +31,18 @@ defmodule DrumMachineNerves.Scene.SysInfo do
          |> group(
            fn g ->
              g
-             |> text("ViewPort")
-             |> text("", translate: {10, 20}, font_size: 18, id: :vp_info)
+             |> text("File Info")
+             |> text("", translate: {10, 20}, font_size: 18, id: :file_info)
            end,
            t: {10, 110}
          )
          |> group(
            fn g ->
              g
-             |> text("Input Devices")
-             |> text("Devices are being loaded...",
-               translate: {10, 20},
-               font_size: 18,
-               id: :devices
-             )
+             |> text("Device List")
+             |> text("", translate: {10, 20}, font_size: 18, id: :device_list)
            end,
-           t: {280, 30},
-           id: :device_list
+           t: {10, 180}
          )
          |> group(
            fn g ->
@@ -62,7 +57,7 @@ defmodule DrumMachineNerves.Scene.SysInfo do
   def init(_, opts) do
     {:ok, info} = Scenic.ViewPort.info(opts[:viewport])
 
-    vp_info = """
+    file_info = """
     size: #{inspect(Map.get(info, :size))}
     """
 
@@ -72,13 +67,12 @@ defmodule DrumMachineNerves.Scene.SysInfo do
 
     graph =
       @graph
-      |> Graph.modify(:vp_info, &text(&1, vp_info))
-      |> Graph.modify(:device_list, &update_opts(&1, hidden: @target == "host"))
+      |> Graph.modify(:file_info, &text(&1, file_info))
 
-    unless @target == "host" do
-      # subscribe to the simulated temperature sensor
-      Process.send_after(self(), :loop, 100)
-    end
+    # unless @target == "host" do
+    # subscribe to the simulated temperature sensor
+    Process.send_after(self(), :loop, 100)
+    # end
 
     {:ok, graph, push: graph}
   end
@@ -86,24 +80,31 @@ defmodule DrumMachineNerves.Scene.SysInfo do
   def handle_info(:loop, graph) do
     Process.send_after(self(), :loop, 500)
     x = :rand.uniform(10)
-    IO.inspect(x)
-    if x == 5 do
-      IO.puts "Playing audio"
-        # AudioPlayer.play_sound("triangle.wav")
 
-        :os.cmd('espeak -ven+f5 -k5 -w /tmp/out.wav Hello')
-        :os.cmd('aplay -q /tmp/out.wav')
+    if x == 5 do
+      IO.puts("Playing audio")
+      AudioPlayer.play_sound("triangle.wav")
+
+      # :os.cmd('espeak -ven+f5 -k5 -w /tmp/out.wav Hello')
+      # :os.cmd('aplay -q /tmp/out.wav')
     end
 
-      # devices =
-      #   InputEvent.enumerate()
-      #   |> Enum.reduce("", fn {_, device}, acc ->
-      #     Enum.join([acc, inspect(device), "\r\n"])
-      #   end)
+    static_path = Path.join(:code.priv_dir(:drum_machine_nerves), "static")
+    files = File.ls(static_path) |> elem(1) |> to_string
 
-      # update the graph
-      # graph = Graph.modify(graph, :devices, &text(&1, devices))
+    output = static_path <> "\n" <> files
 
-      {:noreply, graph, push: graph}
+    static_directory_path = Path.join(:code.priv_dir(:drum_machine_nerves), "static")
+    full_path = Path.join(static_directory_path, "snare.wav")
+    device_list = :os.cmd('aplay -q #{full_path}') |> to_string() |> IO.inspect()
+
+    graph =
+      graph
+      |> Graph.modify(:file_info, &text(&1, output))
+      |> Graph.modify(:device_list, &text(&1, device_list))
+
+    IO.puts("3")
+
+    {:noreply, graph, push: graph}
   end
 end
