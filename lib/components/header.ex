@@ -14,10 +14,15 @@ defmodule DrumMachineNerves.Components.Header do
           fill: :dark_gray,
           translate: {0, 0}
         )
-        |> text("Nerves Drum Machine",
-          id: :pos,
-          translate: {630, 60},
+        |> text(">><<",
+          id: :debug,
+          # was 630 not 30
+          translate: {30, 60},
           font_size: 16,
+          fill: :black
+        )
+        |> text("#{Mix.target()}",
+          translate: {30, 70},
           fill: :black
         )
       end,

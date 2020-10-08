@@ -7,13 +7,7 @@ defmodule AudioPlayer do
 
   use GenServer
   alias __MODULE__
-  @prod Mix.env() == :prod
   # @prod true
-
-  # The library that is going to be used to play audio (on mac afplay, on rpi aplay)
-  @audio_player if @prod, do: "aplay", else: "afplay"
-  # aplay requires the -q command
-  @audio_player_cmd if @prod, do: "#{@audio_player} -q", else: @audio_player
 
   # GenServer initialization
 
@@ -62,27 +56,34 @@ defmodule AudioPlayer do
   # GenServer handlers
 
   def handle_cast(:stop_audio, state) do
-    :os.cmd('killall #{@audio_player}')
+    :os.cmd('killall #{audio_player}')
 
     {:noreply, state}
   end
 
   def handle_cast({:play_sound, file}, state) do
-    spawn(fn ->
-      static_directory_path = Path.join(:code.priv_dir(:drum_machine_nerves), "static")
-      full_path = Path.join(static_directory_path, file)
+    # spawn(fn ->
+    static_directory_path = Path.join(:code.priv_dir(:drum_machine_nerves), "static")
+    full_path = Path.join(static_directory_path, file)
 
-      :os.cmd('#{@audio_player_cmd} #{full_path}')
-    end)
+    :os.cmd('#{audio_player_cmd} #{full_path}')
+    # end)
 
     {:noreply, state}
+  end
+
+  def test(file) do
+    static_directory_path = Path.join(:code.priv_dir(:drum_machine_nerves), "static")
+    full_path = Path.join(static_directory_path, file)
+
+    :os.cmd('#{audio_player_cmd} #{full_path}') |> to_string()
   end
 
   # Private
 
   defp setup_audio do
     # set_audio_output_to_jack()
-    set_volume(100)
+    # set_volume(90)
   end
 
   # This is expected to fail and do nothing on non rpi devices
@@ -93,4 +94,8 @@ defmodule AudioPlayer do
   def set_volume_cmd(percent) when is_binary(percent) do
     :os.cmd('amixer cset numid=1 #{percent}%')
   end
+
+  def rpi, do: Application.get_env(:drum_machine_nerves, :target) in [:rpi, :rpi2, :rpi3]
+  def audio_player, do: if(rpi, do: 'aplay', else: 'afplay')
+  def audio_player_cmd, do: if(rpi, do: '#{audio_player} -q', else: '#{audio_player}')
 end

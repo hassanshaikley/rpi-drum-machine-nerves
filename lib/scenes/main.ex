@@ -49,7 +49,7 @@ defmodule DrumMachineNerves.Scene.Main do
                    #    id: :background,
                    #    fill: {50, 50, 50}
                    #  )
-                   #  |> Header.add_to_graph()
+                   |> Header.add_to_graph()
                    #  |> OffButton.add_to_graph()
                    |> VolumeSlider.add_to_graph()
                    |> StepIndicator.add_to_graph(nil,
@@ -78,6 +78,16 @@ defmodule DrumMachineNerves.Scene.Main do
           |> Map.put(:"#{col}_4", false)
         end)
       )
+
+    :os.cmd('espeak -ven+f5 -k5 -w /tmp/out.wav Hello')
+    :os.cmd('aplay -q /tmp/out.wav')
+
+    output = ">> #{AudioPlayer.test("hihat.wav")} <<"
+    # output = Application.get_env(:drum_machine_nerves, :target) |> to_string()
+
+    state =
+      state
+      |> Graph.modify(:debug, &text(&1, output))
 
     # Start after a second to give the app a chance to initialize
     Process.send_after(self(), :loop, 1000, [])

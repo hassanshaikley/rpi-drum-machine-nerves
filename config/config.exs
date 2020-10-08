@@ -18,6 +18,7 @@ config :nerves, :firmware, rootfs_overlay: "rootfs_overlay"
 
 config :shoehorn,
   init: [:nerves_runtime, :nerves_init_gadget],
+  # env: Mix.env(),
   app: Mix.Project.config()[:app]
 
 # Use Ringlogger as the logger backend and remove :console.
