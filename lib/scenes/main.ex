@@ -121,10 +121,10 @@ defmodule DrumMachineNerves.Scene.Main do
   end
 
   # Code that is run each beat
-  def handle_info(:loop, state) do
+  def handle_info(:loop, %{iteration: iteration} = state) do
     start_time = Time.utc_now()
 
-    current_iteration = state.iteration
+    current_iteration = iteration
     next_iteration = get_next_iteration(current_iteration)
 
     spawn(fn ->
@@ -159,8 +159,8 @@ defmodule DrumMachineNerves.Scene.Main do
   # Private.` #
   ########### `
 
-  defp sound_playing?(iteration, row, state) do
-    Map.get(state.button_state, Optimizations.encode_iteration_row(iteration, row))
+  defp sound_playing?(iteration, row, %{button_state: button_state} = state) do
+    Map.get(button_state, Optimizations.encode_iteration_row(iteration, row))
   end
 
   # In scenic to show that a button is down you need two buttons
@@ -176,19 +176,19 @@ defmodule DrumMachineNerves.Scene.Main do
     end)
   end
 
-  defp update_step_indicator(state) do
+  defp update_step_indicator(%{iteration: iteration} = state) do
     state
-    |> Graph.modify({state.iteration, :h}, fn p ->
+    |> Graph.modify({iteration, :h}, fn p ->
       Primitive.put_style(p, :fill, :blue)
     end)
-    |> Graph.modify({get_previous_iteration(state.iteration), :h}, fn p ->
+    |> Graph.modify({get_previous_iteration(iteration), :h}, fn p ->
       Primitive.put_style(p, :fill, :red)
     end)
   end
 
-  defp update_state(state, row, col, button_down) do
+  defp update_state(%{button_state: button_state} = state, row, col, button_down) do
     new_button_state =
-      Map.put(state.button_state, Optimizations.encode_iteration_row(col, row), button_down)
+      Map.put(button_state, Optimizations.encode_iteration_row(col, row), button_down)
 
     Map.put(state, :button_state, new_button_state)
   end
