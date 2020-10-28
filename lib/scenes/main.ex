@@ -9,6 +9,8 @@ defmodule DrumMachineNerves.Scene.Main do
   alias Scenic.Primitive
   import Scenic.Primitives
 
+  alias DrumMachineNerves.Optimizations
+
   alias DrumMachineNerves.Components.{
     Header,
     OffButton,
@@ -120,16 +122,21 @@ defmodule DrumMachineNerves.Scene.Main do
 
   # Code that is run each beat
   def handle_info(:loop, state) do
-    # start_time = Time.utc_now()
+    start_time = Time.utc_now()
 
     current_iteration = state.iteration
     next_iteration = get_next_iteration(current_iteration)
 
-    if sound_playing?(current_iteration, 0, state), do: AudioPlayer.play_sound("hihat.wav")
-    if sound_playing?(current_iteration, 1, state), do: AudioPlayer.play_sound("snare.wav")
-    if sound_playing?(current_iteration, 2, state), do: AudioPlayer.play_sound("triangle.wav")
-    if sound_playing?(current_iteration, 3, state), do: AudioPlayer.play_sound("runnerskick.wav")
-    if sound_playing?(current_iteration, 4, state), do: AudioPlayer.play_sound("hitoms.wav")
+    spawn(fn ->
+      if sound_playing?(current_iteration, 0, state), do: AudioPlayer.play_sound("hihat.wav")
+      if sound_playing?(current_iteration, 1, state), do: AudioPlayer.play_sound("snare.wav")
+      if sound_playing?(current_iteration, 2, state), do: AudioPlayer.play_sound("triangle.wav")
+
+      if sound_playing?(current_iteration, 3, state),
+        do: AudioPlayer.play_sound("runnerskick.wav")
+
+      if sound_playing?(current_iteration, 4, state), do: AudioPlayer.play_sound("hitoms.wav")
+    end)
 
     updated_state =
       state
@@ -138,7 +145,9 @@ defmodule DrumMachineNerves.Scene.Main do
 
     Process.send_after(self(), :loop, @bpm_in_ms)
 
-    # Time.diff(start_time, Time.utc_now(), :microsecond) |> IO.inspect()
+    Time.diff(start_time, Time.utc_now(), :microsecond)
+    # |> IO.inspect()
+
     {:noreply, updated_state, push: updated_state}
   end
 
@@ -151,8 +160,10 @@ defmodule DrumMachineNerves.Scene.Main do
   ########### `
 
   defp sound_playing?(iteration, row, state) do
-    Map.get(state.button_state, :"#{iteration}_#{row}")
+    Map.get(state.button_state, Optimizations.encode_iteration_row(iteration, row))
   end
+
+  # defp Optimizations.encode_iteration_row(iteration, row), do: String.to_atom(iteration <> "_" <> row)
 
   # In scenic to show that a button is down you need two buttons
   # One for how it looks when it is up and another for how it looks when it is down
@@ -178,7 +189,9 @@ defmodule DrumMachineNerves.Scene.Main do
   end
 
   defp update_state(state, row, col, button_down) do
-    new_button_state = Map.put(state.button_state, :"#{col}_#{row}", button_down)
+    new_button_state =
+      Map.put(state.button_state, Optimizations.encode_iteration_row(col, row), button_down)
+
     Map.put(state, :button_state, new_button_state)
   end
 
