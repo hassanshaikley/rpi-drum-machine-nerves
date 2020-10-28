@@ -24,7 +24,7 @@ defmodule DrumMachineNerves.Scene.Main do
   @height 480
 
   @num_rows 5
-  @num_cols 4
+  @num_cols 8
 
   # @button_width 46 * 1.5
   # @button_height @button_width
@@ -185,24 +185,23 @@ defmodule DrumMachineNerves.Scene.Main do
   defp get_next_iteration(iteration) when iteration == 0, do: 1
   defp get_next_iteration(iteration) when iteration == 1, do: 2
   defp get_next_iteration(iteration) when iteration == 2, do: 3
-  # defp get_next_iteration(iteration) when iteration == 3, do: 4
-  # defp get_next_iteration(iteration) when iteration == 4, do: 5
-  # defp get_next_iteration(iteration) when iteration == 5, do: 6
-  # defp get_next_iteration(iteration) when iteration == 6, do: 7
-  # defp get_next_iteration(iteration) when iteration == 7, do: 8
+  defp get_next_iteration(iteration) when iteration == 3, do: 4
+  defp get_next_iteration(iteration) when iteration == 4, do: 5
+  defp get_next_iteration(iteration) when iteration == 5, do: 6
+  defp get_next_iteration(iteration) when iteration == 6, do: 7
+  defp get_next_iteration(iteration) when iteration == 7, do: 8
   # -- kill this one defp get_next_iteration(iteration) when iteration == 8, do: 0
-  defp get_next_iteration(iteration) when iteration == @num_cols - 1, do: 0
+  defp get_next_iteration(iteration) when iteration == @num_cols, do: 0
 
   defp get_previous_iteration(iteration) when iteration == 0, do: @num_cols - 1
   defp get_previous_iteration(iteration) when iteration == 1, do: 0
   defp get_previous_iteration(iteration) when iteration == 2, do: 1
   defp get_previous_iteration(iteration) when iteration == 3, do: 2
-  # defp get_previous_iteration(iteration) when iteration == 4, do: 3
-  # defp get_previous_iteration(iteration) when iteration == 5, do: 4
-  # defp get_previous_iteration(iteration) when iteration == 6, do: 5
-  # defp get_previous_iteration(iteration) when iteration == 7, do: 6
-  # defp get_previous_iteration(iteration) when iteration == 8, do: 7
+  defp get_previous_iteration(iteration) when iteration == 4, do: 3
+  defp get_previous_iteration(iteration) when iteration == 5, do: 4
+  defp get_previous_iteration(iteration) when iteration == 6, do: 5
+  defp get_previous_iteration(iteration) when iteration == 7, do: 6
+  defp get_previous_iteration(iteration) when iteration == 8, do: 7
 
-  defp debug(g), do: Graph.modify(g, :debug, &text(&1, output))
-
+  # defp debug(g), do: Graph.modify(g, :debug, &text(&1, g))
 end
