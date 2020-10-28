@@ -73,16 +73,16 @@ defmodule DrumMachineNerves.Scene.Main do
         :button_state,
         Enum.reduce(0..(@num_cols - 1), %{}, fn col, acc ->
           acc
-          |> Map.put(:"#{col}_0", false)
-          |> Map.put(:"#{col}_1", false)
-          |> Map.put(:"#{col}_2", false)
-          |> Map.put(:"#{col}_3", false)
-          |> Map.put(:"#{col}_4", false)
+          |> Map.put(Optimizations.encode_iteration_row(col, 0), false)
+          |> Map.put(Optimizations.encode_iteration_row(col, 1), false)
+          |> Map.put(Optimizations.encode_iteration_row(col, 2), false)
+          |> Map.put(Optimizations.encode_iteration_row(col, 3), false)
+          |> Map.put(Optimizations.encode_iteration_row(col, 4), false)
         end)
       )
 
-    :os.cmd('espeak -ven+f5 -k5 -w /tmp/out.wav Hello')
-    :os.cmd('aplay -q /tmp/out.wav')
+    # :os.cmd('espeak -ven+f5 -k5 -w /tmp/out.wav Hello')
+    # :os.cmd('aplay -q /tmp/out.wav')
 
     # Start after a second to give the app a chance to initialize
     Process.send_after(self(), :loop, 1000, [])
@@ -162,8 +162,6 @@ defmodule DrumMachineNerves.Scene.Main do
   defp sound_playing?(iteration, row, state) do
     Map.get(state.button_state, Optimizations.encode_iteration_row(iteration, row))
   end
-
-  # defp Optimizations.encode_iteration_row(iteration, row), do: String.to_atom(iteration <> "_" <> row)
 
   # In scenic to show that a button is down you need two buttons
   # One for how it looks when it is up and another for how it looks when it is down
