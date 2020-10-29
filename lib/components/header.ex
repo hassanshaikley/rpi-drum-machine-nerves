@@ -21,7 +21,7 @@ defmodule DrumMachineNerves.Components.Header do
           font_size: 16,
           fill: :black
         )
-        |> text("#{Mix.target()}",
+        |> text("#{Mix.env()}",
           translate: {30, 70},
           fill: :black
         )

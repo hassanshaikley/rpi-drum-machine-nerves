@@ -5,12 +5,9 @@ thing = fn 0, 0 -> :"0_0" end
 
 Benchee.run(
   %{
-    "Matching" => fn ->
-      thing.(0, 0)
+    a == b
     end,
-    "Concatenation" => fn ->
-      s = a <> b
-      String.to_atom(s)
+    a === b
     end
   },
   time: 10,

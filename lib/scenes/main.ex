@@ -54,11 +54,12 @@ defmodule DrumMachineNerves.Scene.Main do
                    |> Header.add_to_graph()
                    #  |> OffButton.add_to_graph()
                    |> VolumeSlider.add_to_graph()
-                   |> StepIndicator.add_to_graph(nil,
-                     button_width: @button_width,
-                     button_padding: @button_padding,
-                     num_cols: @num_cols
-                   )
+                   |> StepIndicator.add_to_graph()
+                   #  |> StepIndicator.add_to_graph(nil,
+                   #    button_width: @button_width,
+                   #    button_padding: @button_padding,
+                   #    num_cols: @num_cols
+                   #  )
                    |> PushButtons.add_to_graph(
                      button_width: @button_width,
                      button_height: @button_height,
@@ -127,7 +128,7 @@ defmodule DrumMachineNerves.Scene.Main do
   def handle_info(:loop, %{iteration: iteration} = state) do
     Process.send_after(self(), :loop, @bpm_in_ms)
 
-    start_time = Time.utc_now()
+    # start_time = Time.utc_now()
 
     current_iteration = iteration
     next_iteration = get_next_iteration(current_iteration)
@@ -148,7 +149,7 @@ defmodule DrumMachineNerves.Scene.Main do
       |> update_step_indicator
       |> Map.put(:iteration, next_iteration)
 
-    Time.diff(start_time, Time.utc_now(), :microsecond)
+    # Time.diff(start_time, Time.utc_now(), :microsecond)
     # |> IO.inspect()
 
     {:noreply, updated_state, push: updated_state}

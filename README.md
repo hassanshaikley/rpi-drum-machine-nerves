@@ -4,6 +4,8 @@ From template
 
 # Perf things
 
+## Optimiztion 1
+
 ```
 a = "cat"
 b = "dog"
@@ -58,3 +60,7 @@ Name             Memory usage
 Matching              0.45 KB
 Concatenation         1.62 KB - 3.57x memory usage +1.16 KB
 ```
+
+## Optimization 2
+
+Burn fw with mix_env = prod
