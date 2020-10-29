@@ -111,7 +111,10 @@ defmodule DrumMachineNerves.Scene.Main do
   end
 
   def filter_event({:click, "shutdown"}, _context, state) do
-    spawn(fn -> :os.cmd('sudo shutdown -h now') end)
+    # spawn(fn -> :os.cmd('poweroff') end)
+    # spawn(fn -> Nerves.Runtime.poweroff() end)
+    spawn(fn -> System.cmd("poweroff", ["now"]) end)
+
     {:noreply, state}
   end
 
@@ -122,6 +125,8 @@ defmodule DrumMachineNerves.Scene.Main do
 
   # Code that is run each beat
   def handle_info(:loop, %{iteration: iteration} = state) do
+    Process.send_after(self(), :loop, @bpm_in_ms)
+
     start_time = Time.utc_now()
 
     current_iteration = iteration
@@ -142,8 +147,6 @@ defmodule DrumMachineNerves.Scene.Main do
       state
       |> update_step_indicator
       |> Map.put(:iteration, next_iteration)
-
-    Process.send_after(self(), :loop, @bpm_in_ms)
 
     Time.diff(start_time, Time.utc_now(), :microsecond)
     # |> IO.inspect()
