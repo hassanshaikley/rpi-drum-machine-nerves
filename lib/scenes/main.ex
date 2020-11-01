@@ -20,9 +20,6 @@ defmodule DrumMachineNerves.Scene.Main do
     VolumeControls
   }
 
-  @width 800
-  @height 480
-
   @num_rows 5
   @num_cols 8
 
@@ -41,10 +38,6 @@ defmodule DrumMachineNerves.Scene.Main do
            |> List.flatten()
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
-                   #  |> rect({@width, @height},
-                   #    id: :background,
-                   #    fill: {50, 50, 50}
-                   #  )
                    |> Header.add_to_graph()
                    |> OffButton.add_to_graph()
                    |> VolumeControls.add_to_graph()
@@ -63,6 +56,8 @@ defmodule DrumMachineNerves.Scene.Main do
 
   def init(_, _) do
     Optimizations.disable_hdmi()
+    Optimizations.disable_ethernet()
+    Optimizations.disable_usb()
 
     state =
       @main_menu_graph
@@ -110,7 +105,7 @@ defmodule DrumMachineNerves.Scene.Main do
     {:noreply, new_state, push: new_state}
   end
 
-  def filter_event({:click, "shutdown"}, _context, state) do
+  def filter_event({:click, :poweroff}, _context, state) do
     # spawn(fn -> :os.cmd('poweroff') end)
     # spawn(fn -> Nerves.Runtime.poweroff() end)
     spawn(fn -> System.cmd("poweroff", ["now"]) end)

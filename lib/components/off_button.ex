@@ -11,14 +11,14 @@ defmodule DrumMachineNerves.Components.OffButton do
     |> button("OFF",
       theme: %{
         text: :white,
-        background: :black,
+        background: :red,
         active: :black,
         border: :green
       },
-      id: "shutdown",
-      translate: {600, 30},
-      height: 50,
-      width: 50
+      id: :poweroff,
+      translate: {700, 13},
+      height: 70,
+      width: 70
     )
   end
 end
