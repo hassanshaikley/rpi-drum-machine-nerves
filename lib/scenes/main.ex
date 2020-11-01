@@ -6,7 +6,6 @@ defmodule DrumMachineNerves.Scene.Main do
   use Scenic.Scene
 
   alias Scenic.Graph
-
   alias DrumMachineNerves.Optimizations
 
   alias DrumMachineNerves.Components.{
@@ -130,18 +129,11 @@ defmodule DrumMachineNerves.Scene.Main do
 
   def handle_info(:loop, %{iteration: iteration, bpm_in_ms: bpm_in_ms} = state) do
     Process.send_after(self(), :loop, bpm_in_ms)
-
-    # start_time = Time.utc_now()
-
-    next_iteration = Optimizations.get_next_iteration(iteration)
-
     GenServer.cast(DrumMachineNerves.Components.StepIndicator, {:loop, iteration})
-
     play_active_audio(iteration, state)
 
-    new_state = Map.put(state, :iteration, next_iteration)
+    new_state = Map.put(state, :iteration, Optimizations.get_next_iteration(iteration))
 
-    # Time.diff(Time.utc_now(), start_time, :microsecond) |> IO.inspect()
     {:noreply, new_state}
   end
 

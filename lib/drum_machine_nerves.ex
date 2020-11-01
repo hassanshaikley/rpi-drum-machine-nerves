@@ -3,9 +3,9 @@ defmodule DrumMachineNerves.Application do
   # for more information on OTP Applications
   @moduledoc false
 
-  @target Mix.target()
-
   use Application
+
+  @target Mix.target()
 
   def start(_type, _args) do
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -4,9 +4,8 @@ defmodule DrumMachineNerves.Components.BpmControls do
   """
 
   use Scenic.Component, has_children: true
-  import Scenic.Components
-  import Scenic.Primitives
-  import Scenic.Components
+
+  import Scenic.{Components, Primitives}
 
   alias Scenic.Graph
 
