@@ -85,9 +85,6 @@ defmodule DrumMachineNerves.Scene.Main do
 
     # |> add_debug_text("poop")
 
-    # :os.cmd('espeak -ven+f5 -k5 -w /tmp/out.wav Hello')
-    # :os.cmd('aplay -q /tmp/out.wav')
-
     # Start after a second to give the app a chance to initialize
     Process.send_after(self(), :loop, 1000, [])
 

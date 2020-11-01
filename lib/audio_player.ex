@@ -11,7 +11,10 @@ defmodule AudioPlayer do
   def init(volume: volume) do
     setup_audio(volume)
 
-    {:ok, %{volume: volume}}
+    {:ok,
+     %{
+       volume: volume
+     }}
   end
 
   # Public API
@@ -40,7 +43,7 @@ defmodule AudioPlayer do
 
   ## Examples
 
-      iex> AudioPlayer.set_volume("100")
+      iex> AudioPlayer.set_volume(100)
 
   """
 
