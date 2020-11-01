@@ -99,8 +99,6 @@ defmodule DrumMachineNerves.Components.PushButtons do
   def verify(_), do: {:ok, nil}
 
   def handle_info(:loop, state \\ %{}) do
-    IO.inspect("HELLLO FROM LOOP FROM PUSH BUTTONS PLS WOWRK")
-
     {:noreply, %{}, push: %{}}
   end
 

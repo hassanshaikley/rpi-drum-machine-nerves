@@ -152,7 +152,6 @@ defmodule DrumMachineNerves.Scene.Main do
     Process.send_after(self(), :loop, bpm_in_ms)
 
     # start_time = Time.utc_now()
-    IO.inspect(state.bpm)
 
     next_iteration = Optimizations.get_next_iteration(iteration)
 
