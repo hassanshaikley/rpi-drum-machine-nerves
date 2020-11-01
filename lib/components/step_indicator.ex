@@ -1,23 +1,8 @@
 defmodule DrumMachineNerves.Components.StepIndicator do
-  use Scenic.Component
+  use Scenic.Component, has_children: false
   import Scenic.Primitives
 
   alias Scenic.Graph
-
-  # @graph Graph.build()
-  #        |> text("", text_align: :center, translate: {100, 200}, color: :red, id: :text)
-  #        |> Scenic.Components.button("OFF",
-  #          theme: %{
-  #            text: :white,
-  #            background: :blue,
-  #            active: :black,
-  #            border: :green
-  #          },
-  #          id: "shutdown",
-  #          translate: {400, 50},
-  #          height: 50,
-  #          width: 50
-  #        )
 
   @graph Graph.build()
          |> group(
@@ -44,17 +29,9 @@ defmodule DrumMachineNerves.Components.StepIndicator do
            t: {16, 120}
          )
 
-  # def info(data),
-  #   do: """
-  #     #{IO.ANSI.red()}#{__MODULE__} data must be a bitstring
-  #     #{IO.ANSI.yellow()}Received: #{inspect(data)}
-  #     #{IO.ANSI.default_color()}
-  #   """
+  def verify(_), do: {:ok, nil}
 
-  def verify(text) when is_bitstring(text), do: {:ok, text}
-  def verify(_), do: {:ok, :a}
-
-  def init(text, opts) do
+  def init(_text, _opts) do
     # modify the already built graph
     graph = @graph
     #   |> Graph.modify(:_root_, &update_opts(&1, styles: opts[:styles]))
@@ -62,14 +39,20 @@ defmodule DrumMachineNerves.Components.StepIndicator do
 
     state = %{
       graph: graph,
-      text: "hi"
+      text: "hi",
+      name: __MODULE__,
+      id: __MODULE__
     }
+
+    IO.puts("init step indicator")
 
     {:ok, state, push: graph}
   end
 
-  def handle_info(:loop, %{iteration: iteration} = state) do
+  # Not quite working how I want yet
+  def handle_info(:loop, state) do
     IO.puts("Looping")
+    graph = @graph
     {:ok, state, push: graph}
   end
 end

@@ -144,6 +144,8 @@ defmodule DrumMachineNerves.Scene.Main do
       if sound_playing?(current_iteration, 4, state), do: AudioPlayer.play_sound("hitoms.wav")
     end)
 
+    # Process.send(StepIndicator, :loop, [])
+
     updated_state =
       state
       |> update_step_indicator
@@ -156,7 +158,7 @@ defmodule DrumMachineNerves.Scene.Main do
   end
 
   def handle_input(_msg, _, state) do
-    {:noreply, state}
+    {:halt, state}
   end
 
   ####### '.###

@@ -63,4 +63,13 @@ Concatenation         1.62 KB - 3.57x memory usage +1.16 KB
 
 ## Optimization 2
 
+[ Need citaation]
+
 Burn fw with mix_env = prod
+
+# Optimization 3
+
+, has_children: false
+for components u make
+
+[ Citaation in the scenic docs]
