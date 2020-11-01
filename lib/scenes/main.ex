@@ -131,7 +131,7 @@ defmodule DrumMachineNerves.Scene.Main do
     # start_time = Time.utc_now()
 
     current_iteration = iteration
-    next_iteration = get_next_iteration(current_iteration)
+    next_iteration = get_next_iteration(current_iteration) |> IO.inspect()
 
     spawn(fn ->
       if sound_playing?(current_iteration, 0, state), do: AudioPlayer.play_sound("hihat.wav")
@@ -206,11 +206,9 @@ defmodule DrumMachineNerves.Scene.Main do
   defp get_next_iteration(iteration) when iteration == 4, do: 5
   defp get_next_iteration(iteration) when iteration == 5, do: 6
   defp get_next_iteration(iteration) when iteration == 6, do: 7
-  defp get_next_iteration(iteration) when iteration == 7, do: 8
-  # -- kill this one defp get_next_iteration(iteration) when iteration == 8, do: 0
-  defp get_next_iteration(iteration) when iteration == @num_cols, do: 0
+  defp get_next_iteration(iteration) when iteration == 7, do: 0
 
-  defp get_previous_iteration(iteration) when iteration == 0, do: @num_cols - 1
+  defp get_previous_iteration(iteration) when iteration == 0, do: 7
   defp get_previous_iteration(iteration) when iteration == 1, do: 0
   defp get_previous_iteration(iteration) when iteration == 2, do: 1
   defp get_previous_iteration(iteration) when iteration == 3, do: 2
@@ -218,7 +216,6 @@ defmodule DrumMachineNerves.Scene.Main do
   defp get_previous_iteration(iteration) when iteration == 5, do: 4
   defp get_previous_iteration(iteration) when iteration == 6, do: 5
   defp get_previous_iteration(iteration) when iteration == 7, do: 6
-  defp get_previous_iteration(iteration) when iteration == 8, do: 7
 
   # defp debug(g), do: Graph.modify(g, :debug, &text(&1, g))
 end

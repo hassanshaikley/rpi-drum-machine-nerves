@@ -1,8 +1,6 @@
 defmodule AudioPlayer do
   @moduledoc """
   Audio player that uses a GenServer to manage the audio
-
-  Currently unsophisticated; ideally it would schedule things so that the timing is on the dot
   """
 
   use GenServer
@@ -30,7 +28,7 @@ defmodule AudioPlayer do
     do: Process.send(__MODULE__, {:play_sound, file}, [])
 
   @doc """
-  Sets volume to the given percent (integer between 0 and 100)
+  Sets volume to the given percent
 
   ## Examples
 

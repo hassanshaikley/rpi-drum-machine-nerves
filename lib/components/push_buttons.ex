@@ -18,37 +18,9 @@ defmodule DrumMachineNerves.Components.PushButtons do
           buttons,
           graph,
           fn obj, graph ->
-            x = elem(obj, 0)
-            y = elem(obj, 1)
-            label = elem(obj, 2)
-
             graph
-            |> button("",
-              theme: %{
-                text: :white,
-                background: {200, 200, 200},
-                active: {200, 200, 200},
-                border: :green
-              },
-              id: Tuple.append(label, :up),
-              translate: {x, y},
-              height: button_height,
-              width: button_width,
-              hidden: false
-            )
-            |> button("",
-              theme: %{
-                text: :white,
-                background: {50, 240, 50},
-                active: {50, 240, 50},
-                border: :green
-              },
-              hidden: true,
-              id: Tuple.append(label, :down),
-              translate: {x, y},
-              height: button_height,
-              width: button_width
-            )
+            |> up_button(obj, button_width, button_height)
+            |> down_button(obj, button_width, button_height)
           end
         )
       end,
@@ -56,9 +28,33 @@ defmodule DrumMachineNerves.Components.PushButtons do
     )
   end
 
-  def info(_data) do
+  defp up_button(graph, obj, button_width, button_height) do
+    push_button(graph, obj, button_width, button_height, :up, {200, 200, 200})
   end
 
-  def verify(_any) do
+  defp down_button(graph, obj, button_width, button_height) do
+    push_button(graph, obj, button_width, button_height, :down, {50, 240, 50})
+  end
+
+  defp push_button(graph, obj, button_width, button_height, direction, background) do
+    x = elem(obj, 0)
+    y = elem(obj, 1)
+    label = elem(obj, 2)
+    id = Tuple.append(label, direction)
+    hidden = direction == :down
+
+    button(graph, "",
+      theme: %{
+        text: :white,
+        background: background,
+        active: background,
+        border: :green
+      },
+      hidden: hidden,
+      id: id,
+      translate: {x, y},
+      height: button_height,
+      width: button_width
+    )
   end
 end
