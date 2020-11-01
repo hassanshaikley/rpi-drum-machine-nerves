@@ -82,6 +82,8 @@ defmodule DrumMachineNerves.Scene.Main do
         end)
       )
 
+    # |> add_debug_text("poop")
+
     # :os.cmd('espeak -ven+f5 -k5 -w /tmp/out.wav Hello')
     # :os.cmd('aplay -q /tmp/out.wav')
 
@@ -141,7 +143,7 @@ defmodule DrumMachineNerves.Scene.Main do
     # start_time = Time.utc_now()
 
     current_iteration = iteration
-    next_iteration = get_next_iteration(current_iteration) |> IO.inspect()
+    next_iteration = Optimizations.get_next_iteration(current_iteration)
 
     spawn(fn ->
       if sound_playing?(current_iteration, 0, state), do: AudioPlayer.play_sound("hihat.wav")
@@ -197,7 +199,7 @@ defmodule DrumMachineNerves.Scene.Main do
     |> Graph.modify({iteration, :h}, fn p ->
       Primitive.put_style(p, :fill, :blue)
     end)
-    |> Graph.modify({get_previous_iteration(iteration), :h}, fn p ->
+    |> Graph.modify({Optimizations.get_previous_iteration(iteration), :h}, fn p ->
       Primitive.put_style(p, :fill, :red)
     end)
   end
@@ -209,23 +211,5 @@ defmodule DrumMachineNerves.Scene.Main do
     Map.put(state, :button_state, new_button_state)
   end
 
-  defp get_next_iteration(iteration) when iteration == 0, do: 1
-  defp get_next_iteration(iteration) when iteration == 1, do: 2
-  defp get_next_iteration(iteration) when iteration == 2, do: 3
-  defp get_next_iteration(iteration) when iteration == 3, do: 4
-  defp get_next_iteration(iteration) when iteration == 4, do: 5
-  defp get_next_iteration(iteration) when iteration == 5, do: 6
-  defp get_next_iteration(iteration) when iteration == 6, do: 7
-  defp get_next_iteration(iteration) when iteration == 7, do: 0
-
-  defp get_previous_iteration(iteration) when iteration == 0, do: 7
-  defp get_previous_iteration(iteration) when iteration == 1, do: 0
-  defp get_previous_iteration(iteration) when iteration == 2, do: 1
-  defp get_previous_iteration(iteration) when iteration == 3, do: 2
-  defp get_previous_iteration(iteration) when iteration == 4, do: 3
-  defp get_previous_iteration(iteration) when iteration == 5, do: 4
-  defp get_previous_iteration(iteration) when iteration == 6, do: 5
-  defp get_previous_iteration(iteration) when iteration == 7, do: 6
-
-  # defp debug(g), do: Graph.modify(g, :debug, &text(&1, g))
+  defp add_debug_text(graph, txt), do: Graph.modify(graph, :debug, &text(&1, txt))
 end

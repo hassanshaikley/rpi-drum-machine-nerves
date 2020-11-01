@@ -56,4 +56,22 @@ defmodule DrumMachineNerves.Optimizations do
   def encode_iteration_row(iteration, row) do
     "#{iteration}_#{row}" |> IO.inspect()
   end
+
+  def get_next_iteration(iteration) when iteration == 0, do: 1
+  def get_next_iteration(iteration) when iteration == 1, do: 2
+  def get_next_iteration(iteration) when iteration == 2, do: 3
+  def get_next_iteration(iteration) when iteration == 3, do: 4
+  def get_next_iteration(iteration) when iteration == 4, do: 5
+  def get_next_iteration(iteration) when iteration == 5, do: 6
+  def get_next_iteration(iteration) when iteration == 6, do: 7
+  def get_next_iteration(iteration) when iteration == 7, do: 0
+
+  def get_previous_iteration(iteration) when iteration == 0, do: 7
+  def get_previous_iteration(iteration) when iteration == 1, do: 0
+  def get_previous_iteration(iteration) when iteration == 2, do: 1
+  def get_previous_iteration(iteration) when iteration == 3, do: 2
+  def get_previous_iteration(iteration) when iteration == 4, do: 3
+  def get_previous_iteration(iteration) when iteration == 5, do: 4
+  def get_previous_iteration(iteration) when iteration == 6, do: 5
+  def get_previous_iteration(iteration) when iteration == 7, do: 6
 end
