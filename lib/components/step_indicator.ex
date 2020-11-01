@@ -2,7 +2,8 @@ defmodule DrumMachineNerves.Components.StepIndicator do
   use Scenic.Component, has_children: false
   import Scenic.Primitives
 
-  alias Scenic.Graph
+  alias Scenic.{Graph, Primitive}
+  alias DrumMachineNerves.Optimizations
 
   @graph Graph.build()
          |> group(
@@ -44,10 +45,29 @@ defmodule DrumMachineNerves.Components.StepIndicator do
     {:ok, state, push: graph}
   end
 
-  # Not quite working how I want yet
-  def handle_info(:loop, state) do
-    IO.puts("Looping")
-    graph = @graph
-    {:ok, state, push: graph}
+  def handle_cast({:loop, iteration}, state) do
+    graph = update(state.graph, iteration)
+    {:noreply, state, push: graph}
+  end
+
+  def child_spec({args, opts}) do
+    %{
+      id: make_ref(),
+      start:
+        {Scenic.Scene, :start_link, [__MODULE__, args, Keyword.put_new(opts, :name, __MODULE__)]},
+      type: :worker,
+      restart: :permanent,
+      shutdown: 500
+    }
+  end
+
+  defp update(state, iteration) do
+    state
+    |> Graph.modify({iteration, :h}, fn p ->
+      Primitive.put_style(p, :fill, :blue)
+    end)
+    |> Graph.modify({Optimizations.get_previous_iteration(iteration), :h}, fn p ->
+      Primitive.put_style(p, :fill, :red)
+    end)
   end
 end

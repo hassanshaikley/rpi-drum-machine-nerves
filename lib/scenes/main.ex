@@ -84,6 +84,7 @@ defmodule DrumMachineNerves.Scene.Main do
     # |> add_debug_text("poop")
 
     # Start after a second to give the app a chance to initialize
+
     Process.send_after(self(), :loop, 1000, [])
 
     {:ok, state, push: state}
@@ -175,6 +176,9 @@ defmodule DrumMachineNerves.Scene.Main do
     current_iteration = iteration
     next_iteration = Optimizations.get_next_iteration(current_iteration)
 
+    # Process.send(DrumMachineNerves.Components.StepIndicator, :loop, [current_iteration])
+    GenServer.cast(DrumMachineNerves.Components.StepIndicator, {:loop, current_iteration})
+
     spawn(fn ->
       if sound_playing?(current_iteration, 0, state), do: AudioPlayer.play_sound("hihat.wav")
       if sound_playing?(current_iteration, 1, state), do: AudioPlayer.play_sound("snare.wav")
@@ -194,7 +198,6 @@ defmodule DrumMachineNerves.Scene.Main do
 
     new_state =
       state
-      |> update_step_indicator
       |> Map.put(:iteration, next_iteration)
 
     # Time.diff(start_time, Time.utc_now(), :microsecond)
@@ -217,16 +220,6 @@ defmodule DrumMachineNerves.Scene.Main do
     Map.get(button_state, Optimizations.encode_iteration_row(iteration, row))
   end
 
-  defp update_step_indicator(%{iteration: iteration} = state) do
-    state
-    |> Graph.modify({iteration, :h}, fn p ->
-      Primitive.put_style(p, :fill, :blue)
-    end)
-    |> Graph.modify({Optimizations.get_previous_iteration(iteration), :h}, fn p ->
-      Primitive.put_style(p, :fill, :red)
-    end)
-  end
-
   defp update_button_state(%{button_state: button_state} = state, row, col, button_down) do
     new_button_state =
       Map.put(button_state, Optimizations.encode_iteration_row(col, row), button_down)
@@ -234,5 +227,5 @@ defmodule DrumMachineNerves.Scene.Main do
     Map.put(state, :button_state, new_button_state)
   end
 
-  defp add_debug_text(graph, txt), do: Grape.modify(graph, :debug, &text(&1, txt))
+  defp add_debug_text(graph, txt), do: Graph.modify(graph, :debug, &text(&1, txt))
 end

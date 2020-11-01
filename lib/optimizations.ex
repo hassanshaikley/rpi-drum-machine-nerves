@@ -79,4 +79,13 @@ defmodule DrumMachineNerves.Optimizations do
   def disable_hdmi do
     :os.cmd('tvservice -o')
   end
+
+  # Still need to test that this work
+  def disable_ethernet do
+    :os.cmd('ip link set eth0 down')
+  end
+
+  def disable_usb do
+    :os.cmd('echo 0x0 > /sys/devices/platform/bcm2708_usb/buspower')
+  end
 end

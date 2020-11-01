@@ -73,3 +73,13 @@ Burn fw with mix_env = prod
 for components u make
 
 [ Citaation in the scenic docs]
+
+## See if can start with
+
+(disable wifi + bluetooth)
+dtoverlay=pi3-disable-wifi
+dtoverlay=pi3-disable-bt
+
+(disaable leds, there's na example in freezes libraary)
+dtparam=act_led_trigger=none
+dtparam=act_led_activelow=on
