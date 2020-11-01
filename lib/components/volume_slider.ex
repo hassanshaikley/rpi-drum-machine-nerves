@@ -13,38 +13,33 @@ defmodule DrumMachineNerves.Components.VolumeSlider do
     |> group(
       fn graph ->
         graph
-        |> text("volume", translate: {450, 62})
-        |> slider({{40, 100}, 50},
-          id: :volume_slider,
-          translate: {500, 50},
-          width: 100
+        |> text("volume")
+        |> button("+",
+          theme: %{
+            text: :white,
+            background: {100, 100, 100},
+            active: {100, 200, 100},
+            border: :green
+          },
+          id: :volume_up,
+          t: {0, 10},
+          height: 40,
+          width: 40
+        )
+        |> button("-",
+          theme: %{
+            text: :white,
+            background: {100, 100, 100},
+            active: {100, 200, 100},
+            border: :green
+          },
+          id: :volume_down,
+          t: {50, 10},
+          height: 40,
+          width: 40
         )
       end,
-      t: {0, 0}
-    )
-    |> button("+",
-      theme: %{
-        text: :white,
-        background: {100, 100, 100},
-        active: {100, 200, 100},
-        border: :green
-      },
-      id: :volume_up,
-      t: {0, 40},
-      height: 20,
-      width: 20
-    )
-    |> button("-",
-      theme: %{
-        text: :white,
-        background: {100, 100, 100},
-        active: {100, 200, 100},
-        border: :green
-      },
-      id: :volume_down,
-      t: {40, 40},
-      height: 20,
-      width: 20
+      t: {450, 30}
     )
   end
 
