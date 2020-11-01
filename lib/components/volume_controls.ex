@@ -1,4 +1,4 @@
-defmodule DrumMachineNerves.Components.VolumeSlider do
+defmodule DrumMachineNerves.Components.VolumeControls do
   @moduledoc """
   Volume Slider component
   """

@@ -16,7 +16,7 @@ defmodule DrumMachineNerves.Scene.Main do
     OffButton,
     PushButtons,
     StepIndicator,
-    VolumeSlider
+    VolumeControls
   }
 
   @bpm 80
@@ -53,7 +53,7 @@ defmodule DrumMachineNerves.Scene.Main do
                    #  )
                    |> Header.add_to_graph()
                    |> OffButton.add_to_graph()
-                   |> VolumeSlider.add_to_graph()
+                   |> VolumeControls.add_to_graph()
                    |> StepIndicator.add_to_graph()
                    #  |> StepIndicator.add_to_graph(nil,
                    #    button_width: @button_width,
