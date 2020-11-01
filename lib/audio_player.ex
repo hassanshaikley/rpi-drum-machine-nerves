@@ -11,10 +11,7 @@ defmodule AudioPlayer do
   def init(volume: volume) do
     setup_audio(volume)
 
-    {:ok,
-     %{
-       volume: volume
-     }}
+    {:ok, []}
   end
 
   # Public API
@@ -29,12 +26,6 @@ defmodule AudioPlayer do
   """
   def play_sound(file),
     do: Process.send(__MODULE__, {:play_sound, file}, [])
-
-  def increase_volume(),
-    do: GenServer.cast(__MODULE__, :increase_volume)
-
-  def decrease_volume(),
-    do: GenServer.cast(__MODULE__, :decrease_volume)
 
   # Process.send(__MODULE__, {:play_sound, file}, [])
 
@@ -53,31 +44,10 @@ defmodule AudioPlayer do
     |> set_volume_cmd
   end
 
-  def increment_volume(volume) when volume <= 90, do: volume + 10
-  def increment_volume(_), do: 100
-
-  def decrement_volume(volume) when volume >= 10, do: volume - 10
-  def decrement_volume(_), do: 0
-
   @doc """
   Stops any sounds that are currently being played. Used for teardown purposes.
   """
   def stop_sound, do: Process.send(__MODULE__, :stop_audio, [])
-
-  def handle_cast(:increase_volume, %{volume: volume} = state) do
-    new_volume = increment_volume(volume)
-
-    set_volume(new_volume)
-    {:noreply, Map.put(state, :volume, new_volume)}
-  end
-
-  def handle_cast(:decrease_volume, %{volume: volume} = state) do
-    new_volume = decrement_volume(volume)
-
-    set_volume(new_volume)
-
-    {:noreply, Map.put(state, :volume, new_volume)}
-  end
 
   def handle_info(:stop_audio, state) do
     :os.cmd('killall #{audio_player()}')

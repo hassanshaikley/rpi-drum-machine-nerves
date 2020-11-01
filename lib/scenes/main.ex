@@ -39,7 +39,6 @@ defmodule DrumMachineNerves.Scene.Main do
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
                    |> Header.add_to_graph()
-                   #  |> OffButton.add_to_graph()
                    |> VolumeControls.add_to_graph()
                    |> StepIndicator.add_to_graph()
                    |> BpmControls.add_to_graph()
@@ -75,6 +74,7 @@ defmodule DrumMachineNerves.Scene.Main do
       )
       |> Map.put(:bpm_in_ms, bpm_to_ms(90))
       |> Map.put(:bpm, 90)
+      |> Map.put(:volume, 50)
 
     # |> add_debug_text("poop")
 
@@ -115,19 +115,34 @@ defmodule DrumMachineNerves.Scene.Main do
     {:noreply, state}
   end
 
-  def filter_event({:value_changed, _id, value}, _context, state) do
-    AudioPlayer.set_volume(value)
-    {:noreply, state}
-  end
-
   def filter_event({:click, :volume_up}, _context, state) do
-    AudioPlayer.increase_volume()
-    {:noreply, state}
+    IO.inspect(increase_volume(state))
+
+    new_volume = increase_volume(state)
+
+    state =
+      Graph.modify(
+        state,
+        :volume_label,
+        &text(&1, "volume (" <> Integer.to_string(new_volume) <> ")")
+      )
+      |> Map.put(:volume, new_volume)
+
+    {:noreply, state, push: state}
   end
 
   def filter_event({:click, :volume_down}, _context, state) do
-    AudioPlayer.decrease_volume()
-    {:noreply, state}
+    new_volume = decrease_volume(state)
+
+    state =
+      Graph.modify(
+        state,
+        :volume_label,
+        &text(&1, "volume (" <> Integer.to_string(new_volume) <> ")")
+      )
+      |> Map.put(:volume, new_volume)
+
+    {:noreply, state, push: state}
   end
 
   def filter_event({:click, :increase_bpm}, _context, state) do
@@ -168,7 +183,7 @@ defmodule DrumMachineNerves.Scene.Main do
   def handle_info(:loop, %{iteration: iteration, bpm_in_ms: bpm_in_ms} = state) do
     Process.send_after(self(), :loop, bpm_in_ms)
 
-    # start_time = Time.utc_now()
+    start_time = Time.utc_now()
 
     current_iteration = iteration
     next_iteration = Optimizations.get_next_iteration(current_iteration)
@@ -179,6 +194,7 @@ defmodule DrumMachineNerves.Scene.Main do
 
     new_state = Map.put(state, :iteration, next_iteration)
 
+    Time.diff(Time.utc_now(), start_time, :microsecond) |> IO.inspect()
     {:noreply, new_state}
   end
 
@@ -189,6 +205,28 @@ defmodule DrumMachineNerves.Scene.Main do
   ####### '.###
   # Private.` #
   ########### `
+
+  defp increase_volume(%{volume: volume} = state) do
+    new_volume = increment_volume(volume)
+
+    AudioPlayer.set_volume(new_volume)
+
+    new_volume
+  end
+
+  defp decrease_volume(%{volume: volume} = state) do
+    new_volume = decrement_volume(volume)
+
+    AudioPlayer.set_volume(new_volume)
+
+    new_volume
+  end
+
+  def increment_volume(volume) when volume <= 90, do: volume + 10
+  def increment_volume(_), do: 100
+
+  def decrement_volume(volume) when volume >= 10, do: volume - 10
+  def decrement_volume(_), do: 0
 
   defp play_active_audio(current_iteration, state) do
     spawn(fn ->
