@@ -39,9 +39,13 @@ defmodule AudioPlayer do
   """
 
   def set_volume(percent) when is_integer(percent) and percent in 0..100 do
+    spawn(fn ->
+      percent
+      |> Integer.to_string()
+      |> set_volume_cmd
+    end)
+
     percent
-    |> Integer.to_string()
-    |> set_volume_cmd
   end
 
   @doc """

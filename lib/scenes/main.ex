@@ -6,7 +6,6 @@ defmodule DrumMachineNerves.Scene.Main do
   use Scenic.Scene
 
   alias Scenic.Graph
-  alias Scenic.Primitive
   import Scenic.Primitives
 
   alias DrumMachineNerves.Optimizations
@@ -14,7 +13,6 @@ defmodule DrumMachineNerves.Scene.Main do
   alias DrumMachineNerves.Components.{
     BpmControls,
     Header,
-    OffButton,
     PushButtons,
     StepIndicator,
     VolumeControls
@@ -22,20 +20,6 @@ defmodule DrumMachineNerves.Scene.Main do
 
   @num_rows 5
   @num_cols 8
-
-  @button_width 60
-  @button_height @button_width
-  @button_padding 4
-
-  # Tuples for every button containing {the left most x value, the top most y value, and the unique button id}
-  # This is only used to build the UI
-  @buttons Enum.map(0..(@num_cols - 1), fn x ->
-             Enum.map(0..(@num_rows - 1), fn y ->
-               {(@button_width + @button_padding) * x, (@button_height + @button_padding) * y,
-                {x, y}}
-             end)
-           end)
-           |> List.flatten()
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
                    |> Header.add_to_graph()
@@ -47,11 +31,7 @@ defmodule DrumMachineNerves.Scene.Main do
                    #    button_padding: @button_padding,
                    #    num_cols: @num_cols
                    #  )
-                   |> PushButtons.add_to_graph(
-                     button_width: @button_width,
-                     button_height: @button_height,
-                     buttons: @buttons
-                   )
+                   |> PushButtons.add_to_graph()
 
   def init(_, _) do
     Optimizations.disable_hdmi()
@@ -80,7 +60,8 @@ defmodule DrumMachineNerves.Scene.Main do
 
     # Start after a second to give the app a chance to initialize
 
-    Process.send_after(self(), :loop, 1000, [])
+    # Used to be 1000 insteaad of 1
+    Process.send_after(self(), :loop, 1, [])
 
     {:ok, state, push: state}
   end
@@ -174,23 +155,19 @@ defmodule DrumMachineNerves.Scene.Main do
       |> Map.put(:bpm_in_ms, new_bpm_in_ms)
       |> Graph.modify(:bpm_label, &text(&1, "bpm (" <> Integer.to_string(new_bpm) <> ")"))
 
-    # <> Integer.to_string(new_bpm) <>
-
     {:noreply, new_state, push: new_state}
   end
 
-  # Code that is run each beat
   def handle_info(:loop, %{iteration: iteration, bpm_in_ms: bpm_in_ms} = state) do
     Process.send_after(self(), :loop, bpm_in_ms)
 
     start_time = Time.utc_now()
 
-    current_iteration = iteration
-    next_iteration = Optimizations.get_next_iteration(current_iteration)
+    next_iteration = Optimizations.get_next_iteration(iteration)
 
-    GenServer.cast(DrumMachineNerves.Components.StepIndicator, {:loop, current_iteration})
+    GenServer.cast(DrumMachineNerves.Components.StepIndicator, {:loop, iteration})
 
-    play_active_audio(current_iteration, state)
+    play_active_audio(iteration, state)
 
     new_state = Map.put(state, :iteration, next_iteration)
 
@@ -206,20 +183,16 @@ defmodule DrumMachineNerves.Scene.Main do
   # Private.` #
   ########### `
 
-  defp increase_volume(%{volume: volume} = state) do
-    new_volume = increment_volume(volume)
-
-    AudioPlayer.set_volume(new_volume)
-
-    new_volume
+  defp increase_volume(%{volume: volume}) do
+    volume
+    |> increment_volume
+    |> AudioPlayer.set_volume()
   end
 
-  defp decrease_volume(%{volume: volume} = state) do
-    new_volume = decrement_volume(volume)
-
-    AudioPlayer.set_volume(new_volume)
-
-    new_volume
+  defp decrease_volume(%{volume: volume}) do
+    volume
+    |> decrement_volume()
+    |> AudioPlayer.set_volume()
   end
 
   def increment_volume(volume) when volume <= 90, do: volume + 10

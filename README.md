@@ -83,3 +83,5 @@ dtoverlay=pi3-disable-bt
 (disaable leds, there's na example in freezes libraary)
 dtparam=act_led_trigger=none
 dtparam=act_led_activelow=on
+
+# Seeing issues at ~200 > BPM

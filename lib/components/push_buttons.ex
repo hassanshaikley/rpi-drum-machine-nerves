@@ -14,37 +14,25 @@ defmodule DrumMachineNerves.Components.PushButtons do
 
   alias Scenic.{Graph, Primitive}
 
-  def init(
-        [button_width: button_width, button_height: button_height, buttons: buttons],
-        _opts
-      ) do
-    graph =
-      Graph.build()
-      |> group(
-        fn graph ->
-          Enum.reduce(
-            buttons,
-            graph,
-            fn obj, graph ->
-              graph
-              |> push_button(obj, button_width, button_height, :up, {200, 200, 200})
-              |> push_button(obj, button_width, button_height, :down, {50, 240, 50})
-            end
-          )
-        end,
-        t: {16, 140}
-      )
+  @num_rows 5
+  @num_cols 8
 
-    state = %{
-      graph: graph
-    }
+  @button_width 60
+  @button_height @button_width
+  @button_padding 4
 
-    {:ok, state, push: graph}
-  end
+  # Tuples for every button containing {the left most x value, the top most y value, and the unique button id}
+  # This is only used to build the UI
+  @buttons Enum.map(0..(@num_cols - 1), fn x ->
+             Enum.map(0..(@num_rows - 1), fn y ->
+               {(@button_width + @button_padding) * x, (@button_height + @button_padding) * y,
+                {x, y}}
+             end)
+           end)
+           |> List.flatten()
 
-  def verify(_), do: {:ok, nil}
-
-  defp push_button(graph, obj, button_width, button_height, direction, background) do
+  # anonymouse function so that I can call it from the module attribute / cache the graph at compile time
+  push_button = fn graph, obj, button_width, button_height, direction, background ->
     x = elem(obj, 0)
     y = elem(obj, 1)
     label = elem(obj, 2)
@@ -66,6 +54,49 @@ defmodule DrumMachineNerves.Components.PushButtons do
       width: button_width
     )
   end
+
+  @graph Graph.build()
+         |> group(
+           fn graph ->
+             Enum.reduce(
+               @buttons,
+               graph,
+               fn obj, graph ->
+                 graph
+                 |> push_button.(
+                   obj,
+                   @button_width,
+                   @button_height,
+                   :up,
+                   {200, 200, 200}
+                 )
+                 |> push_button.(
+                   obj,
+                   @button_width,
+                   @button_height,
+                   :down,
+                   {50, 240, 50}
+                 )
+               end
+             )
+           end,
+           t: {16, 140}
+         )
+
+  def init(
+        _,
+        _opts
+      ) do
+    graph = @graph
+
+    state = %{
+      graph: graph
+    }
+
+    {:ok, state, push: graph}
+  end
+
+  def verify(_), do: {:ok, nil}
 
   def handle_info(:loop, state \\ %{}) do
     IO.inspect("HELLLO FROM LOOP FROM PUSH BUTTONS PLS WOWRK")
