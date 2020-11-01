@@ -12,15 +12,13 @@ defmodule DrumMachineNerves.Scene.Main do
   alias DrumMachineNerves.Optimizations
 
   alias DrumMachineNerves.Components.{
+    BpmControls,
     Header,
     OffButton,
     PushButtons,
     StepIndicator,
     VolumeControls
   }
-
-  @bpm 80
-  @bpm_in_ms trunc(60_000 / @bpm)
 
   @width 800
   @height 480
@@ -55,6 +53,7 @@ defmodule DrumMachineNerves.Scene.Main do
                    |> OffButton.add_to_graph()
                    |> VolumeControls.add_to_graph()
                    |> StepIndicator.add_to_graph()
+                   |> BpmControls.add_to_graph()
                    #  |> StepIndicator.add_to_graph(nil,
                    #    button_width: @button_width,
                    #    button_padding: @button_padding,
@@ -81,6 +80,8 @@ defmodule DrumMachineNerves.Scene.Main do
           |> Map.put(Optimizations.encode_iteration_row(col, 4), false)
         end)
       )
+      |> Map.put(:bpm_in_ms, bpm_to_ms(90))
+      |> Map.put(:bpm, 90)
 
     # |> add_debug_text("poop")
 
@@ -98,19 +99,19 @@ defmodule DrumMachineNerves.Scene.Main do
   # --------------------------------------------------------
 
   def filter_event({:click, {col, row, :up} = id}, _context, state) do
-    updated_state =
+    new_state =
       toggle_button(id, true, state)
-      |> update_state(row, col, true)
+      |> update_button_state(row, col, true)
 
-    {:noreply, updated_state, push: updated_state}
+    {:noreply, new_state, push: new_state}
   end
 
   def filter_event({:click, {col, row, :down} = id}, _context, state) do
-    updated_state =
+    new_state =
       toggle_button(id, false, state)
-      |> update_state(row, col, false)
+      |> update_button_state(row, col, false)
 
-    {:noreply, updated_state, push: updated_state}
+    {:noreply, new_state, push: new_state}
   end
 
   def filter_event({:click, "shutdown"}, _context, state) do
@@ -136,9 +137,44 @@ defmodule DrumMachineNerves.Scene.Main do
     {:noreply, state}
   end
 
+  def filter_event({:click, :increase_bpm}, _context, state) do
+    new_bpm = state.bpm + 1
+    new_bpm_in_ms = bpm_to_ms(new_bpm)
+
+    new_state =
+      state
+      |> Map.put(:bpm, new_bpm)
+      |> Map.put(:bpm_in_ms, new_bpm_in_ms)
+      |> Graph.modify(:bpm_label, &text(&1, "bpm (" <> Integer.to_string(new_bpm) <> ")"))
+
+    # new_bpm_in_ms = state.bpm_in_ms + 6 * 5
+    # new_state = Map.put(state, :bpm_in_ms, new_bpm_in_ms)
+    # new_bpm =
+    # ms_to_bpm(new_bpm_in_ms) |> IO.inspect(label: :new_bpm_in_ms)
+    # Grape.modify(graph, :debug, &text(&1, txt))
+
+    {:noreply, new_state, push: new_state}
+  end
+
+  def filter_event({:click, :decrease_bpm}, _context, state) do
+    new_bpm = state.bpm - 1
+    new_bpm_in_ms = bpm_to_ms(new_bpm)
+
+    new_state =
+      state
+      |> Map.put(:bpm, new_bpm)
+      |> Map.put(:bpm_in_ms, new_bpm_in_ms)
+      |> Graph.modify(:bpm_label, &text(&1, "bpm (" <> Integer.to_string(new_bpm) <> ")"))
+
+    # <> Integer.to_string(new_bpm) <>
+
+    {:noreply, new_state, push: new_state}
+  end
+
   # Code that is run each beat
-  def handle_info(:loop, %{iteration: iteration} = state) do
-    Process.send_after(self(), :loop, @bpm_in_ms)
+  def handle_info(:loop, %{iteration: iteration, bpm_in_ms: bpm_in_ms} = state) do
+    IO.inspect(state.bpm_in_ms)
+    Process.send_after(self(), :loop, bpm_in_ms)
 
     # start_time = Time.utc_now()
 
@@ -158,7 +194,7 @@ defmodule DrumMachineNerves.Scene.Main do
 
     # Process.send(StepIndicator, :loop, [])
 
-    updated_state =
+    new_state =
       state
       |> update_step_indicator
       |> Map.put(:iteration, next_iteration)
@@ -166,7 +202,7 @@ defmodule DrumMachineNerves.Scene.Main do
     # Time.diff(start_time, Time.utc_now(), :microsecond)
     # |> IO.inspect()
 
-    {:noreply, updated_state, push: updated_state}
+    {:noreply, new_state, push: new_state}
   end
 
   def handle_input(_msg, _, state) do
@@ -177,7 +213,9 @@ defmodule DrumMachineNerves.Scene.Main do
   # Private.` #
   ########### `
 
-  defp sound_playing?(iteration, row, %{button_state: button_state} = state) do
+  defp bpm_to_ms(bpm), do: trunc(60_000 / bpm)
+
+  defp sound_playing?(iteration, row, %{button_state: button_state}) do
     Map.get(button_state, Optimizations.encode_iteration_row(iteration, row))
   end
 
@@ -204,12 +242,12 @@ defmodule DrumMachineNerves.Scene.Main do
     end)
   end
 
-  defp update_state(%{button_state: button_state} = state, row, col, button_down) do
+  defp update_button_state(%{button_state: button_state} = state, row, col, button_down) do
     new_button_state =
       Map.put(button_state, Optimizations.encode_iteration_row(col, row), button_down)
 
     Map.put(state, :button_state, new_button_state)
   end
 
-  defp add_debug_text(graph, txt), do: Graph.modify(graph, :debug, &text(&1, txt))
+  defp add_debug_text(graph, txt), do: Grape.modify(graph, :debug, &text(&1, txt))
 end
