@@ -18,7 +18,6 @@ defmodule DrumMachineNerves.Scene.Main do
     VolumeControls
   }
 
-  @num_rows 5
   @num_cols 8
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
@@ -26,11 +25,6 @@ defmodule DrumMachineNerves.Scene.Main do
                    |> VolumeControls.add_to_graph()
                    |> StepIndicator.add_to_graph()
                    |> BpmControls.add_to_graph()
-                   #  |> StepIndicator.add_to_graph(nil,
-                   #    button_width: @button_width,
-                   #    button_padding: @button_padding,
-                   #    num_cols: @num_cols
-                   #  )
                    |> PushButtons.add_to_graph()
 
   def init(_, _) do
@@ -56,12 +50,7 @@ defmodule DrumMachineNerves.Scene.Main do
       |> Map.put(:bpm, 90)
       |> Map.put(:volume, 50)
 
-    # |> add_debug_text("poop")
-
-    # Start after a second to give the app a chance to initialize
-
-    # Used to be 1000 insteaad of 1
-    Process.send_after(self(), :loop, 1, [])
+    Process.send(self(), :loop, [])
 
     {:ok, state, push: state}
   end
@@ -95,29 +84,21 @@ defmodule DrumMachineNerves.Scene.Main do
   def filter_event({:click, :volume_up}, _context, state) do
     new_volume = increase_volume(state)
 
-    state =
-      Graph.modify(
-        state,
-        :volume_label,
-        &text(&1, "volume (" <> Integer.to_string(new_volume) <> ")")
-      )
-      |> Map.put(:volume, new_volume)
+    GenServer.cast(DrumMachineNerves.Components.VolumeControls, {:update_volume, new_volume})
 
-    {:noreply, state, push: state}
+    new_state = Map.put(state, :volume, new_volume)
+
+    {:noreply, new_state}
   end
 
   def filter_event({:click, :volume_down}, _context, state) do
     new_volume = decrease_volume(state)
 
-    state =
-      Graph.modify(
-        state,
-        :volume_label,
-        &text(&1, "volume (" <> Integer.to_string(new_volume) <> ")")
-      )
-      |> Map.put(:volume, new_volume)
+    GenServer.cast(DrumMachineNerves.Components.VolumeControls, {:update_volume, new_volume})
 
-    {:noreply, state, push: state}
+    new_state = Map.put(state, :volume, new_volume)
+
+    {:noreply, new_state}
   end
 
   def filter_event({:click, :increase_bpm}, _context, state) do
@@ -213,6 +194,4 @@ defmodule DrumMachineNerves.Scene.Main do
 
     Map.put(state, :button_state, new_button_state)
   end
-
-  defp add_debug_text(graph, txt), do: Graph.modify(graph, :debug, &text(&1, txt))
 end

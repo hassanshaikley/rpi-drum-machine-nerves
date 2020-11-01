@@ -10,7 +10,7 @@ defmodule DrumMachineNerves.Components.VolumeControls do
 
   alias Scenic.Graph
 
-  @graph Graph.build()
+  @graph Graph.build(font: :roboto, font_size: 16)
          |> group(
            fn graph ->
              graph
@@ -52,4 +52,26 @@ defmodule DrumMachineNerves.Components.VolumeControls do
   end
 
   def verify(_), do: {:ok, nil}
+
+  def handle_cast({:update_volume, new_volume}, state) do
+    graph =
+      Graph.modify(
+        state.graph,
+        :volume_label,
+        &text(&1, "volume (" <> Integer.to_string(new_volume) <> ")")
+      )
+
+    {:noreply, state, push: graph}
+  end
+
+  def child_spec({args, opts}) do
+    %{
+      id: make_ref(),
+      start:
+        {Scenic.Scene, :start_link, [__MODULE__, args, Keyword.put_new(opts, :name, __MODULE__)]},
+      type: :worker,
+      restart: :permanent,
+      shutdown: 500
+    }
+  end
 end
