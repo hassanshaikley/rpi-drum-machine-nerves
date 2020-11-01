@@ -71,19 +71,15 @@ defmodule DrumMachineNerves.Scene.Main do
   # --------------------------------------------------------
 
   def filter_event({:click, {col, row, :up} = id}, _context, state) do
-    new_state =
-      state
-      |> update_button_state(row, col, true)
+    new_state = update_button_state(state, row, col, true)
 
-    {:noreply, new_state, push: new_state}
+    {:noreply, new_state}
   end
 
   def filter_event({:click, {col, row, :down} = id}, _context, state) do
-    new_state =
-      state
-      |> update_button_state(row, col, false)
+    new_state = update_button_state(state, row, col, false)
 
-    {:noreply, new_state, push: new_state}
+    {:noreply, new_state}
   end
 
   def filter_event({:click, :poweroff}, _context, state) do
