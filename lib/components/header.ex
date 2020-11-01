@@ -16,7 +16,6 @@ defmodule DrumMachineNerves.Components.Header do
         )
         |> text(">><<",
           id: :debug,
-          # was 630 not 30
           translate: {30, 60},
           font_size: 16,
           fill: :black

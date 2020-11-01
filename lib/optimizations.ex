@@ -3,8 +3,6 @@ defmodule DrumMachineNerves.Optimizations do
   Given two numbers it concatenates them between _and returns them as an atom.
   This is the translation from two numbers to an id used in this app.
 
-  The reason it isn't something like String.to_atom("#{a}_#{b}") is for performance.
-
   ## Examples
 
       iex> Optimizations.encode_iteration_row(5, 0)
@@ -75,4 +73,10 @@ defmodule DrumMachineNerves.Optimizations do
   def get_previous_iteration(iteration) when iteration == 5, do: 4
   def get_previous_iteration(iteration) when iteration == 6, do: 5
   def get_previous_iteration(iteration) when iteration == 7, do: 6
+
+  # Drawn from https://github.com/cjfreeze/power_control
+  # Just to reduce power consumption
+  def disable_hdmi do
+    :os.cmd('tvservice -o')
+  end
 end

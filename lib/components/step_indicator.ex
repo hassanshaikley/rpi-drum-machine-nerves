@@ -38,10 +38,7 @@ defmodule DrumMachineNerves.Components.StepIndicator do
     #   |> Graph.modify(:text, &text(&1, text))
 
     state = %{
-      graph: graph,
-      text: "hi",
-      name: __MODULE__,
-      id: __MODULE__
+      graph: graph
     }
 
     {:ok, state, push: graph}

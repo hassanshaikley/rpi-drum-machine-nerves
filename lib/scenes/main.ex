@@ -26,10 +26,6 @@ defmodule DrumMachineNerves.Scene.Main do
   @num_rows 5
   @num_cols 8
 
-  # @button_width 46 * 1.5
-  # @button_height @button_width
-  # @button_padding 2 * 1.5
-
   @button_width 60
   @button_height @button_width
   @button_padding 4
@@ -66,6 +62,8 @@ defmodule DrumMachineNerves.Scene.Main do
                    )
 
   def init(_, _) do
+    Optimizations.disable_hdmi()
+
     state =
       @main_menu_graph
       |> Map.put(:iteration, 0)
@@ -97,7 +95,7 @@ defmodule DrumMachineNerves.Scene.Main do
 
   def filter_event({:click, {col, row, :up} = id}, _context, state) do
     new_state =
-      toggle_button(id, true, state)
+      state
       |> update_button_state(row, col, true)
 
     {:noreply, new_state, push: new_state}
@@ -105,7 +103,7 @@ defmodule DrumMachineNerves.Scene.Main do
 
   def filter_event({:click, {col, row, :down} = id}, _context, state) do
     new_state =
-      toggle_button(id, false, state)
+      state
       |> update_button_state(row, col, false)
 
     {:noreply, new_state, push: new_state}
@@ -188,6 +186,10 @@ defmodule DrumMachineNerves.Scene.Main do
       if sound_playing?(current_iteration, 4, state), do: AudioPlayer.play_sound("hitoms.wav")
     end)
 
+    # IO.puts("1")
+    # Process.send(PushButtons, :loop, []) |> IO.inspect(label: :push_button_loop)
+    # IO.puts("2")
+
     # Process.send(StepIndicator, :loop, [])
 
     new_state =
@@ -213,19 +215,6 @@ defmodule DrumMachineNerves.Scene.Main do
 
   defp sound_playing?(iteration, row, %{button_state: button_state}) do
     Map.get(button_state, Optimizations.encode_iteration_row(iteration, row))
-  end
-
-  # In scenic to show that a button is down you need two buttons
-  # One for how it looks when it is up and another for how it looks when it is down
-  # And then hide the inactive button
-  defp toggle_button({col, row, _down}, button_down, state) do
-    state
-    |> Graph.modify({col, row, :down}, fn p ->
-      Primitive.put_style(p, :hidden, !button_down)
-    end)
-    |> Graph.modify({col, row, :up}, fn p ->
-      Primitive.put_style(p, :hidden, button_down)
-    end)
   end
 
   defp update_step_indicator(%{iteration: iteration} = state) do
