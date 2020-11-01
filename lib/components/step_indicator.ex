@@ -33,10 +33,7 @@ defmodule DrumMachineNerves.Components.StepIndicator do
   def verify(_), do: {:ok, nil}
 
   def init(_text, _opts) do
-    # modify the already built graph
     graph = @graph
-    #   |> Graph.modify(:_root_, &update_opts(&1, styles: opts[:styles]))
-    #   |> Graph.modify(:text, &text(&1, text))
 
     state = %{
       graph: graph

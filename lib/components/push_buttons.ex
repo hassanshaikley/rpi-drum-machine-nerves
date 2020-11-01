@@ -39,9 +39,6 @@ defmodule DrumMachineNerves.Components.PushButtons do
       graph: graph
     }
 
-    # IO.inspect(self(), label: :push_buttons)
-    # IO.inspect(state.graph)
-
     {:ok, state, push: graph}
   end
 

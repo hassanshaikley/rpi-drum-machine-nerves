@@ -176,34 +176,13 @@ defmodule DrumMachineNerves.Scene.Main do
     current_iteration = iteration
     next_iteration = Optimizations.get_next_iteration(current_iteration)
 
-    # Process.send(DrumMachineNerves.Components.StepIndicator, :loop, [current_iteration])
     GenServer.cast(DrumMachineNerves.Components.StepIndicator, {:loop, current_iteration})
 
-    spawn(fn ->
-      if sound_playing?(current_iteration, 0, state), do: AudioPlayer.play_sound("hihat.wav")
-      if sound_playing?(current_iteration, 1, state), do: AudioPlayer.play_sound("snare.wav")
-      if sound_playing?(current_iteration, 2, state), do: AudioPlayer.play_sound("triangle.wav")
+    play_active_audio(current_iteration, state)
 
-      if sound_playing?(current_iteration, 3, state),
-        do: AudioPlayer.play_sound("runnerskick.wav")
+    new_state = Map.put(state, :iteration, next_iteration)
 
-      if sound_playing?(current_iteration, 4, state), do: AudioPlayer.play_sound("hitoms.wav")
-    end)
-
-    # IO.puts("1")
-    # Process.send(PushButtons, :loop, []) |> IO.inspect(label: :push_button_loop)
-    # IO.puts("2")
-
-    # Process.send(StepIndicator, :loop, [])
-
-    new_state =
-      state
-      |> Map.put(:iteration, next_iteration)
-
-    # Time.diff(start_time, Time.utc_now(), :microsecond)
-    # |> IO.inspect()
-
-    {:noreply, new_state, push: new_state}
+    {:noreply, new_state}
   end
 
   def handle_input(_msg, _, state) do
@@ -213,6 +192,16 @@ defmodule DrumMachineNerves.Scene.Main do
   ####### '.###
   # Private.` #
   ########### `
+
+  defp play_active_audio(current_iteration, state) do
+    spawn(fn ->
+      if sound_playing?(current_iteration, 0, state), do: AudioPlayer.play_sound("hihat.wav")
+      if sound_playing?(current_iteration, 1, state), do: AudioPlayer.play_sound("snare.wav")
+      if sound_playing?(current_iteration, 2, state), do: AudioPlayer.play_sound("triangle.wav")
+      if sound_playing?(current_iteration, 3, state), do: AudioPlayer.play_sound("kick.wav")
+      if sound_playing?(current_iteration, 4, state), do: AudioPlayer.play_sound("hitoms.wav")
+    end)
+  end
 
   defp bpm_to_ms(bpm), do: trunc(60_000 / bpm)
 
