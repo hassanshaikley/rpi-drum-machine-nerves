@@ -19,21 +19,13 @@ defmodule DrumMachineNerves.Components.PushButtons do
           graph,
           fn obj, graph ->
             graph
-            |> up_button(obj, button_width, button_height)
-            |> down_button(obj, button_width, button_height)
+            |> push_button(obj, button_width, button_height, :up, {200, 200, 200})
+            |> push_button(obj, button_width, button_height, :down, {50, 240, 50})
           end
         )
       end,
       t: {16, 140}
     )
-  end
-
-  defp up_button(graph, obj, button_width, button_height) do
-    push_button(graph, obj, button_width, button_height, :up, {200, 200, 200})
-  end
-
-  defp down_button(graph, obj, button_width, button_height) do
-    push_button(graph, obj, button_width, button_height, :down, {50, 240, 50})
   end
 
   defp push_button(graph, obj, button_width, button_height, direction, background) do
