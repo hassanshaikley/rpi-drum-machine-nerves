@@ -98,18 +98,14 @@ defmodule DrumMachineNerves.Components.PushButtons do
 
   def verify(_), do: {:ok, nil}
 
-  def handle_info(:loop, state \\ %{}) do
-    {:noreply, %{}, push: %{}}
-  end
-
-  def filter_event({:click, {col, row, :up} = id} = event, _context, state) do
+  def filter_event({:click, {_col, _row, :up} = id} = event, _context, state) do
     graph = toggle_button(id, true, state.graph)
     state = Map.put(state, :graph, graph)
 
     {:cont, event, state, push: graph}
   end
 
-  def filter_event({:click, {col, row, :down} = id} = event, _context, state) do
+  def filter_event({:click, {_col, _row, :down} = id} = event, _context, state) do
     graph = toggle_button(id, false, state.graph)
     state = Map.put(state, :graph, graph)
 
