@@ -7,13 +7,8 @@ defmodule AudioPlayer do
 
   use GenServer
   alias __MODULE__
-  # @prod true
 
-  # GenServer initialization
-
-  def start_link(default \\ []) do
-    GenServer.start_link(__MODULE__, default, name: __MODULE__)
-  end
+  def start_link(default \\ []), do: GenServer.start_link(__MODULE__, default, name: __MODULE__)
 
   def init(init_arg \\ []) do
     setup_audio()
@@ -31,7 +26,8 @@ defmodule AudioPlayer do
       iex> AudioPlayer.play_sound("triangle.wav")
 
   """
-  def play_sound(file), do: GenServer.cast(__MODULE__, {:play_sound, file})
+  def play_sound(file),
+    do: Process.send(__MODULE__, {:play_sound, file}, [])
 
   @doc """
   Sets volume to the given percent (integer between 0 and 100)
@@ -51,22 +47,20 @@ defmodule AudioPlayer do
   @doc """
   Stops any sounds that are currently being played. Used for teardown purposes.
   """
-  def stop_sound, do: GenServer.cast(__MODULE__, :stop_audio)
+  def stop_sound, do: Process.send(__MODULE__, :stop_audio, [])
 
-  # GenServer handlers
-
-  def handle_cast(:stop_audio, state) do
-    :os.cmd('killall #{audio_player}')
+  def handle_info(:stop_audio, state) do
+    :os.cmd('killall #{audio_player()}')
 
     {:noreply, state}
   end
 
-  def handle_cast({:play_sound, file}, state) do
+  def handle_info({:play_sound, file}, state) do
     spawn(fn ->
       static_directory_path = Path.join(:code.priv_dir(:drum_machine_nerves), "static")
       full_path = Path.join(static_directory_path, file)
 
-      :os.cmd('#{audio_player_cmd} #{full_path}')
+      :os.cmd('#{audio_player_cmd()} #{full_path}')
     end)
 
     {:noreply, state}
@@ -76,19 +70,16 @@ defmodule AudioPlayer do
 
   defp setup_audio do
     set_audio_output_to_jack()
-    set_volume(90)
+    set_volume(50)
   end
 
   # This is expected to fail and do nothing on non rpi devices
-  defp set_audio_output_to_jack do
-    :os.cmd('amixer cset numid=3 1')
-  end
+  defp set_audio_output_to_jack, do: :os.cmd('amixer cset numid=3 1')
 
-  def set_volume_cmd(percent) when is_binary(percent) do
-    :os.cmd('amixer cset numid=1 #{percent}%')
-  end
+  def set_volume_cmd(percent) when is_binary(percent),
+    do: :os.cmd('amixer cset numid=1 #{percent}%')
 
   def rpi, do: Application.get_env(:drum_machine_nerves, :target) in [:rpi, :rpi2, :rpi3]
-  def audio_player, do: if(rpi, do: 'aplay', else: 'afplay')
-  def audio_player_cmd, do: if(rpi, do: '#{audio_player} -q', else: '#{audio_player}')
+  def audio_player, do: if(rpi(), do: 'aplay', else: 'afplay')
+  def audio_player_cmd, do: if(rpi(), do: '#{audio_player()} -q', else: '#{audio_player()}')
 end
