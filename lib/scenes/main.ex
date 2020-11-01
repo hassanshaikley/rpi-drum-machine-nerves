@@ -52,7 +52,7 @@ defmodule DrumMachineNerves.Scene.Main do
                    #    fill: {50, 50, 50}
                    #  )
                    |> Header.add_to_graph()
-                   #  |> OffButton.add_to_graph()
+                   |> OffButton.add_to_graph()
                    |> VolumeSlider.add_to_graph()
                    |> StepIndicator.add_to_graph()
                    #  |> StepIndicator.add_to_graph(nil,
@@ -122,6 +122,16 @@ defmodule DrumMachineNerves.Scene.Main do
   def filter_event({:value_changed, _id, value}, _context, state) do
     AudioPlayer.set_volume(value)
     {:noreply, state}
+  end
+
+  def filter_event({:click, :volume_up}, _context, state) do
+    AudioPlayer.increase_volume()
+    {:noreply, state}
+  end
+
+  def filter_event({:click, :volume_down}, _context, state) do
+    AudioPlayer.decrease_volume()
+    {:no_reply, state}
   end
 
   # Code that is run each beat

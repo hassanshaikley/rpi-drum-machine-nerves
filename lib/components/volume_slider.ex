@@ -22,6 +22,30 @@ defmodule DrumMachineNerves.Components.VolumeSlider do
       end,
       t: {0, 0}
     )
+    |> button("+",
+      theme: %{
+        text: :white,
+        background: {100, 100, 100},
+        active: {100, 200, 100},
+        border: :green
+      },
+      id: :volume_up,
+      t: {0, 40},
+      height: 20,
+      width: 20
+    )
+    |> button("-",
+      theme: %{
+        text: :white,
+        background: {100, 100, 100},
+        active: {100, 200, 100},
+        border: :green
+      },
+      id: :volume_down,
+      t: {40, 40},
+      height: 20,
+      width: 20
+    )
   end
 
   def info(_data) do

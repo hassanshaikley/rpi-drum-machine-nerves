@@ -44,8 +44,6 @@ defmodule DrumMachineNerves.Components.StepIndicator do
       id: __MODULE__
     }
 
-    IO.puts("init step indicator")
-
     {:ok, state, push: graph}
   end
 

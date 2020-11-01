@@ -20,7 +20,7 @@ defmodule DrumMachineNerves.Application do
 
     [
       {Scenic, viewports: [main_viewport_config]},
-      {AudioPlayer, []}
+      {AudioPlayer, [volume: 50]}
     ]
   end
 
@@ -29,7 +29,7 @@ defmodule DrumMachineNerves.Application do
 
     [
       {Scenic, viewports: [main_viewport_config]},
-      {AudioPlayer, []}
+      {AudioPlayer, [volume: 50]}
     ]
   end
 end

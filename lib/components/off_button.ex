@@ -16,15 +16,9 @@ defmodule DrumMachineNerves.Components.OffButton do
         border: :green
       },
       id: "shutdown",
-      translate: {400, 50},
+      translate: {600, 30},
       height: 50,
       width: 50
     )
-  end
-
-  def info(_data) do
-  end
-
-  def verify(_any) do
   end
 end

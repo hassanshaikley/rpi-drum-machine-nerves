@@ -1,6 +1,10 @@
 defmodule DrumMachineNerves.Components.PushButtons do
   @moduledoc """
   Push Buttons component
+
+  With scenic we use two buttons to create the illusion of changing a buttons color.
+  When a button is pressed, it is hidden and the opposite state button that sits directly
+  underneath it is revealed.
   """
 
   use Scenic.Scene, has_children: false
@@ -33,6 +37,7 @@ defmodule DrumMachineNerves.Components.PushButtons do
     y = elem(obj, 1)
     label = elem(obj, 2)
     id = Tuple.append(label, direction)
+    # Initialize the down (pressed) button as hidden
     hidden = direction == :down
 
     button(graph, "",
