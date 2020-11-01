@@ -39,7 +39,7 @@ defmodule DrumMachineNerves.Scene.Main do
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
                    |> Header.add_to_graph()
-                   |> OffButton.add_to_graph()
+                   #  |> OffButton.add_to_graph()
                    |> VolumeControls.add_to_graph()
                    |> StepIndicator.add_to_graph()
                    |> BpmControls.add_to_graph()
@@ -108,7 +108,9 @@ defmodule DrumMachineNerves.Scene.Main do
   def filter_event({:click, :poweroff}, _context, state) do
     # spawn(fn -> :os.cmd('poweroff') end)
     # spawn(fn -> Nerves.Runtime.poweroff() end)
-    spawn(fn -> System.cmd("poweroff", ["now"]) end)
+
+    # Tried the thing below it didnt wowrk
+    # spawn(fn -> System.cmd("poweroff", ["now"]) end)
 
     {:noreply, state}
   end
