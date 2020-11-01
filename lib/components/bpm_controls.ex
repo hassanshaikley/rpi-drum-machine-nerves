@@ -10,7 +10,7 @@ defmodule DrumMachineNerves.Components.BpmControls do
 
   alias Scenic.Graph
 
-  @graph Graph.build()
+  @graph Graph.build(font: :roboto, font_size: 16)
          |> group(
            fn graph ->
              graph
@@ -51,7 +51,10 @@ defmodule DrumMachineNerves.Components.BpmControls do
   def verify(_), do: {:ok, nil}
 
   def filter_event({:click, :decrease_bpm} = event, _context, state) do
-    IO.puts("HI")
+    {:cont, event, state, push: state.graph}
+  end
+
+  def filter_event({:click, :increase_bpm} = event, _context, state) do
     {:cont, event, state, push: state.graph}
   end
 

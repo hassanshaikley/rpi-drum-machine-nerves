@@ -12,7 +12,7 @@ defmodule DrumMachineNerves.Scene.Main do
 
   alias DrumMachineNerves.Components.{
     BpmControls,
-    Header,
+    # Header,
     PushButtons,
     StepIndicator,
     VolumeControls
@@ -22,7 +22,7 @@ defmodule DrumMachineNerves.Scene.Main do
   @num_cols 8
 
   @main_menu_graph Graph.build(font: :roboto, font_size: 16)
-                   |> Header.add_to_graph()
+                   #  |> Header.add_to_graph()
                    |> VolumeControls.add_to_graph()
                    |> StepIndicator.add_to_graph()
                    |> BpmControls.add_to_graph()
@@ -144,8 +144,6 @@ defmodule DrumMachineNerves.Scene.Main do
 
     new_bpm_in_ms = bpm_to_ms(new_bpm)
 
-    IO.inspect(new_bpm)
-
     new_state =
       state
       |> Map.put(:bpm, new_bpm)
@@ -158,6 +156,7 @@ defmodule DrumMachineNerves.Scene.Main do
     Process.send_after(self(), :loop, bpm_in_ms)
 
     # start_time = Time.utc_now()
+    IO.inspect(state.bpm)
 
     next_iteration = Optimizations.get_next_iteration(iteration)
 
