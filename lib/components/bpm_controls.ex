@@ -22,9 +22,9 @@ defmodule DrumMachineNerves.Components.BpmControls do
             border: :green
           },
           id: :increase_bpm,
-          t: {0, 10},
-          height: 40,
-          width: 40
+          t: {60, -17},
+          height: 70,
+          width: 70
         )
         |> button("-",
           theme: %{
@@ -34,12 +34,12 @@ defmodule DrumMachineNerves.Components.BpmControls do
             border: :green
           },
           id: :decrease_bpm,
-          t: {50, 10},
-          height: 40,
-          width: 40
+          t: {140, -17},
+          height: 70,
+          width: 70
         )
       end,
-      t: {200, 30}
+      t: {150, 30}
     )
   end
 

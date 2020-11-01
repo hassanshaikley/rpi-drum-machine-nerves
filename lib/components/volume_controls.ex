@@ -13,7 +13,7 @@ defmodule DrumMachineNerves.Components.VolumeControls do
     |> group(
       fn graph ->
         graph
-        |> text("volume")
+        |> text("volume (50)", t: {-17, 0})
         |> button("+",
           theme: %{
             text: :white,
@@ -22,9 +22,9 @@ defmodule DrumMachineNerves.Components.VolumeControls do
             border: :green
           },
           id: :volume_up,
-          t: {0, 10},
-          height: 40,
-          width: 40
+          t: {60, -17},
+          height: 70,
+          width: 70
         )
         |> button("-",
           theme: %{
@@ -34,9 +34,9 @@ defmodule DrumMachineNerves.Components.VolumeControls do
             border: :green
           },
           id: :volume_down,
-          t: {50, 10},
-          height: 40,
-          width: 40
+          t: {140, -17},
+          height: 70,
+          width: 70
         )
       end,
       t: {450, 30}
