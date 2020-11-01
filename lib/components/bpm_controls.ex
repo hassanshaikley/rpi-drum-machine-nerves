@@ -42,10 +42,4 @@ defmodule DrumMachineNerves.Components.BpmControls do
       t: {150, 30}
     )
   end
-
-  def info(_data) do
-  end
-
-  def verify(_any) do
-  end
 end

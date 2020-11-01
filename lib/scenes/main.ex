@@ -173,7 +173,6 @@ defmodule DrumMachineNerves.Scene.Main do
 
   # Code that is run each beat
   def handle_info(:loop, %{iteration: iteration, bpm_in_ms: bpm_in_ms} = state) do
-    IO.inspect(state.bpm_in_ms)
     Process.send_after(self(), :loop, bpm_in_ms)
 
     # start_time = Time.utc_now()

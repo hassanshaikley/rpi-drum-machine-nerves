@@ -30,10 +30,4 @@ defmodule DrumMachineNerves.Components.Header do
       t: {10, 10}
     )
   end
-
-  def info(_data) do
-  end
-
-  def verify(_any) do
-  end
 end
