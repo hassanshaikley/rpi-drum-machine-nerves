@@ -12,7 +12,7 @@ defmodule DrumMachineNerves.Components.VolumeControls do
          |> group(
            fn graph ->
              graph
-             |> text("volume (50)", t: {-17, 0}, id: :volume_label)
+             |> text("volume\n(50)", t: {-17, 0}, id: :volume_label)
              |> button("+",
                theme: %{
                  text: :white,
