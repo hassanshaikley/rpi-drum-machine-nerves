@@ -97,8 +97,6 @@ defmodule DrumMachineNerves.Scene.Main do
   end
 
   def filter_event({:click, :volume_up}, _context, state) do
-    IO.inspect(increase_volume(state))
-
     new_volume = increase_volume(state)
 
     state =
@@ -128,40 +126,38 @@ defmodule DrumMachineNerves.Scene.Main do
 
   def filter_event({:click, :increase_bpm}, _context, state) do
     new_bpm = state.bpm + 1
+    GenServer.cast(DrumMachineNerves.Components.BpmControls, {:update_bpm, new_bpm})
+
     new_bpm_in_ms = bpm_to_ms(new_bpm)
 
     new_state =
       state
       |> Map.put(:bpm, new_bpm)
       |> Map.put(:bpm_in_ms, new_bpm_in_ms)
-      |> Graph.modify(:bpm_label, &text(&1, "bpm (" <> Integer.to_string(new_bpm) <> ")"))
 
-    # new_bpm_in_ms = state.bpm_in_ms + 6 * 5
-    # new_state = Map.put(state, :bpm_in_ms, new_bpm_in_ms)
-    # new_bpm =
-    # ms_to_bpm(new_bpm_in_ms) |> IO.inspect(label: :new_bpm_in_ms)
-    # Grape.modify(graph, :debug, &text(&1, txt))
-
-    {:noreply, new_state, push: new_state}
+    {:noreply, new_state}
   end
 
   def filter_event({:click, :decrease_bpm}, _context, state) do
     new_bpm = state.bpm - 1
+    GenServer.cast(DrumMachineNerves.Components.BpmControls, {:update_bpm, new_bpm})
+
     new_bpm_in_ms = bpm_to_ms(new_bpm)
+
+    IO.inspect(new_bpm)
 
     new_state =
       state
       |> Map.put(:bpm, new_bpm)
       |> Map.put(:bpm_in_ms, new_bpm_in_ms)
-      |> Graph.modify(:bpm_label, &text(&1, "bpm (" <> Integer.to_string(new_bpm) <> ")"))
 
-    {:noreply, new_state, push: new_state}
+    {:noreply, new_state}
   end
 
   def handle_info(:loop, %{iteration: iteration, bpm_in_ms: bpm_in_ms} = state) do
     Process.send_after(self(), :loop, bpm_in_ms)
 
-    start_time = Time.utc_now()
+    # start_time = Time.utc_now()
 
     next_iteration = Optimizations.get_next_iteration(iteration)
 
@@ -171,7 +167,7 @@ defmodule DrumMachineNerves.Scene.Main do
 
     new_state = Map.put(state, :iteration, next_iteration)
 
-    Time.diff(Time.utc_now(), start_time, :microsecond) |> IO.inspect()
+    # Time.diff(Time.utc_now(), start_time, :microsecond) |> IO.inspect()
     {:noreply, new_state}
   end
 
