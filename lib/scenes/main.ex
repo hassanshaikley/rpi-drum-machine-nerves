@@ -6,7 +6,6 @@ defmodule DrumMachineNerves.Scene.Main do
   use Scenic.Scene
 
   alias Scenic.Graph
-  import Scenic.Primitives
 
   alias DrumMachineNerves.Optimizations
 
@@ -59,13 +58,13 @@ defmodule DrumMachineNerves.Scene.Main do
   # event handlers
   # --------------------------------------------------------
 
-  def filter_event({:click, {col, row, :up} = id}, _context, state) do
+  def filter_event({:click, {col, row, :up}}, _context, state) do
     new_state = update_button_state(state, row, col, true)
 
     {:noreply, new_state}
   end
 
-  def filter_event({:click, {col, row, :down} = id}, _context, state) do
+  def filter_event({:click, {col, row, :down}}, _context, state) do
     new_state = update_button_state(state, row, col, false)
 
     {:noreply, new_state}
