@@ -64,11 +64,14 @@ defmodule AudioPlayer do
   def handle_cast(:increase_volume, %{volume: volume} = state) do
     new_volume = increment_volume(volume)
 
+    set_volume(new_volume)
     {:noreply, Map.put(state, :volume, new_volume)}
   end
 
   def handle_cast(:decrease_volume, %{volume: volume} = state) do
     new_volume = decrement_volume(volume)
+
+    set_volume(new_volume)
 
     {:noreply, Map.put(state, :volume, new_volume)}
   end

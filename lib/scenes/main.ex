@@ -131,7 +131,7 @@ defmodule DrumMachineNerves.Scene.Main do
 
   def filter_event({:click, :volume_down}, _context, state) do
     AudioPlayer.decrease_volume()
-    {:no_reply, state}
+    {:noreply, state}
   end
 
   # Code that is run each beat
