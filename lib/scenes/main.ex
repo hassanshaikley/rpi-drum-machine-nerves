@@ -30,9 +30,16 @@ defmodule DrumMachineNerves.Scene.Main do
     Optimizations.disable_ethernet()
     Optimizations.disable_usb()
 
+    graph = @main_menu_graph
+
     state =
-      @main_menu_graph
-      |> Map.put(:iteration, 0)
+      %{
+        graph: graph,
+        bpm: 90,
+        bpm_in_ms: bpm_to_ms(90),
+        volume: 50,
+        iteration: 0
+      }
       |> Map.put(
         :button_state,
         Enum.reduce(0..(@num_cols - 1), %{}, fn col, acc ->
@@ -44,13 +51,10 @@ defmodule DrumMachineNerves.Scene.Main do
           |> Map.put(Optimizations.encode_iteration_row(col, 4), false)
         end)
       )
-      |> Map.put(:bpm_in_ms, bpm_to_ms(90))
-      |> Map.put(:bpm, 90)
-      |> Map.put(:volume, 50)
 
     Process.send(self(), :loop, [])
 
-    {:ok, state, push: state}
+    {:ok, state, push: state.graph}
   end
 
   # ============================================================================
@@ -101,6 +105,7 @@ defmodule DrumMachineNerves.Scene.Main do
 
   def filter_event({:click, :increase_bpm}, _context, state) do
     new_bpm = state.bpm + 1
+
     GenServer.cast(DrumMachineNerves.Components.BpmControls, {:update_bpm, new_bpm})
 
     new_bpm_in_ms = bpm_to_ms(new_bpm)
