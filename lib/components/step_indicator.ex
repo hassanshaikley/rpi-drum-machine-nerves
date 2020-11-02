@@ -20,7 +20,7 @@ defmodule RpiDrumMachineNerves.Components.StepIndicator do
 
                  graph
                  |> rect({60, 10},
-                   fill: :red,
+                   fill: :dark_red,
                    translate: {x, y},
                    id: {index, :h}
                  )
@@ -61,10 +61,10 @@ defmodule RpiDrumMachineNerves.Components.StepIndicator do
   defp update(state, iteration) do
     state
     |> Graph.modify({iteration, :h}, fn p ->
-      Primitive.put_style(p, :fill, :blue)
+      Primitive.put_style(p, :fill, :red)
     end)
     |> Graph.modify({Optimizations.get_previous_iteration(iteration), :h}, fn p ->
-      Primitive.put_style(p, :fill, :red)
+      Primitive.put_style(p, :fill, :dark_red)
     end)
   end
 end

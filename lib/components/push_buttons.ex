@@ -75,7 +75,7 @@ defmodule RpiDrumMachineNerves.Components.PushButtons do
                    @button_width,
                    @button_height,
                    :down,
-                   {50, 240, 50}
+                   {100, 200, 100}
                  )
                end
              )
