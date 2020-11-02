@@ -11,9 +11,9 @@ defmodule RpiDrumMachineNerves.Components.InstrumentLabels do
              graph
              |> text("hihat", t: {0, 0}, id: :volume_label)
              |> text("snare", t: {0, 64}, id: :volume_label)
-             |> text("triangle", t: {0, 64 * 2}, id: :volume_label)
+             |> text("cymbal", t: {0, 64 * 2}, id: :volume_label)
              |> text("kick", t: {0, 64 * 3}, id: :volume_label)
-             |> text("hitoms", t: {0, 64 * 4}, id: :volume_label)
+             |> text("tom", t: {0, 64 * 4}, id: :volume_label)
            end,
            t: {10, 150}
          )

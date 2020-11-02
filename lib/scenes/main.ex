@@ -177,9 +177,9 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     spawn(fn ->
       if sound_playing?(current_iteration, 0, state), do: AudioPlayer.play_sound("hihat.wav")
       if sound_playing?(current_iteration, 1, state), do: AudioPlayer.play_sound("snare.wav")
-      if sound_playing?(current_iteration, 2, state), do: AudioPlayer.play_sound("triangle.wav")
+      if sound_playing?(current_iteration, 2, state), do: AudioPlayer.play_sound("cymbal.wav")
       if sound_playing?(current_iteration, 3, state), do: AudioPlayer.play_sound("kick.wav")
-      if sound_playing?(current_iteration, 4, state), do: AudioPlayer.play_sound("hitoms.wav")
+      if sound_playing?(current_iteration, 4, state), do: AudioPlayer.play_sound("tom.wav")
     end)
   end
 
