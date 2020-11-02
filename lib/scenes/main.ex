@@ -11,6 +11,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   alias RpiDrumMachineNerves.Components.{
     BpmControls,
     Header,
+    InstrumentLabels,
     PushButtons,
     StepIndicator,
     VolumeControls
@@ -24,6 +25,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                    |> StepIndicator.add_to_graph()
                    |> BpmControls.add_to_graph()
                    |> PushButtons.add_to_graph()
+                   |> InstrumentLabels.add_to_graph()
 
   def init(_, _) do
     Optimizations.disable_hdmi()

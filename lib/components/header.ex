@@ -7,7 +7,7 @@ defmodule RpiDrumMachineNerves.Components.Header do
 
   alias Scenic.Graph
 
-  @graph Graph.build(font: :roboto_mono, font_size: 16)
+  @graph Graph.build(font: :roboto_mono, font_size: 30)
          |> group(
            fn graph ->
              graph
@@ -15,9 +15,15 @@ defmodule RpiDrumMachineNerves.Components.Header do
                fill: :dark_gray,
                translate: {0, 0}
              )
-             |> text("RPI Drum Machine Nerves v 1.0",
+             |> text("RPI Drum Machine Nerves",
                id: :title,
-               translate: {550, 70},
+               translate: {380, 70},
+               font_size: 30,
+               fill: :black
+             )
+             |> text("v 1.0",
+               id: :title,
+               translate: {730, 70},
                font_size: 16,
                fill: :black
              )

@@ -39,7 +39,7 @@ defmodule RpiDrumMachineNerves.Components.BpmControls do
                width: 70
              )
            end,
-           t: {600, 130}
+           t: {630, 130}
          )
 
   def init(_, _opts) do

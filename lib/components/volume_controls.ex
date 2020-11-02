@@ -38,7 +38,7 @@ defmodule RpiDrumMachineNerves.Components.VolumeControls do
                width: 70
              )
            end,
-           t: {600, 330}
+           t: {630, 300}
          )
 
   def init(_, _opts) do
