@@ -5,6 +5,8 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   use Scenic.Scene
 
+  import Scenic.Primitives
+
   alias Scenic.Graph
   alias RpiDrumMachineNerves.Optimizations
 
@@ -20,6 +22,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   @num_cols 8
 
   @main_menu_graph Graph.build(font: :roboto_mono, font_size: 16)
+                   |> rectangle({800, 480}, fill: {56, 55, 61})
                    |> Header.add_to_graph()
                    |> VolumeControls.add_to_graph()
                    |> StepIndicator.add_to_graph()
