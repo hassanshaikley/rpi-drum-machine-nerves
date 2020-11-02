@@ -78,16 +78,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     {:noreply, new_state}
   end
 
-  def filter_event({:click, :poweroff}, _context, state) do
-    # spawn(fn -> :os.cmd('poweroff') end)
-    # spawn(fn -> Nerves.Runtime.poweroff() end)
-
-    # Tried the thing below it didnt wowrk
-    # spawn(fn -> System.cmd("poweroff", ["now"]) end)
-
-    {:noreply, state}
-  end
-
   def filter_event({:click, :volume_up}, _context, state) do
     new_volume = increase_volume(state)
 

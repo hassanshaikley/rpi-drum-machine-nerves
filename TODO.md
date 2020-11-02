@@ -1,22 +1,3 @@
-# Optimize Elixir
-
-# Optimize Scenic
-
-# Optimize Nerves
-
-# Improve sounds
-
-[] Experiment with Overclocking
-[] Update the versions of stuff
-
-## Compile optimization notes
-
-Readme text goes here
-
-From template
-
-# Perf things
-
 ## Optimiztion 1
 
 ```

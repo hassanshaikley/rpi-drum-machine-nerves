@@ -2,9 +2,9 @@
 
 ![Image of the drum machine](beat_it.png)
 
-This is a drum machine intended to run on an RPI. I currently have tested this on a RPI 2 B+.
+This is a drum machine intended to run on an RPI. I currently have tested this on a RPI 3 B+.
 
-There are some known issues; it won't run with all 4 measures. It works with 1 measure due to performance constraints on the RPI 2 B+.
+Last time I tried, the RPI 2 was only capable of handling 1 measure with 4 beats. It's possible that it can handle it now I just haven't gotten around to testing it.
 
 ## Local Dependencies
 
@@ -12,6 +12,13 @@ There are some known issues; it won't run with all 4 measures. It works with 1 m
 
 ## Device Dependencies
 
-- Official Rasberry PI 7 inch touch screen (roughly \$68 USD)
-- RPI 2 or 3 ($20-$40 USD)
+- Official Rasberry PI 7 inch touch screen (roughly \$65 USD)
+- RPI 3 ($20-$40 USD)
 - headphones or speakers
+
+# Running it locally on mac/linux
+
+```
+$> mix deps.get
+$> iex -S mix
+```

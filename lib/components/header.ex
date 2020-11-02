@@ -27,17 +27,6 @@ defmodule RpiDrumMachineNerves.Components.Header do
                font_size: 16,
                fill: :black
              )
-
-             #  |> text(">><<",
-             #    id: :debug,
-             #    translate: {30, 50},
-             #    font_size: 16,
-             #    fill: :black
-             #  )
-             #  |> text("#{Mix.env()}",
-             #    translate: {30, 70},
-             #    fill: :black
-             #  )
            end,
            id: :header,
            t: {10, 10}
