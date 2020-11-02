@@ -18,7 +18,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   @num_cols 8
 
-  @main_menu_graph Graph.build(font: :roboto, font_size: 16)
+  @main_menu_graph Graph.build(font: :roboto_mono, font_size: 16)
                    |> Header.add_to_graph()
                    |> VolumeControls.add_to_graph()
                    |> StepIndicator.add_to_graph()

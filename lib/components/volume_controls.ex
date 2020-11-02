@@ -8,11 +8,11 @@ defmodule RpiDrumMachineNerves.Components.VolumeControls do
 
   alias Scenic.Graph
 
-  @graph Graph.build(font: :roboto, font_size: 16)
+  @graph Graph.build(font: :roboto_mono, font_size: 16)
          |> group(
            fn graph ->
              graph
-             |> text("volume\n(50)", t: {-17, 0}, id: :volume_label)
+             |> text("vol\n(50)", t: {0, 0}, id: :volume_label)
              |> button("+",
                theme: %{
                  text: :white,
@@ -21,7 +21,7 @@ defmodule RpiDrumMachineNerves.Components.VolumeControls do
                  border: :green
                },
                id: :volume_up,
-               t: {60, -17},
+               t: {40, -10},
                height: 70,
                width: 70
              )
@@ -33,12 +33,12 @@ defmodule RpiDrumMachineNerves.Components.VolumeControls do
                  border: :green
                },
                id: :volume_down,
-               t: {140, -17},
+               t: {40, -10 + 80},
                height: 70,
                width: 70
              )
            end,
-           t: {450, 30}
+           t: {600, 330}
          )
 
   def init(_, _opts) do
@@ -56,7 +56,7 @@ defmodule RpiDrumMachineNerves.Components.VolumeControls do
       Graph.modify(
         state.graph,
         :volume_label,
-        &text(&1, "volume (" <> Integer.to_string(new_volume) <> ")")
+        &text(&1, "vol\n(" <> Integer.to_string(new_volume) <> ")")
       )
 
     {:noreply, state, push: graph}

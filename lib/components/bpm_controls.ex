@@ -9,7 +9,7 @@ defmodule RpiDrumMachineNerves.Components.BpmControls do
 
   alias Scenic.Graph
 
-  @graph Graph.build(font: :roboto, font_size: 16)
+  @graph Graph.build(font: :roboto_mono, font_size: 16)
          |> group(
            fn graph ->
              graph
@@ -22,7 +22,7 @@ defmodule RpiDrumMachineNerves.Components.BpmControls do
                  border: :green
                },
                id: :increase_bpm,
-               t: {60, -17},
+               t: {40, 0 - 10},
                height: 70,
                width: 70
              )
@@ -34,12 +34,12 @@ defmodule RpiDrumMachineNerves.Components.BpmControls do
                  border: :green
                },
                id: :decrease_bpm,
-               t: {140, -17},
+               t: {40, 80 - 10},
                height: 70,
                width: 70
              )
            end,
-           t: {150, 30}
+           t: {600, 130}
          )
 
   def init(_, _opts) do
@@ -62,7 +62,7 @@ defmodule RpiDrumMachineNerves.Components.BpmControls do
       Graph.modify(
         state.graph,
         :bpm_label,
-        &text(&1, "bpm (" <> Integer.to_string(new_bpm) <> ")")
+        &text(&1, "bpm\n(" <> Integer.to_string(new_bpm) <> ")")
       )
 
     {:noreply, state, push: graph}

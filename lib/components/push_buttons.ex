@@ -80,7 +80,7 @@ defmodule RpiDrumMachineNerves.Components.PushButtons do
                end
              )
            end,
-           t: {16, 140}
+           t: {16 + 60, 140}
          )
 
   def init(

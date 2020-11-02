@@ -7,7 +7,7 @@ defmodule RpiDrumMachineNerves.Components.Header do
 
   alias Scenic.Graph
 
-  @graph Graph.build()
+  @graph Graph.build(font: :roboto_mono, font_size: 16)
          |> group(
            fn graph ->
              graph
@@ -15,16 +15,23 @@ defmodule RpiDrumMachineNerves.Components.Header do
                fill: :dark_gray,
                translate: {0, 0}
              )
-             |> text(">><<",
-               id: :debug,
-               translate: {30, 60},
+             |> text("RPI Drum Machine Nerves v 1.0",
+               id: :title,
+               translate: {550, 70},
                font_size: 16,
                fill: :black
              )
-             |> text("#{Mix.env()}",
-               translate: {30, 70},
-               fill: :black
-             )
+
+             #  |> text(">><<",
+             #    id: :debug,
+             #    translate: {30, 50},
+             #    font_size: 16,
+             #    fill: :black
+             #  )
+             #  |> text("#{Mix.env()}",
+             #    translate: {30, 70},
+             #    fill: :black
+             #  )
            end,
            id: :header,
            t: {10, 10}

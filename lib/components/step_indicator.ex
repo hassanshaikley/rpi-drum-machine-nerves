@@ -27,7 +27,7 @@ defmodule RpiDrumMachineNerves.Components.StepIndicator do
                end
              )
            end,
-           t: {16, 120}
+           t: {16 + 60, 120}
          )
 
   def verify(_), do: {:ok, nil}
