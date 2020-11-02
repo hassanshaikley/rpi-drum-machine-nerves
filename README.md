@@ -1,87 +1,17 @@
-Readme text goes here
+# RPI Drum Machine Nerves
 
-From template
+![Image of the drum machine](beat_it.png)
 
-# Perf things
+This is a drum machine intended to run on an RPI. I currently have tested this on a RPI 2 B+.
 
-## Optimiztion 1
+There are some known issues; it won't run with all 4 measures. It works with 1 measure due to performance constraints on the RPI 2 B+.
 
-```
-a = "cat"
-b = "dog"
+## Local Dependencies
 
-Benchee.run(
-  %{
-    "Interpolation" => fn ->
-      "#{a}#{b}"
-    end,
-    "Concatenation" => fn ->
-      a <> b
-    end
-  },
-  time: 10,
-  memory_time: 2
-)
-```
+- afplay for local testing on a mac. If you'd like to use another library modify `lib/audio_player.ex`.
 
-```
-Name                    ips        average  deviation         median         99th %
-Concatenation      817.95 K        1.22 μs  ±2576.49%           1 μs           3 μs
-Interpolation      258.23 K        3.87 μs   ±636.15%           3 μs           6 μs
+## Device Dependencies
 
-Comparison:
-Concatenation      817.95 K
-Interpolation      258.23 K - 3.17x slower +2.65 μs
-
-Memory usage statistics:
-
-Name             Memory usage
-Concatenation         0.99 KB
-Interpolation         2.32 KB - 2.34x memory usage +1.33 KB
-```
-
-Then theres matching
-
-```
-Benchmarking Concatenation...
-Benchmarking Matching...
-
-Name                    ips        average  deviation         median         99th %
-Matching             1.32 M        0.76 μs  ±6499.33%        0.98 μs        0.98 μs
-Concatenation        0.41 M        2.42 μs  ±1364.84%        1.98 μs        3.98 μs
-
-Comparison:
-Matching             1.32 M
-Concatenation        0.41 M - 3.19x slower +1.66 μs
-
-Memory usage statistics:
-
-Name             Memory usage
-Matching              0.45 KB
-Concatenation         1.62 KB - 3.57x memory usage +1.16 KB
-```
-
-## Optimization 2
-
-[ Need citaation]
-
-Burn fw with mix_env = prod
-
-# Optimization 3
-
-, has_children: false
-for components u make
-
-[ Citaation in the scenic docs]
-
-## See if can start with
-
-(disable wifi + bluetooth)
-dtoverlay=pi3-disable-wifi
-dtoverlay=pi3-disable-bt
-
-(disaable leds, there's na example in freezes libraary)
-dtparam=act_led_trigger=none
-dtparam=act_led_activelow=on
-
-# Seeing issues at ~200 > BPM
+- Official Rasberry PI 7 inch touch screen (roughly \$68 USD)
+- RPI 2 or 3 ($20-$40 USD)
+- headphones or speakers
