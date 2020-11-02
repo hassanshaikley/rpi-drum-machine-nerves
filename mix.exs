@@ -1,4 +1,4 @@
-defmodule DrumMachineNerves.MixProject do
+defmodule RpiDrumMachineNerves.MixProject do
   use Mix.Project
 
   @app :drum_machine_nerves
@@ -30,7 +30,7 @@ defmodule DrumMachineNerves.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      mod: {DrumMachineNerves.Application, []},
+      mod: {RpiDrumMachineNerves.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end

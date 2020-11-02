@@ -1,4 +1,4 @@
-defmodule DrumMachineNerves.Scene.Main do
+defmodule RpiDrumMachineNerves.Scene.Main do
   @moduledoc """
   Main scene
   """
@@ -6,9 +6,9 @@ defmodule DrumMachineNerves.Scene.Main do
   use Scenic.Scene
 
   alias Scenic.Graph
-  alias DrumMachineNerves.Optimizations
+  alias RpiDrumMachineNerves.Optimizations
 
-  alias DrumMachineNerves.Components.{
+  alias RpiDrumMachineNerves.Components.{
     BpmControls,
     # Header,
     PushButtons,
@@ -86,7 +86,7 @@ defmodule DrumMachineNerves.Scene.Main do
   def filter_event({:click, :volume_up}, _context, state) do
     new_volume = increase_volume(state)
 
-    GenServer.cast(DrumMachineNerves.Components.VolumeControls, {:update_volume, new_volume})
+    GenServer.cast(RpiDrumMachineNerves.Components.VolumeControls, {:update_volume, new_volume})
 
     new_state = Map.put(state, :volume, new_volume)
 
@@ -96,7 +96,7 @@ defmodule DrumMachineNerves.Scene.Main do
   def filter_event({:click, :volume_down}, _context, state) do
     new_volume = decrease_volume(state)
 
-    GenServer.cast(DrumMachineNerves.Components.VolumeControls, {:update_volume, new_volume})
+    GenServer.cast(RpiDrumMachineNerves.Components.VolumeControls, {:update_volume, new_volume})
 
     new_state = Map.put(state, :volume, new_volume)
 
@@ -106,7 +106,7 @@ defmodule DrumMachineNerves.Scene.Main do
   def filter_event({:click, :increase_bpm}, _context, state) do
     new_bpm = state.bpm + 1
 
-    GenServer.cast(DrumMachineNerves.Components.BpmControls, {:update_bpm, new_bpm})
+    GenServer.cast(RpiDrumMachineNerves.Components.BpmControls, {:update_bpm, new_bpm})
 
     new_bpm_in_ms = bpm_to_ms(new_bpm)
 
@@ -120,7 +120,7 @@ defmodule DrumMachineNerves.Scene.Main do
 
   def filter_event({:click, :decrease_bpm}, _context, state) do
     new_bpm = state.bpm - 1
-    GenServer.cast(DrumMachineNerves.Components.BpmControls, {:update_bpm, new_bpm})
+    GenServer.cast(RpiDrumMachineNerves.Components.BpmControls, {:update_bpm, new_bpm})
 
     new_bpm_in_ms = bpm_to_ms(new_bpm)
 
@@ -134,7 +134,7 @@ defmodule DrumMachineNerves.Scene.Main do
 
   def handle_info(:loop, %{iteration: iteration, bpm_in_ms: bpm_in_ms} = state) do
     Process.send_after(self(), :loop, bpm_in_ms)
-    GenServer.cast(DrumMachineNerves.Components.StepIndicator, {:loop, iteration})
+    GenServer.cast(RpiDrumMachineNerves.Components.StepIndicator, {:loop, iteration})
     play_active_audio(iteration, state)
 
     new_state = Map.put(state, :iteration, Optimizations.get_next_iteration(iteration))

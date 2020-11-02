@@ -1,4 +1,4 @@
-defmodule DrumMachineNerves.Optimizations do
+defmodule RpiDrumMachineNerves.Optimizations do
   @doc """
   Given two numbers it concatenates them between _and returns them as an atom.
   This is the translation from two numbers to an id used in this app.

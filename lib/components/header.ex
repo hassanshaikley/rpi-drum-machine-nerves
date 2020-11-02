@@ -1,4 +1,4 @@
-# defmodule DrumMachineNerves.Components.Header do
+# defmodule RpiDrumMachineNerves.Components.Header do
 #   @moduledoc """
 #   Header component
 #   """

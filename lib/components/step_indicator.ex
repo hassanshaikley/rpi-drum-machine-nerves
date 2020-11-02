@@ -1,9 +1,9 @@
-defmodule DrumMachineNerves.Components.StepIndicator do
+defmodule RpiDrumMachineNerves.Components.StepIndicator do
   use Scenic.Component, has_children: false
   import Scenic.Primitives
 
   alias Scenic.{Graph, Primitive}
-  alias DrumMachineNerves.Optimizations
+  alias RpiDrumMachineNerves.Optimizations
 
   @graph Graph.build()
          |> group(
