@@ -1,10 +1,12 @@
-defmodule AudioPlayer do
+defmodule RpiDrumMachineNerves.AudioPlayer do
   @moduledoc """
   Audio player that uses a GenServer to manage the audio
   """
 
+  @audio_player if(Mix.env() == :prod, do: 'aplay', else: 'afplay')
+  @audio_player_cmd if(Mix.env() == :prod, do: '#{@audio_player} -q', else: @audio_player)
+
   use GenServer
-  alias __MODULE__
 
   def start_link(default \\ []), do: GenServer.start_link(__MODULE__, default, name: __MODULE__)
 
@@ -21,13 +23,13 @@ defmodule AudioPlayer do
 
   ## Examples
 
-      iex> AudioPlayer.play_sound("triangle.wav")
+      iex> AudioPlayer.play_audio("triangle.wav")
 
   """
-  def play_sound(file),
-    do: Process.send(__MODULE__, {:play_sound, file}, [])
+  def play_audio(file),
+    do: Process.send(__MODULE__, {:play_audio, file}, [])
 
-  # Process.send(__MODULE__, {:play_sound, file}, [])
+  # Process.send(__MODULE__, {:play_audio, file}, [])
 
   @doc """
   Sets volume to the given percent
@@ -48,23 +50,12 @@ defmodule AudioPlayer do
     percent
   end
 
-  @doc """
-  Stops any sounds that are currently being played. Used for teardown purposes.
-  """
-  def stop_sound, do: Process.send(__MODULE__, :stop_audio, [])
-
-  def handle_info(:stop_audio, state) do
-    :os.cmd('killall #{audio_player()}')
-
-    {:noreply, state}
-  end
-
-  def handle_info({:play_sound, file}, state) do
+  def handle_info({:play_audio, file}, state) do
     spawn(fn ->
       static_directory_path = Path.join(:code.priv_dir(:drum_machine_nerves), "static")
       full_path = Path.join(static_directory_path, file)
 
-      :os.cmd('#{audio_player_cmd()} #{full_path}')
+      :os.cmd('#{@audio_player_cmd} #{full_path}')
     end)
 
     {:noreply, state}
@@ -82,8 +73,4 @@ defmodule AudioPlayer do
 
   def set_volume_cmd(percent) when is_binary(percent),
     do: :os.cmd('amixer cset numid=1 #{percent}%')
-
-  def rpi, do: Application.get_env(:drum_machine_nerves, :target) in [:rpi, :rpi2, :rpi3]
-  def audio_player, do: if(rpi(), do: 'aplay', else: 'afplay')
-  def audio_player_cmd, do: if(rpi(), do: '#{audio_player()} -q', else: '#{audio_player()}')
 end

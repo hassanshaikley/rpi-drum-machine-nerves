@@ -8,7 +8,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   import Scenic.Primitives
 
   alias Scenic.Graph
-  alias RpiDrumMachineNerves.Optimizations
+  alias RpiDrumMachineNerves.{AudioPlayer, Optimizations}
 
   alias RpiDrumMachineNerves.Components.{
     BpmControls,
@@ -57,7 +57,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
         end)
       )
 
-    Process.send(self(), :loop, [])
+    Process.send_after(self(), :loop, 5000, [])
 
     {:ok, state, push: state.graph}
   end
@@ -165,17 +165,17 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   defp play_active_audio(current_iteration, state) do
     spawn(fn ->
-      if sound_playing?(current_iteration, 0, state), do: AudioPlayer.play_sound("hihat.wav")
-      if sound_playing?(current_iteration, 1, state), do: AudioPlayer.play_sound("snare.wav")
-      if sound_playing?(current_iteration, 2, state), do: AudioPlayer.play_sound("cymbal.wav")
-      if sound_playing?(current_iteration, 3, state), do: AudioPlayer.play_sound("kick.wav")
-      if sound_playing?(current_iteration, 4, state), do: AudioPlayer.play_sound("tom.wav")
+      if audio_playing?(current_iteration, 0, state), do: AudioPlayer.play_audio("hihat.wav")
+      if audio_playing?(current_iteration, 1, state), do: AudioPlayer.play_audio("snare.wav")
+      if audio_playing?(current_iteration, 2, state), do: AudioPlayer.play_audio("cymbal.wav")
+      if audio_playing?(current_iteration, 3, state), do: AudioPlayer.play_audio("kick.wav")
+      if audio_playing?(current_iteration, 4, state), do: AudioPlayer.play_audio("tom.wav")
     end)
   end
 
   defp bpm_to_ms(bpm), do: trunc(60_000 / bpm)
 
-  defp sound_playing?(iteration, row, %{button_state: button_state}) do
+  defp audio_playing?(iteration, row, %{button_state: button_state}) do
     Map.get(button_state, Optimizations.encode_iteration_row(iteration, row))
   end
 
