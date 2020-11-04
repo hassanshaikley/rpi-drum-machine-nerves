@@ -8,9 +8,7 @@ defmodule RpiDrumMachineNerves.Components.StepIndicator do
   @graph Graph.build()
          |> group(
            fn graph ->
-             Enum.map(0..(8 - 1), fn col ->
-               {(60 + 4) * col, 4, col}
-             end)
+             Enum.map(0..(8 - 1), fn col -> {(60 + 4) * col, 4, col} end)
              |> Enum.reduce(
                graph,
                fn obj, graph ->
@@ -19,11 +17,7 @@ defmodule RpiDrumMachineNerves.Components.StepIndicator do
                  index = elem(obj, 2)
 
                  graph
-                 |> rect({60, 10},
-                   fill: :dark_red,
-                   translate: {x, y},
-                   id: {index, :h}
-                 )
+                 |> rect({60, 10}, fill: :dark_red, translate: {x, y}, id: {index, :h})
                end
              )
            end,
@@ -60,9 +54,7 @@ defmodule RpiDrumMachineNerves.Components.StepIndicator do
 
   defp update(state, iteration) do
     state
-    |> Graph.modify({iteration, :h}, fn p ->
-      Primitive.put_style(p, :fill, :red)
-    end)
+    |> Graph.modify({iteration, :h}, fn p -> Primitive.put_style(p, :fill, :red) end)
     |> Graph.modify({Optimizations.get_previous_iteration(iteration), :h}, fn p ->
       Primitive.put_style(p, :fill, :dark_red)
     end)

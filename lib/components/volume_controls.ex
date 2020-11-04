@@ -18,7 +18,7 @@ defmodule RpiDrumMachineNerves.Components.VolumeControls do
                  text: :white,
                  background: {100, 100, 100},
                  active: {100, 200, 100},
-                 border: :green
+                 border: :black
                },
                id: :volume_up,
                t: {40, -10},
@@ -30,7 +30,7 @@ defmodule RpiDrumMachineNerves.Components.VolumeControls do
                  text: :white,
                  background: {100, 100, 100},
                  active: {100, 200, 100},
-                 border: :green
+                 border: :black
                },
                id: :volume_down,
                t: {40, -10 + 80},
@@ -52,13 +52,8 @@ defmodule RpiDrumMachineNerves.Components.VolumeControls do
   def verify(_), do: {:ok, nil}
 
   def handle_cast({:update_volume, new_volume}, state) do
-    graph =
-      Graph.modify(
-        state.graph,
-        :volume_label,
-        &text(&1, "vol\n(" <> Integer.to_string(new_volume) <> ")")
-      )
-
+    vol = Integer.to_string(new_volume)
+    graph = Graph.modify(state.graph, :volume_label, &text(&1, "vol\n(" <> vol <> ")"))
     {:noreply, state, push: graph}
   end
 

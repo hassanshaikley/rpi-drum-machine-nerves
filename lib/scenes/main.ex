@@ -22,13 +22,13 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   @num_cols 8
 
   @main_menu_graph Graph.build(font: :roboto_mono, font_size: 16)
-                   |> rectangle({800, 480}, fill: {56, 55, 61})
+                   #  |> rectangle({800, 480}, fill: {56, 55, 61})
                    |> Header.add_to_graph()
                    |> VolumeControls.add_to_graph()
                    |> StepIndicator.add_to_graph()
-                   |> BpmControls.add_to_graph()
-                   |> PushButtons.add_to_graph()
-                   |> InstrumentLabels.add_to_graph()
+  #  |> BpmControls.add_to_graph()
+  #  |> PushButtons.add_to_graph()
+  #  |> InstrumentLabels.add_to_graph()
 
   def init(_, _) do
     Optimizations.disable_hdmi()
@@ -45,17 +45,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
         volume: 50,
         iteration: 0
       }
-      |> Map.put(
-        :button_state,
-        Enum.reduce(0..(@num_cols - 1), %{}, fn col, acc ->
-          acc
-          |> Map.put(Optimizations.encode_iteration_row(col, 0), false)
-          |> Map.put(Optimizations.encode_iteration_row(col, 1), false)
-          |> Map.put(Optimizations.encode_iteration_row(col, 2), false)
-          |> Map.put(Optimizations.encode_iteration_row(col, 3), false)
-          |> Map.put(Optimizations.encode_iteration_row(col, 4), false)
-        end)
-      )
+      |> init_button_state()
 
     Process.send_after(self(), :loop, 5000, [])
 
@@ -129,7 +119,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   def handle_info(:loop, %{iteration: iteration, bpm_in_ms: bpm_in_ms} = state) do
     Process.send_after(self(), :loop, bpm_in_ms)
-    GenServer.cast(RpiDrumMachineNerves.Components.StepIndicator, {:loop, iteration})
+    GenServer.cast(StepIndicator, {:loop, iteration})
     play_active_audio(iteration, state)
 
     new_state = Map.put(state, :iteration, Optimizations.get_next_iteration(iteration))
@@ -149,6 +139,21 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     volume
     |> increment_volume
     |> AudioPlayer.set_volume()
+  end
+
+  defp init_button_state(state) do
+    Map.put(
+      state,
+      :button_state,
+      Enum.reduce(0..(@num_cols - 1), %{}, fn col, acc ->
+        acc
+        |> Map.put(Optimizations.encode_iteration_row(col, 0), false)
+        |> Map.put(Optimizations.encode_iteration_row(col, 1), false)
+        |> Map.put(Optimizations.encode_iteration_row(col, 2), false)
+        |> Map.put(Optimizations.encode_iteration_row(col, 3), false)
+        |> Map.put(Optimizations.encode_iteration_row(col, 4), false)
+      end)
+    )
   end
 
   defp decrease_volume(%{volume: volume}) do
