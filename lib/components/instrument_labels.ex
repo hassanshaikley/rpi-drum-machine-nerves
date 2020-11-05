@@ -18,18 +18,7 @@ defmodule RpiDrumMachineNerves.Components.InstrumentLabels do
            t: {10, 150}
          )
 
-  def init(
-        _,
-        _opts
-      ) do
-    graph = @graph
-
-    state = %{
-      graph: graph
-    }
-
-    {:ok, state, push: graph}
-  end
+  def init(_, _opts), do: {:ok, %{graph: @graph}, push: @graph}
 
   def verify(_), do: {:ok, nil}
 end

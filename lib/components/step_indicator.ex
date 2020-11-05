@@ -55,8 +55,10 @@ defmodule RpiDrumMachineNerves.Components.StepIndicator do
   defp update(state, iteration) do
     state
     |> Graph.modify({iteration, :h}, fn p -> Primitive.put_style(p, :fill, :red) end)
-    |> Graph.modify({Optimizations.get_previous_iteration(iteration), :h}, fn p ->
+    |> Graph.modify({get_previous_iteration(iteration), :h}, fn p ->
       Primitive.put_style(p, :fill, :dark_red)
     end)
   end
+
+  defp get_previous_iteration(iteration), do: rem(iteration - 1, 8)
 end

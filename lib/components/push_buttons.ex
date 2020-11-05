@@ -63,20 +63,8 @@ defmodule RpiDrumMachineNerves.Components.PushButtons do
                graph,
                fn obj, graph ->
                  graph
-                 |> push_button.(
-                   obj,
-                   @button_width,
-                   @button_height,
-                   :up,
-                   {200, 200, 200}
-                 )
-                 |> push_button.(
-                   obj,
-                   @button_width,
-                   @button_height,
-                   :down,
-                   {100, 200, 100}
-                 )
+                 |> push_button.(obj, @button_width, @button_height, :up, {200, 200, 200})
+                 |> push_button.(obj, @button_width, @button_height, :down, {100, 200, 100})
                end
              )
            end,

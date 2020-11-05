@@ -22,13 +22,13 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   @num_cols 8
 
   @main_menu_graph Graph.build(font: :roboto_mono, font_size: 16)
-                   #  |> rectangle({800, 480}, fill: {56, 55, 61})
+                   |> rectangle({800, 480}, fill: {56, 55, 61})
                    |> Header.add_to_graph()
                    |> VolumeControls.add_to_graph()
                    |> StepIndicator.add_to_graph()
-  #  |> BpmControls.add_to_graph()
-  #  |> PushButtons.add_to_graph()
-  #  |> InstrumentLabels.add_to_graph()
+                   |> BpmControls.add_to_graph()
+                   |> PushButtons.add_to_graph()
+                   |> InstrumentLabels.add_to_graph()
 
   def init(_, _) do
     Optimizations.disable_hdmi()
@@ -70,21 +70,15 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
   def filter_event({:click, :volume_up}, _context, state) do
     new_volume = increase_volume(state)
-
     GenServer.cast(RpiDrumMachineNerves.Components.VolumeControls, {:update_volume, new_volume})
-
     new_state = Map.put(state, :volume, new_volume)
-
     {:noreply, new_state}
   end
 
   def filter_event({:click, :volume_down}, _context, state) do
     new_volume = decrease_volume(state)
-
     GenServer.cast(RpiDrumMachineNerves.Components.VolumeControls, {:update_volume, new_volume})
-
     new_state = Map.put(state, :volume, new_volume)
-
     {:noreply, new_state}
   end
 
@@ -122,7 +116,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     GenServer.cast(StepIndicator, {:loop, iteration})
     play_active_audio(iteration, state)
 
-    new_state = Map.put(state, :iteration, Optimizations.get_next_iteration(iteration))
+    new_state = Map.put(state, :iteration, get_next_iteration(iteration))
 
     {:noreply, new_state}
   end
@@ -190,4 +184,6 @@ defmodule RpiDrumMachineNerves.Scene.Main do
 
     Map.put(state, :button_state, new_button_state)
   end
+
+  defp get_next_iteration(i), do: rem(i + 1, 8)
 end
