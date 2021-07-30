@@ -52,7 +52,7 @@ defmodule RpiDrumMachineNerves.Components.VolumeControls do
   def verify(_), do: {:ok, nil}
 
   def handle_cast({:update_volume, new_volume}, state) do
-    graph = Graph.modify(state.graph, :volume_label, &text(&1, volume_text_macro(new_volume)))
+    graph = Graph.modify(state.graph, :volume_label, &text(&1, volume_text(new_volume)))
     {:noreply, state, push: graph}
   end
 
@@ -73,10 +73,25 @@ defmodule RpiDrumMachineNerves.Components.VolumeControls do
   end
 
 
-  0..100 |> Enum.each fn vol ->
-    def volume_text_macro(unquote(vol)) do
-      vol_string = to_string(unquote(vol))
-      "vol\n(" <> vol_string <> ")"
+  # def unquote(:"hello_#{name}")() do
+  #   IO.inspect("Hello #{unquote(name)}")
+  # end
+
+  # First attempt
+  # 0..100 |> Enum.each fn vol ->
+  #   def volume_text_macro(unquote(vol)) do
+  #     vol_string = to_string(unquote(vol))
+  #     "vol\n(" <> vol_string <> ")"
+  #   end
+  # end
+
+  0..0 |> Enum.each fn vol ->
+    defmacro volume_text_macro(unquote(vol) = vol) do
+      quote do
+        # MyOtherModule.unquote(action)(unquote(msg), unquote(sender))
+
+        "vol\n(" <>  unquote(vol) <> ")"
+      end
     end
   end
 end

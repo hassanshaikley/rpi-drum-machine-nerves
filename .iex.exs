@@ -1,4 +1,4 @@
-alias RpiDrumMachineNerves.Components.VolumeControls
+require RpiDrumMachineNerves.Components.VolumeControls
 
 volume_text_macro = fn x ->
 
@@ -23,13 +23,13 @@ end
 
 
 
-Benchee.run(
-  %{
-    "without macro" => fn -> volume_text.(10) end,
-    "with macro" => fn -> volume_text_macro.(10) end
-  },
-  time: 10,
-  memory_time: 2
-)
+# Benchee.run(
+#   %{
+#     "without macro" => fn -> volume_text.(10) end,
+#     "with macro" => fn -> volume_text_macro.(10) end
+#   },
+#   time: 10,
+#   memory_time: 2
+# )
 
 # IO.puts "HI"
