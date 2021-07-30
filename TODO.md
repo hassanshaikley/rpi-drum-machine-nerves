@@ -1,81 +1,23 @@
-## Optimiztion 1
+# To Do
 
-```
-a = "cat"
-b = "dog"
+- Review the code
+- Create benchmarks you want to run on the RPI (just bc they're faster on my machine doesn't mean they will be faster on the PI)
 
-Benchee.run(
-  %{
-    "Interpolation" => fn ->
-      "#{a}#{b}"
-    end,
-    "Concatenation" => fn ->
-      a <> b
-    end
-  },
-  time: 10,
-  memory_time: 2
-)
-```
+## Questions
+- Are there more performany architectures ?
+  - It is a simple app but would using a different, maybe more multithreaded, architecture be desirable
+- Is there a more readable way to write scenic code?
+- Are there ways we can use Streams?
+- Can we make Scenic more performant?
 
-```
-Name                    ips        average  deviation         median         99th %
-Concatenation      817.95 K        1.22 μs  ±2576.49%           1 μs           3 μs
-Interpolation      258.23 K        3.87 μs   ±636.15%           3 μs           6 μs
 
-Comparison:
-Concatenation      817.95 K
-Interpolation      258.23 K - 3.17x slower +2.65 μs
+## Benchmarks:
+- See if tails recursion is faster on the PI
+- Look for methods that copy 
+- Cache result of bpm_to_ms with metaprogramming during compile time and see if that is faster
+- Would using a process for each instrument be faster? It kind of feels wrong
 
-Memory usage statistics:
+- Encode iteration row changed from returning strings or use macro to generate the functions
+- Need to run the benchmarks on the PI itself
+- Note that we don't care about memory
 
-Name             Memory usage
-Concatenation         0.99 KB
-Interpolation         2.32 KB - 2.34x memory usage +1.33 KB
-```
-
-Then theres matching
-
-```
-Benchmarking Concatenation...
-Benchmarking Matching...
-
-Name                    ips        average  deviation         median         99th %
-Matching             1.32 M        0.76 μs  ±6499.33%        0.98 μs        0.98 μs
-Concatenation        0.41 M        2.42 μs  ±1364.84%        1.98 μs        3.98 μs
-
-Comparison:
-Matching             1.32 M
-Concatenation        0.41 M - 3.19x slower +1.66 μs
-
-Memory usage statistics:
-
-Name             Memory usage
-Matching              0.45 KB
-Concatenation         1.62 KB - 3.57x memory usage +1.16 KB
-```
-
-## Optimization 2
-
-[ Need citaation]
-
-Burn fw with mix_env = prod
-
-# Optimization 3
-
-, has_children: false
-for components u make
-
-[ Citaation in the scenic docs]
-
-## See if can start with
-
-(disable wifi + bluetooth)
-dtoverlay=pi3-disable-wifi
-dtoverlay=pi3-disable-bt
-
-(disaable leds, there's na example in freezes libraary)
-dtparam=act_led_trigger=none
-dtparam=act_led_activelow=on
-
-# Seeing issues at ~200 > BPM
