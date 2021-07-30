@@ -9,6 +9,8 @@ Last time I tried, the RPI 2 was only capable of handling 1 measure with 4 beats
 ## Local Dependencies
 
 - afplay for local testing on a mac. If you'd like to use another library modify `lib/audio_player.ex`.
+- `glfw` is a scenic dependency
+- `glew` is a scenic dependency
 
 ## Device Dependencies
 
