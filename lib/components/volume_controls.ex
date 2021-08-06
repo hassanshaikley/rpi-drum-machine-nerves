@@ -56,10 +56,6 @@ defmodule RpiDrumMachineNerves.Components.VolumeControls do
     {:noreply, state, push: graph}
   end
 
-  def volume_text(vol) do
-    vol = Integer.to_string(vol)
-    "vol\n(" <> vol <> ")"
-  end
 
   def child_spec({args, opts}) do
     %{
@@ -73,6 +69,12 @@ defmodule RpiDrumMachineNerves.Components.VolumeControls do
   end
 
 
+
+  def volume_text(vol) do
+    vol = Integer.to_string(vol)
+    "vol\n(" <> vol <> ")"
+  end
+
   # def unquote(:"hello_#{name}")() do
   #   IO.inspect("Hello #{unquote(name)}")
   # end
@@ -85,13 +87,32 @@ defmodule RpiDrumMachineNerves.Components.VolumeControls do
   #   end
   # end
 
-  0..0 |> Enum.each fn vol ->
-    defmacro volume_text_macro(unquote(vol) = vol) do
-      quote do
-        # MyOtherModule.unquote(action)(unquote(msg), unquote(sender))
+  # 0..0 |> Enum.each fn vol ->
+  #   defmacro volume_text_macro(unquote(vol) = vol) do
+  #     quote do
+  #       # MyOtherModule.unquote(action)(unquote(msg), unquote(sender))
 
-        "vol\n(" <>  unquote(vol) <> ")"
-      end
-    end
+  #       "vol\n(" <>  unquote(vol) <> ")"
+  #     end
+  #   end
+  # end
+  # for vol <- 0..100 do
+  #   def volume_text_macro(unquote(vol)) do
+  #     vol = Integer.to_string(vol)
+
+  #     unquote("vol\n(#{vol})")
+  #   end
+  # end
+
+  def volume_text_macro(10) do
+    "vol\n(10)"
   end
+  # for i <- 0..100 do
+  #   def unquote(:volume_text_macro)(unquote(i)) do
+  #     vol = Integer.to_string(unquote(i))
+  #     string = "vol\n(#{vol})"
+  #     string
+  #   end
+  # end
+
 end
