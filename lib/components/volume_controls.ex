@@ -12,7 +12,9 @@ defmodule RpiDrumMachineNerves.Components.VolumeControls do
          |> group(
            fn graph ->
              graph
-             |> text("vol\n(50)", t: {0, 0}, id: :volume_label)
+             |> text("vol", t: {0, 0})
+             |> text("50", t: {0, 13}, id: :volume_label)
+
              |> button("+",
                theme: %{
                  text: :white,
@@ -53,7 +55,7 @@ defmodule RpiDrumMachineNerves.Components.VolumeControls do
 
   def handle_cast({:update_volume, new_volume}, state) do
     vol = Integer.to_string(new_volume)
-    graph = Graph.modify(state.graph, :volume_label, &text(&1, "vol\n(" <> vol <> ")"))
+    graph = Graph.modify(state.graph, :volume_label, &text(&1, vol))
     {:noreply, state, push: graph}
   end
 
