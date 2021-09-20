@@ -45,6 +45,7 @@ defmodule RpiDrumMachineNerves.MixProject do
       {:toolshed, "~> 0.2"},
       {:scenic, "~> 0.10"},
       {:scenic_sensor, "~> 0.7"},
+      {:midi_synth, "~> 0.4.0"},
 
       # Dependencies for only the :host
       {:scenic_driver_glfw, "~> 0.10", targets: :host},

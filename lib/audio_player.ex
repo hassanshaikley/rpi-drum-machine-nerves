@@ -12,8 +12,8 @@ defmodule RpiDrumMachineNerves.AudioPlayer do
 
   def init(volume: volume) do
     setup_audio(volume)
-
-    {:ok, []}
+    {:ok, synth} = MIDISynth.start_link([])
+    {:ok, %{synth: synth}}
   end
 
   # Public API
@@ -26,10 +26,8 @@ defmodule RpiDrumMachineNerves.AudioPlayer do
       iex> AudioPlayer.play_audio("triangle.wav")
 
   """
-  def play_audio(file),
-    do: Process.send(__MODULE__, {:play_audio, file}, [])
-
-  # Process.send(__MODULE__, {:play_audio, file}, [])
+  def play_audio(args),
+    do: Process.send(__MODULE__, {:play_audio, args}, [])
 
   @doc """
   Sets volume to the given percent
@@ -50,16 +48,29 @@ defmodule RpiDrumMachineNerves.AudioPlayer do
     percent
   end
 
-  def handle_info({:play_audio, file}, state) do
-    spawn(fn ->
-      static_directory_path = Path.join(:code.priv_dir(:drum_machine_nerves), "static")
-      full_path = Path.join(static_directory_path, file)
+  def handle_info({:play_audio, args}, %{synth: synth} = state) do
+    # MIDISynth.Keyboard.play(synth, 56, 0, 127, 9)
+    apply(MIDISynth.Keyboard, :play, [synth] ++ args)
+    # spawn(fn ->
+      # static_directory_path = Path.join(:code.priv_dir(:drum_machine_nerves), "static")
+      # full_path = Path.join(static_directory_path, file)
 
-      :os.cmd('#{@audio_player_cmd} #{full_path}')
-    end)
+      # :os.cmd('#{@audio_player_cmd} #{full_path}')
+    # end)
 
     {:noreply, state}
   end
+
+  # def handle_info({:play_audio, file}, state) do
+  #   spawn(fn ->
+  #     static_directory_path = Path.join(:code.priv_dir(:drum_machine_nerves), "static")
+  #     full_path = Path.join(static_directory_path, file)
+
+  #     :os.cmd('#{@audio_player_cmd} #{full_path}')
+  #   end)
+
+  #   {:noreply, state}
+  # end
 
   # Private
 
