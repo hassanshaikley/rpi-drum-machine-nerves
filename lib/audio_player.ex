@@ -55,8 +55,6 @@ defmodule RpiDrumMachineNerves.AudioPlayer do
       static_directory_path = Path.join(:code.priv_dir(:drum_machine_nerves), "static")
       full_path = Path.join(static_directory_path, file)
 
-      # :os.cmd('#{@audio_player_cmd} #{full_path}')
-
       System.cmd(@audio_player, @audio_player_args ++ [full_path])
     end)
 
@@ -70,19 +68,19 @@ defmodule RpiDrumMachineNerves.AudioPlayer do
     set_volume(volume)
   end
 
-  # This is expected to fail and do nothing on non rpi devices
-  # defp set_audio_output_to_jack, do: System.cmd("amixer", ["cset", "numid=3", "1"], stderr_to_stdout: true)
   defp set_audio_output_to_jack do
-    case Mix.env() do
-      :prod -> System.cmd("echo", ["ji"], stderr_to_stdout: true)
-      _ -> :noop
+    try do
+      System.cmd("amixer", ["cset", "numid=3", "1"], stderr_to_stdout: true)
+    rescue
+      e in ErlangError -> "Error!"
     end
   end
 
   def set_volume_cmd(percent) when is_binary(percent) do
-    case Mix.env() do
-      :prod -> System.cmd("amixer", ["cset", "numid=3", "#{percent}%"], stderr_to_stdout: true)
-      _ -> :noop
+    try do
+      System.cmd("amixer", ["cset", "numid=3", "#{percent}%"], stderr_to_stdout: true)
+    rescue
+      e in ErlangError -> "Error!"
     end
   end
 end
