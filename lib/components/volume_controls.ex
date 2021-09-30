@@ -14,7 +14,6 @@ defmodule RpiDrumMachineNerves.Components.VolumeControls do
              graph
              |> text("vol", t: {0, 0})
              |> text("50", t: {0, 13}, id: :volume_label)
-
              |> button("+",
                theme: %{
                  text: :white,
