@@ -3,8 +3,8 @@ defmodule RpiDrumMachineNerves.AudioPlayer do
   Audio player that uses a GenServer to manage the audio
   """
 
-  @audio_player if(Mix.env() == :prod, do: 'aplay', else: 'afplay')
-  @audio_player_cmd if(Mix.env() == :prod, do: '#{@audio_player} -q', else: @audio_player)
+  @audio_player if(Mix.env() == :prod, do: "aplay", else: "afplay")
+  @audio_player_args if(Mix.env() == :prod, do: ["-q"], else: [])
 
   use GenServer
 
@@ -55,7 +55,9 @@ defmodule RpiDrumMachineNerves.AudioPlayer do
       static_directory_path = Path.join(:code.priv_dir(:drum_machine_nerves), "static")
       full_path = Path.join(static_directory_path, file)
 
-      :os.cmd('#{@audio_player_cmd} #{full_path}')
+      # :os.cmd('#{@audio_player_cmd} #{full_path}')
+
+      System.cmd(@audio_player, @audio_player_args ++ [full_path])
     end)
 
     {:noreply, state}
@@ -69,8 +71,18 @@ defmodule RpiDrumMachineNerves.AudioPlayer do
   end
 
   # This is expected to fail and do nothing on non rpi devices
-  defp set_audio_output_to_jack, do: :os.cmd('amixer cset numid=3 1')
+  # defp set_audio_output_to_jack, do: System.cmd("amixer", ["cset", "numid=3", "1"], stderr_to_stdout: true)
+  defp set_audio_output_to_jack do
+    case Mix.env() do
+      :prod -> System.cmd("echo", ["ji"], stderr_to_stdout: true)
+      _ -> :noop
+    end
+  end
 
-  def set_volume_cmd(percent) when is_binary(percent),
-    do: :os.cmd('amixer cset numid=1 #{percent}%')
+  def set_volume_cmd(percent) when is_binary(percent) do
+    case Mix.env() do
+      :prod -> System.cmd("amixer", ["cset", "numid=3", "#{percent}%"], stderr_to_stdout: true)
+      _ -> :noop
+    end
+  end
 end

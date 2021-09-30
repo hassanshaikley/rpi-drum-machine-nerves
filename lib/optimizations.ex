@@ -77,15 +77,24 @@ defmodule RpiDrumMachineNerves.Optimizations do
   # Drawn from https://github.com/cjfreeze/power_control
   # Just to reduce power consumption
   def disable_hdmi do
-    :os.cmd('tvservice -o')
+    case Mix.env() do
+      :prod -> System.cmd("tvservice", ["-o"])
+      _ -> :noop
+    end
   end
 
   # Still need to test that this work
   def disable_ethernet do
-    :os.cmd('ip link set eth0 down')
+    case Mix.env() do
+      :prod -> System.cmd("echo", ["ip", "link", "set", "eth0", "down"])
+      _ -> :noop
+    end
   end
 
   def disable_usb do
-    :os.cmd('echo 0x0 > /sys/devices/platform/bcm2708_usb/buspower')
+    case Mix.env() do
+      :prod -> System.cmd("echo", ["0x0", ">", "/sys/devices/platform/bcm2708_usb/buspower"])
+      _ -> :noop
+    end
   end
 end
