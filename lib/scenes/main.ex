@@ -112,12 +112,14 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   end
 
   def handle_info(:loop, %{iteration: iteration, bpm_in_ms: bpm_in_ms} = state) do
-    Process.send_after(self(), :loop, bpm_in_ms)
+    # Process.send_after(self(), :loop, bpm_in_ms)
+    MicroTimer.send_after(bpm_in_ms * 1000, :loop)
     GenServer.cast(StepIndicator, {:loop, iteration})
     play_active_audio(iteration, state)
 
     new_state = Map.put(state, :iteration, get_next_iteration(iteration))
 
+    :erlang.yield()
     {:noreply, new_state}
   end
 
@@ -163,13 +165,16 @@ defmodule RpiDrumMachineNerves.Scene.Main do
   def decrement_volume(_), do: 0
 
   defp play_active_audio(current_iteration, state) do
-    spawn(fn ->
-      if audio_playing?(current_iteration, 0, state), do: AudioPlayer.play_audio("hihat.wav")
-      if audio_playing?(current_iteration, 1, state), do: AudioPlayer.play_audio("snare.wav")
-      if audio_playing?(current_iteration, 2, state), do: AudioPlayer.play_audio("cymbal.wav")
-      if audio_playing?(current_iteration, 3, state), do: AudioPlayer.play_audio("kick.wav")
-      if audio_playing?(current_iteration, 4, state), do: AudioPlayer.play_audio("tom.wav")
-    end)
+    if audio_playing?(current_iteration, 0, state),
+      do: AudioPlayer.play_audio("hihat_short_broken.wav")
+
+    if audio_playing?(current_iteration, 1, state), do: AudioPlayer.play_audio("snare.wav")
+
+    if audio_playing?(current_iteration, 2, state),
+      do: AudioPlayer.play_audio("cymbal_short.wav")
+
+    if audio_playing?(current_iteration, 3, state), do: AudioPlayer.play_audio("kick.wav")
+    if audio_playing?(current_iteration, 4, state), do: AudioPlayer.play_audio("tom_short.wav")
   end
 
   defp bpm_to_ms(bpm), do: trunc(60_000 / bpm)

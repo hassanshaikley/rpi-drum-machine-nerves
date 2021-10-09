@@ -3,7 +3,7 @@ defmodule RpiDrumMachineNerves.AudioPlayer do
   Audio player that uses a GenServer to manage the audio
   """
 
-  @audio_player if(Mix.env() == :prod, do: "aplay", else: "afplay")
+  @audio_player if(Mix.env() == :prod, do: "aplay", else: "play")
   @audio_player_args if(Mix.env() == :prod, do: ["-q"], else: [])
 
   use GenServer
@@ -55,7 +55,7 @@ defmodule RpiDrumMachineNerves.AudioPlayer do
       static_directory_path = Path.join(:code.priv_dir(:drum_machine_nerves), "static")
       full_path = Path.join(static_directory_path, file)
 
-      System.cmd(@audio_player, @audio_player_args ++ [full_path])
+      :os.cmd('#{@audio_player} #{@audio_player_args} #{full_path}', %{max_size: 0})
     end)
 
     {:noreply, state}
