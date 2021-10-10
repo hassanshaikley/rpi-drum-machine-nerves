@@ -63,7 +63,8 @@ defmodule RpiDrumMachineNerves.AudioPlayer do
 
   defp set_audio_output_to_jack do
     try do
-      System.cmd("amixer", ["cset", "numid=3", "1"], stderr_to_stdout: true)
+      # System.cmd("amixer", ["cset", "numid=3", "1"], stderr_to_stdout: true)
+      :os.cmd('amixer cset numid=3 1')
     rescue
       e in ErlangError -> "Error!"
     end

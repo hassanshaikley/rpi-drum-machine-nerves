@@ -42,7 +42,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
         graph: graph,
         bpm: 90,
         bpm_in_ms: bpm_to_ms(90),
-        volume: 50,
+        volume: 70,
         iteration: 0
       }
       |> init_button_state()
