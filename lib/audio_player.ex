@@ -3,9 +3,6 @@ defmodule RpiDrumMachineNerves.AudioPlayer do
   Audio player that uses a GenServer to manage the audio
   """
 
-  @audio_player if(Mix.env() == :prod, do: "aplay", else: "play")
-  @audio_player_args if(Mix.env() == :prod, do: ["-q"], else: [])
-
   use GenServer
 
   def start_link(default \\ []), do: GenServer.start_link(__MODULE__, default, name: __MODULE__)
@@ -52,14 +49,7 @@ defmodule RpiDrumMachineNerves.AudioPlayer do
   end
 
   def handle_info({:play_audio, args}, %{synth: synth} = state) do
-    spawn(fn ->
-      # static_directory_path = Path.join(:code.priv_dir(:drum_machine_nerves), "static")
-      # full_path = Path.join(static_directory_path, file)
-
-      # :os.cmd('#{@audio_player} #{@audio_player_args} #{full_path}', %{max_size: 0})
-
-      apply(MIDISynth.Keyboard, :play, [synth] ++ args)
-    end)
+    apply(MIDISynth.Keyboard, :play, [synth] ++ args)
 
     {:noreply, state}
   end

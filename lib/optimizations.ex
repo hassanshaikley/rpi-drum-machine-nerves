@@ -74,30 +74,30 @@ defmodule RpiDrumMachineNerves.Optimizations do
   def get_previous_iteration(iteration) when iteration == 6, do: 5
   def get_previous_iteration(iteration) when iteration == 7, do: 6
 
-  # Drawn from https://github.com/cjfreeze/power_control
-  # Just to reduce power consumption
-  def disable_hdmi do
-    try do
-      System.cmd("tvservice", ["-o"])
-    rescue
-      e in ErlangError -> "Error!"
-    end
-  end
+  # # Drawn from https://github.com/cjfreeze/power_control
+  # # Just to reduce power consumption
+  # def disable_hdmi do
+  #   try do
+  #     System.cmd("tvservice", ["-o"])
+  #   rescue
+  #     e in ErlangError -> "Error!"
+  #   end
+  # end
 
-  # Still need to test that this work
-  def disable_ethernet do
-    try do
-      System.cmd("echo", ["ip", "link", "set", "eth0", "down"])
-    rescue
-      e in ErlangError -> "Error!"
-    end
-  end
+  # # Still need to test that this work
+  # def disable_ethernet do
+  #   try do
+  #     System.cmd("echo", ["ip", "link", "set", "eth0", "down"])
+  #   rescue
+  #     e in ErlangError -> "Error!"
+  #   end
+  # end
 
-  def disable_usb do
-    try do
-      System.cmd("echo", ["0x0", ">", "/sys/devices/platform/bcm2708_usb/buspower"])
-    rescue
-      e in ErlangError -> "Error!"
-    end
-  end
+  # def disable_usb do
+  #   try do
+  #     System.cmd("echo", ["0x0", ">", "/sys/devices/platform/bcm2708_usb/buspower"])
+  #   rescue
+  #     e in ErlangError -> "Error!"
+  #   end
+  # end
 end

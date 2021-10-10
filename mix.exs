@@ -56,6 +56,7 @@ defmodule RpiDrumMachineNerves.MixProject do
       {:nerves_init_gadget, "~> 0.4", targets: @all_targets},
       {:scenic_driver_nerves_rpi, "~> 0.10", targets: @all_targets},
       {:scenic_driver_nerves_touch, "~> 0.10", targets: @all_targets},
+      {:power_control, "~> 0.1.0", targets: [:rpi3_fluidsynth]},
 
       # Dependencies for specific targets
       # {:nerves_system_rpi, "~> 1.8", runtime: false, targets: :rpi},

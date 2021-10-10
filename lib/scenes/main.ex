@@ -31,9 +31,9 @@ defmodule RpiDrumMachineNerves.Scene.Main do
                    |> InstrumentLabels.add_to_graph()
 
   def init(_, _) do
-    Optimizations.disable_hdmi()
-    Optimizations.disable_ethernet()
-    Optimizations.disable_usb()
+    # Optimizations.disable_hdmi()
+    # Optimizations.disable_ethernet()
+    # Optimizations.disable_usb()
 
     graph = @main_menu_graph
 
@@ -170,6 +170,8 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     if audio_playing?(current_iteration, 2, state), do: AudioPlayer.play_audio([49, 0, 127, 9])
     if audio_playing?(current_iteration, 3, state), do: AudioPlayer.play_audio([35, 0, 127, 9])
     if audio_playing?(current_iteration, 4, state), do: AudioPlayer.play_audio([47, 0, 127, 9])
+
+    AudioPlayer.play_audio([42, 0, 127, 9])
   end
 
   defp bpm_to_ms(bpm), do: trunc(60_000 / bpm)

@@ -19,3 +19,8 @@ config :drum_machine_nerves, :viewport, %{
     }
   ]
 }
+
+config :power_control,
+  cpu_governor: :powersave,
+  disable_hdmi: true,
+  disable_leds: true

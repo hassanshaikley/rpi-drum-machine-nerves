@@ -17,7 +17,7 @@ config :nerves, :firmware, rootfs_overlay: "rootfs_overlay"
 # involved with firmware updates.
 
 config :shoehorn,
-  init: [:nerves_runtime, :nerves_init_gadget],
+  init: [:nerves_runtime, :nerves_init_gadget, :power_control],
   # env: Mix.env(),
   app: Mix.Project.config()[:app]
 
