@@ -62,7 +62,7 @@ defmodule RpiDrumMachineNerves.MixProject do
       # {:nerves_system_rpi0, "~> 1.8", runtime: false, targets: :rpi0},
       # {:nerves_system_rpi2, "~> 1.8", runtime: false, targets: :rpi2},
       # {:nerves_system_rpi3, "~> 1.8", runtime: false, targets: :rpi3},
-      {:nerves_system_rpi3_fluidsynth, "~> 1.16.2", runtime: false, targets: :rpi3_fluidsynth},
+      {:nerves_system_rpi3_fluidsynth, "~> 1.16.3", runtime: false, targets: :rpi3_fluidsynth},
       # {:nerves_system_rpi3a, "~> 1.8", runtime: false, targets: :rpi3a},
       # {:nerves_system_rpi4, "~> 1.8", runtime: false, targets: :rpi4},
       # {:nerves_system_bbb, "~> 2.3", runtime: false, targets: :bbb},
