@@ -13,7 +13,7 @@ defmodule RpiDrumMachineNerves.Components.BpmControls do
          |> group(
            fn graph ->
              graph
-             |> text("bpm\n(90)", id: :bpm_label)
+             |> text("bpm\n(200)", id: :bpm_label)
              |> button("+",
                theme: %{
                  text: :white,

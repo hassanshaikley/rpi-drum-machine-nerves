@@ -40,8 +40,8 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     state =
       %{
         graph: graph,
-        bpm: 90,
-        bpm_in_ms: bpm_to_ms(90),
+        bpm: 200,
+        bpm_in_ms: bpm_to_ms(200),
         volume: 70,
         iteration: 0
       }
@@ -171,7 +171,7 @@ defmodule RpiDrumMachineNerves.Scene.Main do
     if audio_playing?(current_iteration, 3, state), do: AudioPlayer.play_audio([35, 0, 127, 9])
     if audio_playing?(current_iteration, 4, state), do: AudioPlayer.play_audio([47, 0, 127, 9])
 
-    AudioPlayer.play_audio([42, 0, 127, 9])
+    # AudioPlayer.play_audio([42, 0, 127, 9])
   end
 
   defp bpm_to_ms(bpm), do: trunc(60_000 / bpm)
